@@ -1,0 +1,695 @@
+let game = new Chess();
+
+function stringToMoveArray(pgnStr) {
+  const [metadata, moves] = pgnStr.trim().split(/\n\n/);
+  const movesArray = moves.replace(/\d+\.\s/g, "").split(/\s/);
+
+  // Extract information from metadata
+  function extractInfo(metadata, tag) {
+    let regex = new RegExp("\\[" + tag + ' "(.*?)"\\]');
+    let match = metadata.match(regex);
+    return match ? match[1] : null;
+  }
+
+  // Extracting required information
+  let whitePlayer = extractInfo(metadata, "White");
+  let blackPlayer = extractInfo(metadata, "Black");
+  let whiteElo = extractInfo(metadata, "WhiteElo");
+  let blackElo = extractInfo(metadata, "BlackElo");
+  let timeControl = extractInfo(metadata, "TimeControl");
+
+  if (
+    timeControl == "600" ||
+    timeControl == "900+10" ||
+    timeControl == "18000"
+  ) {
+    timeControl = "⏱";
+  } else if (
+    timeControl == "180" ||
+    timeControl == "180+2" ||
+    timeControl == "300"
+  ) {
+    timeControl = "⚡";
+  } else if (
+    timeControl == "60" ||
+    timeControl == "60+1" ||
+    timeControl == "180+1"
+  ) {
+    timeControl = "🔫";
+  } else if (timeControl == "1/0") {
+    timeControl = "🤖";
+  }
+
+  let whitePlayerDiv = document.getElementById("whitePlayer");
+  let blackPlayerDiv = document.getElementById("blackPlayer");
+  whitePlayerDiv.innerHTML = `${whitePlayer}: ${timeControl}${whiteElo}`;
+  blackPlayerDiv.innerHTML = `${blackPlayer}: ${timeControl}${blackElo}`;
+
+  return movesArray;
+}
+
+let pgn = [];
+let currentPgn = [];
+
+let board = Chessboard("myBoard", {
+  position: "start",
+  draggable: false,
+  orientation: "white",
+});
+
+let currentMove = 0;
+
+let raport = {
+  playerMoves: [""],
+  bestMoves: ["e2e4, d2d4, c2c4, g1f3, b1c3"],
+  evals: [0],
+  types: ["cp"],
+  colors: [""],
+  pgn: {},
+  fen: [],
+  comment: [""],
+  message: [""],
+};
+
+let accurateMoves = ["e2e4, d2d4, c2c4, g1f3, b1c3"];
+let whiteAccMoves = ["e2e4, d2d4, c2c4, g1f3, b1c3"];
+let blackAccMoves = [""];
+
+let accuracyValue = 0;
+let whiteAccVal = 0;
+let blackAccVal = 0;
+
+let depthSlider = document.getElementById("depth-slider");
+let depthLabel = document.getElementById("depth-label");
+
+depthSlider.addEventListener("input", function () {
+  depthLabel.textContent = "Depth: " + depthSlider.value;
+});
+
+// Review Forward and Backward
+document
+  .getElementById("reviewBtnForward")
+  .addEventListener("click", () => gameReview("forward"));
+
+document
+  .getElementById("reviewBtnBackward")
+  .addEventListener("click", () => gameReview("backward"));
+
+document.addEventListener("keydown", function (event) {
+  if (event.key === "ArrowLeft") {
+    gameReview("backward");
+  } else if (event.key === "ArrowRight") {
+    gameReview("forward");
+  }
+});
+
+function isEven(value) {
+  if (value % 2 == 0) return true;
+  else return false;
+}
+
+function confirmPgn() {
+  const pgnInput = document.getElementById("pgnInput").value;
+  const moves = stringToMoveArray(pgnInput);
+  let pgnStatus = document.getElementById("pgnStatus");
+  removeAllPaintedSquares();
+
+  if (moves.length > 0) {
+    pgn = moves;
+    currentMove = 0;
+    game.reset();
+    board.position(game.fen());
+    console.log("PGN confirmed. Starting game...");
+    pgnStatus.textContent = `PGN loaded successfully`;
+  } else {
+    console.log("Invalid PGN input.");
+    pgnStatus.textContent = `Invalid PGN input`;
+  }
+}
+
+// Generate Raport
+document
+  .getElementById("generateRaport")
+  .addEventListener("click", () => generateRaport());
+
+let pgnArr = [];
+
+async function generateRaport(result) {
+  confirmPgn();
+  pgn.push("");
+  raport.pgn = pgn;
+  for (let i = 0; i < pgn.length - 2; i++) {
+    if (currentMove < pgn.length - 2) {
+      currentMove++;
+      raport.fen.push(game.fen());
+      let pgnClone = pgn.slice(0, currentMove).join(" ");
+      game.load_pgn(pgnClone);
+      board.position(game.fen());
+
+      const fen = game.fen();
+      const stockfish = new Stockfish();
+
+      let analizeProgress = Math.round(((i + 2) / pgn.length) * 100);
+
+      pgnArr = pgnClone.split(" ");
+      console.log(raport);
+
+      if (pgnClone.includes("#")) {
+        checkResult();
+
+        game.load_pgn(pgnClone);
+        board.position(game.fen());
+        raport.fen.push(game.fen());
+        analizeProgress = 100;
+
+        const analiseProgressDiv = document.getElementById("analiseProgress");
+        analiseProgressDiv.textContent = analizeProgress;
+        analiseProgressDiv.innerHTML = `<div id="analizeProgress" style="color: #fff;">${analizeProgress} % complete</div>`;
+
+        const displayMovesDiv = document.getElementById("displayMoves");
+        const moveEvaluationDiv = document.getElementById("moveEvaluation");
+        displayMovesDiv.innerHTML = "";
+        moveEvaluationDiv.innerHTML = "";
+        analiseProgressDiv.innerHTML = `<div id="analizeProgress" style="color: #fff;">Analysis completed!</div>`;
+        board.position(raport.fen[0]);
+        displayAccuracy();
+
+        moveEvaluationDiv.innerHTML = `<span style="color: #FFD700;"><b>Checkmate!</b></span>`;
+        raport.message.push(moveEvaluationDiv.innerHTML);
+
+        displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #FFD700;">${
+          raport.pgn[raport.pgn.length - 3]
+        }</div>`;
+        raport.comment.push(displayMovesDiv.innerHTML);
+
+        return (currentMove = 0);
+      } else if (raport.pgn.length - 2 == pgnArr.length) {
+        removeAllPaintedSquares();
+        game.load_pgn(pgnClone);
+        board.position(game.fen());
+        raport.fen.push(game.fen());
+
+        const analiseProgressDiv = document.getElementById("analiseProgress");
+        analiseProgressDiv.innerHTML = `<div id="analizeProgress" style="color: #fff;">Analysis completed!</div>`;
+
+        const displayMovesDiv = document.getElementById("displayMoves");
+        const moveEvaluationDiv = document.getElementById("moveEvaluation");
+
+        displayMovesDiv.textContent = "";
+        raport.comment.push(displayMovesDiv.innerHTML);
+
+        moveEvaluationDiv.innerHTML = checkResult();
+        raport.message.push(moveEvaluationDiv.innerHTML);
+
+        board.position(raport.fen[0]);
+        displayAccuracy();
+        return (currentMove = 0);
+      } else {
+        if (i >= 2) {
+          if (accurateMoves[i - 1].includes(raport.playerMoves[i])) {
+            accuracyValue++;
+            if (isEven(i)) {
+              blackAccVal++;
+            } else {
+              whiteAccVal++;
+            }
+          }
+        }
+      }
+
+      removeAllPaintedSquares();
+
+      const analiseProgressDiv = document.getElementById("analiseProgress");
+      analiseProgressDiv.textContent = analizeProgress;
+      analiseProgressDiv.innerHTML = `<div id="analizeProgress" style="color: #fff;">${analizeProgress} % complete</div>`;
+
+      if (analizeProgress == 100) {
+        const displayMovesDiv = document.getElementById("displayMoves");
+        const moveEvaluationDiv = document.getElementById("moveEvaluation");
+        displayMovesDiv.innerHTML = "";
+        moveEvaluationDiv.innerHTML = "";
+        analiseProgressDiv.innerHTML = `<div id="analizeProgress" style="color: #fff;">Analysis completed!</div>`;
+        board.position(raport.fen[0]);
+        displayAccuracy();
+        return (currentMove = 0);
+      }
+
+      await DisplayBestPositions(
+        fen,
+        stockfish,
+        parseInt(depthSlider.value),
+        pgnClone
+      );
+    } else {
+      console.log("End of PGN reached.");
+      break;
+    }
+  }
+}
+
+function paintSquares(playerMove, curentColor) {
+  removeAllPaintedSquares();
+
+  if (raport.playerMoves[currentMove]) {
+    let playerMoveFrom = raport.playerMoves[currentMove].substring(0, 2);
+    let playerMoveTo = raport.playerMoves[currentMove].substring(2);
+
+    const squareFrom = document.querySelector(
+      `[data-square=${playerMoveFrom}]`
+    );
+    const squareTo = document.querySelector(`[data-square=${playerMoveTo}]`);
+    if (squareFrom && squareTo) {
+      squareFrom.style.backgroundColor = curentColor;
+      squareTo.style.backgroundColor = curentColor;
+    }
+  }
+}
+
+function displayComment() {
+  const displayMovesDiv = document.getElementById("displayMoves");
+  const moveEvaluation = document.getElementById("moveEvaluation");
+  displayMovesDiv.innerHTML = raport.comment[currentMove];
+  moveEvaluation.innerHTML = raport.message[currentMove];
+}
+
+function displayEvalbar() {
+  let evalbarValue = document.getElementById("evalbar");
+  if (raport.types[currentMove + 1] == "mate") {
+    evalbarValue.innerHTML = `M${raport.evals[currentMove]}`;
+  } else {
+    let value = raport.evals[currentMove] / 100;
+    evalbarValue.innerHTML = value.toFixed(1);
+  }
+}
+
+// Fill evalbar
+function linearInterpolation(x, x0, y0, x1, y1) {
+  return y0 + ((x - x0) * (y1 - y0)) / (x1 - x0);
+}
+
+function calcPerc(evalValue) {
+  if (evalValue <= -4.5) {
+    let valueForWhite = 5;
+    let valueForBlack = 95;
+    return { valueForWhite, valueForBlack };
+  } else if (evalValue >= 4.5) {
+    let valueForWhite = 95;
+    let valueForBlack = 5;
+    return { valueForWhite, valueForBlack };
+  } else {
+    let value = linearInterpolation(evalValue, -4.5, 5, 4.5, 95);
+    value = Math.round(value);
+    let valueForWhite = Math.floor(value);
+    let valueForBlack = Math.floor(100 - value);
+    return { valueForWhite, valueForBlack };
+  }
+}
+
+function fillEvalbar() {
+  let percValue = calcPerc(raport.evals[currentMove] / 100).valueForWhite;
+  const evalBar = document.getElementById("evalbar");
+  const evalBarAfter = window
+    .getComputedStyle(evalBar, "::after")
+    .getPropertyValue("content");
+  if (evalBarAfter !== "none") {
+    const evalBarAfterStyle = document.createElement("style");
+    evalBarAfterStyle.innerHTML = `
+      #evalbar::after {
+        content: "${(raport.evals[currentMove] / 100).toFixed(1)}";
+        height: calc((${percValue} / 100) * 496px);
+      }
+    `;
+    document.head.appendChild(evalBarAfterStyle);
+  }
+}
+
+function displayAccuracy() {
+  whiteAccuracyDiv = document.getElementById("whiteAccuracy");
+  whiteAccuracyDiv.innerHTML =
+    "White accuracy: " +
+    ((whiteAccVal / (raport.playerMoves.length / 2)) * 100).toFixed(1) +
+    "%";
+
+  blackAccuracyDiv = document.getElementById("blackAccuracy");
+  blackAccuracyDiv.innerHTML =
+    "Black accuracy: " +
+    ((blackAccVal / (raport.playerMoves.length / 2)) * 100).toFixed(1) +
+    "%";
+}
+
+function checkResult() {
+  let result = raport.pgn[raport.pgn.length - 2];
+  let formattedResult;
+  if (result === "1-0") {
+    formattedResult =
+      '<span style="color: #FFD700;"><b>White Wins!</b></span></br><div id="displayMoves" style="color: #FFD700;"><b>black resigned</b></div>';
+  } else if (result === "0-1") {
+    formattedResult =
+      '<span style="color: #FFD700;"><b>Black Wins!</b></span></br><div id="displayMoves" style="color: #FFD700;"><b>white resigned</b></div>';
+  } else if (result === "1/2-1/2") {
+    formattedResult = '<span style="color: #FFD700;"><b>Draw</b></span>';
+  }
+
+  return formattedResult;
+}
+
+// Game review
+function gameReview(direction) {
+  let playerMove = raport.playerMoves[currentMove + 1];
+  let curentColor = raport.colors[currentMove + 1];
+
+  if (direction === "forward" && currentMove < pgn.length - 2) {
+    currentMove++;
+  } else if (direction === "backward" && currentMove > 0) {
+    currentMove--;
+  }
+  board.position(raport.fen[currentMove]);
+  paintSquares(playerMove, curentColor);
+  displayComment();
+  displayEvalbar();
+  fillEvalbar();
+  checkResult();
+}
+
+class Stockfish {
+  constructor() {
+    this.worker = new Worker(
+      typeof WebAssembly == "object"
+        ? "stockfish/stockfish-nnue-16.js"
+        : "stockfish/stockfish.js"
+    );
+    this.depth = 0;
+    this.worker.postMessage("uci");
+    this.worker.postMessage("setoption name MultiPV value 3");
+    return;
+  }
+
+  async evaluate(fen, targetDepth, verbose = false) {
+    this.worker.postMessage("position fen " + fen);
+    this.worker.postMessage("go depth " + targetDepth);
+    const messages = [];
+    const lines = [];
+    let timeoutReached = false;
+    return new Promise((res) => {
+      const timeout = setTimeout(() => {
+        timeoutReached = true;
+        res(lines);
+        this.worker.terminate();
+      }, 60000);
+
+      this.worker.addEventListener("message", (event) => {
+        if (timeoutReached) return;
+        let message = event.data;
+        messages.unshift(message);
+        let latestDepth = parseInt(
+          message.match(/(?:depth )(\d+)/)?.[1] || "0"
+        );
+        this.depth = Math.max(latestDepth, this.depth);
+        if (message.startsWith("bestmove") || message.includes("depth 0")) {
+          let searchMessages = messages.filter((msg) =>
+            msg.startsWith("info depth")
+          );
+          const uniqueMovesMap = new Map();
+          for (let searchMessage of searchMessages) {
+            let idString = searchMessage.match(/(?:multipv )(\d+)/)?.[1];
+            let depthString = searchMessage.match(/(?:depth )(\d+)/)?.[1];
+            let moveUCI = searchMessage.match(/(?: pv )(.+?)(?= |$)/)?.[1];
+            let evaluation = {
+              type: searchMessage.includes(" cp ") ? "cp" : "mate",
+              value: parseInt(
+                searchMessage.match(/(?:(?:cp )|(?:mate ))([\d-]+)/)?.[1] || "0"
+              ),
+            };
+            if (fen.includes(" b ")) {
+              evaluation.value *= -1;
+            }
+            if (!idString || !depthString || !moveUCI) continue;
+            let id = parseInt(idString);
+            let depth = parseInt(depthString);
+            if (!uniqueMovesMap.has(moveUCI)) {
+              uniqueMovesMap.set(moveUCI, {
+                id,
+                depth,
+                evaluation,
+                moveUCI,
+              });
+            }
+          }
+          lines.push(...uniqueMovesMap.values());
+          if (lines.length >= 1 || timeoutReached) {
+            clearTimeout(timeout);
+            this.worker.terminate();
+            res(lines);
+          }
+        }
+      });
+      this.worker.addEventListener("error", () => {
+        clearTimeout(timeout);
+        this.worker.terminate();
+        this.worker = new Worker("stockfish/stockfish.js");
+        this.worker.postMessage("uci");
+        this.worker.postMessage("setoption name MultiPV value 3");
+        this.evaluate(fen, targetDepth, verbose).then(res);
+      });
+    });
+    return;
+  }
+
+  async generateBestPositions(fen, numLines, depth) {
+    const engineLines = await this.evaluate(fen, depth);
+    return engineLines.slice(0, numLines);
+  }
+}
+
+async function removeAllPaintedSquares() {
+  const allSquares = document.querySelectorAll("[data-square]");
+  allSquares.forEach((square) => {
+    square.style.backgroundColor = "";
+  });
+}
+
+let evalArr = [0];
+let typeArr = ["cp"];
+let bestMovesArr = ["e2e4"];
+
+async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
+  return new Promise((resolve, reject) => {
+    const numLines = 8;
+    stockfish
+      .generateBestPositions(fen, numLines, depth)
+      .then(async (analyses) => {
+        removeAllPaintedSquares();
+
+        const lastMove = game.history({ verbose: true }).pop();
+
+        const playerMove = getMoveNotation(lastMove);
+        const evalsArr = analyses.map((analysis) => analysis.evaluation.value);
+        const { moveEvaluationText, textColor, colorSquare } =
+          evaluateAndCheckMove(playerMove, fen, evalsArr, analyses, pgnClone);
+        const { moveEvaluationText: updatedText, textColor: updatedTextColor } =
+          checkBestMove(moveEvaluationText, textColor, analyses, lastMove);
+
+        resolve();
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+
+  function getMoveNotation(move) {
+    const fromSquare = move.from;
+    const toSquare = move.to;
+    return fromSquare + toSquare;
+  }
+
+  function checkBestMove(moveEvaluationText, textColor, analyses, lastMove) {
+    let currentPlayerMove = lastMove.from + lastMove.to;
+    let engineBestMove = bestMovesArr[bestMovesArr.length - 1];
+
+    bestMovesArr.push(analyses[0].moveUCI);
+
+    raport.playerMoves.push(currentPlayerMove);
+    raport.bestMoves.push(analyses[0].moveUCI);
+
+    let moves = "";
+    let whiteMoves = "";
+    let blackMoves = "";
+    for (let i = 0; i < analyses.length - 1; i++) {
+      moves += analyses[i].moveUCI + ", ";
+
+      if (isEven(i)) {
+        blackMoves += analyses[i].moveUCI + ", ";
+      } else {
+        whiteMoves += analyses[i].moveUCI + ", ";
+      }
+    }
+    accurateMoves.push(moves);
+    whiteAccMoves.push(whiteMoves);
+    blackAccMoves.push(blackMoves);
+
+    const displayMovesDiv = document.getElementById("displayMoves");
+    displayMovesDiv.textContent = engineBestMove;
+
+    if (currentPlayerMove == engineBestMove) {
+      displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #81b64c;"> ${engineBestMove} is the best move!</div>`;
+      raport.comment.push(displayMovesDiv.innerHTML);
+    } else {
+      displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: ${textColor};">Move played: ${currentPlayerMove}</div>
+      <div id="displayMoves" style="color: #81b64c;">The best was: ${engineBestMove}</div>`;
+      raport.comment.push(displayMovesDiv.innerHTML);
+    }
+
+    return { moveEvaluationText, textColor };
+  }
+
+  function evaluateAndCheckMove(playerMove, fen, evalsArr, analyses, pgnClone) {
+    let currMoveValue = analyses[0].evaluation.value;
+    let currMoveType = analyses[0].evaluation.type;
+    evalArr.push(currMoveValue);
+    typeArr.push(currMoveType);
+
+    raport.evals.push(currMoveValue);
+    raport.types.push(currMoveType);
+
+    let currMove = currMoveValue;
+    let prevMove = evalArr[evalArr.length - 2];
+
+    let currType = currMoveType;
+    let prevType = typeArr[evalArr.length - 2];
+
+    let moveEvaluationText;
+    let textColor;
+    let colorSquare;
+
+    const whiteDiff = currMove - prevMove;
+    const blackDiff = prevMove - currMove;
+
+    if (analyses[0].evaluation.type == "cp") {
+      if (fen.includes(" b ")) {
+        if (
+          currMove >= prevMove &&
+          whiteDiff >= 0 &&
+          whiteDiff < 20 &&
+          prevType !== "mate"
+        ) {
+          moveEvaluationText = "Good move";
+          textColor = "#95b776";
+          colorSquare = "#95b776";
+        } else if (currMove >= prevMove && whiteDiff >= 20 && whiteDiff < 350) {
+          moveEvaluationText = "Very good move";
+          textColor = "#81b64c";
+          colorSquare = "#81b64c";
+        } else if (
+          currMove >= prevMove &&
+          whiteDiff >= 350 &&
+          whiteDiff < 550
+        ) {
+          moveEvaluationText = "Great move!";
+          textColor = "#749bbf";
+          colorSquare = "#749bbf";
+        } else if (currMove >= prevMove && whiteDiff > 550) {
+          moveEvaluationText = "Excellent move!!";
+          textColor = "#26c2a3";
+          colorSquare = "#26c2a3";
+        } else if (currMove <= prevMove && blackDiff > 0 && blackDiff <= 15) {
+          moveEvaluationText = "Inaccuracy";
+          textColor = "#f7c631";
+          colorSquare = "#f7c631";
+        } else if (currMove <= prevMove && blackDiff > 15 && blackDiff <= 35) {
+          moveEvaluationText = "Mistake";
+          textColor = "#ffa459";
+          colorSquare = "#ffa459";
+        } else if (prevType == "mate") {
+          if (currMove > prevMove) {
+            moveEvaluationText = "Mate in: " + analyses[0].evaluation.value;
+            textColor = "#95b776";
+            colorSquare = "#95b776";
+          } else if (currMove < prevMove) {
+            moveEvaluationText = "Mate in: " + analyses[0].evaluation.value;
+            textColor = "#95b776";
+            colorSquare = "#95b776";
+          }
+        } else if (currMove <= prevMove && blackDiff > 35) {
+          moveEvaluationText = "Blunder!";
+          textColor = "#fa412d";
+          colorSquare = "#fa412d";
+        }
+      } else if (fen.includes(" w ")) {
+        if (currMove <= prevMove && blackDiff >= 0 && blackDiff < 20) {
+          moveEvaluationText = "Good move";
+          textColor = "#95b776";
+          colorSquare = "#95b776";
+        } else if (currMove <= prevMove && blackDiff >= 20 && blackDiff < 350) {
+          moveEvaluationText = "Very good move";
+          textColor = "#81b64c";
+          colorSquare = "#81b64c";
+        } else if (
+          currMove <= prevMove &&
+          blackDiff >= 350 &&
+          blackDiff < 550
+        ) {
+          moveEvaluationText = "Great move!";
+          textColor = "#749bbf";
+          colorSquare = "#749bbf";
+        } else if (currMove <= prevMove && blackDiff >= 550) {
+          moveEvaluationText = "Excellent move!!";
+          textColor = "#26c2a3";
+          colorSquare = "#26c2a3";
+        } else if (currMove >= prevMove && whiteDiff > 0 && whiteDiff <= 15) {
+          moveEvaluationText = "Inaccuracy";
+          textColor = "#f7c631";
+          colorSquare = "#f7c631";
+        } else if (currMove >= prevMove && whiteDiff > 15 && whiteDiff <= 35) {
+          moveEvaluationText = "Mistake";
+          textColor = "#ffa459";
+          colorSquare = "#ffa459";
+        } else if (prevType == "mate") {
+          if (currMove > prevMove) {
+            moveEvaluationText = "Improvement for black!";
+            textColor = "#95b776";
+            colorSquare = "#95b776";
+          } else if (currMove < prevMove) {
+            moveEvaluationText = "Improvement for white!";
+            textColor = "#95b776";
+            colorSquare = "#95b776";
+          }
+        } else if (currMove >= prevMove && whiteDiff > 35) {
+          moveEvaluationText = "Blunder!";
+          textColor = "#fa412d";
+          colorSquare = "#fa412d";
+        }
+      }
+    } else if (analyses[0].evaluation.type == "mate") {
+      if (fen.includes(" w ")) {
+        if (currMove > prevMove) {
+          moveEvaluationText = "Mate in: " + analyses[0].evaluation.value;
+          textColor = "#ffb6c1";
+          colorSquare = "#ffb6c1";
+        } else if (currMove <= prevMove) {
+          moveEvaluationText = "Mate in: " + analyses[0].evaluation.value;
+          textColor = "#ffb6c1";
+          colorSquare = "#ffb6c1";
+        }
+      } else if (fen.includes(" b ")) {
+        if (currMove < prevMove) {
+          moveEvaluationText = "Improvement for white!";
+          textColor = "#ffb6c1";
+          colorSquare = "#ffb6c1";
+        } else if (currMove > prevMove) {
+          moveEvaluationText = "Improvement for black!";
+          textColor = "#ffb6c1";
+          colorSquare = "#ffb6c1";
+        }
+      }
+    }
+
+    const moveEvaluationDiv = document.getElementById("moveEvaluation");
+    moveEvaluationDiv.textContent = moveEvaluationText;
+    moveEvaluationDiv.innerHTML = `<span style="color: ${textColor};"><b>${moveEvaluationText}</b></span>`;
+
+    raport.colors.push(textColor);
+    raport.message.push(moveEvaluationDiv.innerHTML);
+
+    return { moveEvaluationText, textColor, colorSquare };
+  }
+}
