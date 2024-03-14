@@ -152,7 +152,6 @@ async function generateRaport(result) {
       let analizeProgress = Math.round(((i + 2) / pgn.length) * 100);
 
       pgnArr = pgnClone.split(" ");
-      console.log(raport);
 
       if (pgnClone.includes("#")) {
         checkResult();
