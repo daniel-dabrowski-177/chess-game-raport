@@ -21,22 +21,29 @@ function stringToMoveArray(pgnStr) {
   if (
     timeControl == "600" ||
     timeControl == "900+10" ||
-    timeControl == "18000"
+    timeControl == "1800" ||
+    timeControl == "600+5" ||
+    timeControl == "1200" ||
+    timeControl == "3200"
   ) {
     timeControl = "⏱";
   } else if (
     timeControl == "180" ||
     timeControl == "180+2" ||
-    timeControl == "300"
+    timeControl == "300" ||
+    timeControl == "300+5" ||
+    timeControl == "300+2"
   ) {
     timeControl = "⚡";
   } else if (
     timeControl == "60" ||
     timeControl == "60+1" ||
-    timeControl == "180+1"
+    timeControl == "120+1" ||
+    timeControl == "30" ||
+    timeControl == "20+1"
   ) {
     timeControl = "🔫";
-  } else if (timeControl == "1/0") {
+  } else if (timeControl == "1/0" || timeControl == "0/1") {
     timeControl = "🤖";
   }
 
@@ -55,6 +62,35 @@ let board = Chessboard("myBoard", {
   position: "start",
   draggable: false,
   orientation: "white",
+  pieceTheme: `chesspieces/uscf/{piece}.png`,
+});
+
+let flipOrientationBtn = document.getElementById("flipOrientationBtn");
+flipOrientationBtn.addEventListener("click", () => {
+  board.flip();
+  removeAllPaintedSquares();
+});
+
+let openSettings = false;
+let settingsContainer = document.querySelector(".settingsContainer");
+
+let settingsBtn = document.getElementById("settingsBtn");
+settingsBtn.addEventListener("click", () => {
+  if (openSettings) {
+    settingsContainer.style.display = "none";
+    openSettings = false;
+  } else {
+    settingsContainer.style.display = "block";
+    openSettings = true;
+  }
+});
+
+let showEngineBestMoves = false;
+
+let bestMoveAsistantBtn = document.getElementById("bestMoveAsistantBtn");
+bestMoveAsistantBtn.addEventListener("click", () => {
+  showEngineBestMoves = !showEngineBestMoves;
+  bestMoveAsistantBtn.textContent = `Best Moves: ${showEngineBestMoves}`;
 });
 
 let currentMove = 0;
@@ -202,6 +238,7 @@ async function generateRaport(result) {
 
         board.position(raport.fen[0]);
         displayAccuracy();
+
         return (currentMove = 0);
       } else {
         if (i >= 2) {
@@ -260,6 +297,22 @@ function paintSquares(playerMove, curentColor) {
     if (squareFrom && squareTo) {
       squareFrom.style.backgroundColor = curentColor;
       squareTo.style.backgroundColor = curentColor;
+    }
+  }
+
+  if (showEngineBestMoves) {
+    if (raport.bestMoves[currentMove] && currentMove >= 1) {
+      let engineMoveFrom = raport.bestMoves[currentMove - 1].substring(0, 2);
+      let engineMoveTo = raport.bestMoves[currentMove - 1].substring(2);
+
+      const squareFrom = document.querySelector(
+        `[data-square=${engineMoveFrom}]`
+      );
+      const squareTo = document.querySelector(`[data-square=${engineMoveTo}]`);
+      if (squareFrom && squareTo) {
+        squareFrom.style.backgroundColor = "#3b79b3";
+        squareTo.style.backgroundColor = "#3b79b3";
+      }
     }
   }
 }
@@ -379,7 +432,7 @@ class Stockfish {
     );
     this.depth = 0;
     this.worker.postMessage("uci");
-    this.worker.postMessage("setoption name MultiPV value 3");
+    this.worker.postMessage("setoption name MultiPV value 8");
     return;
   }
 
@@ -447,7 +500,7 @@ class Stockfish {
         this.worker.terminate();
         this.worker = new Worker("stockfish/stockfish.js");
         this.worker.postMessage("uci");
-        this.worker.postMessage("setoption name MultiPV value 3");
+        this.worker.postMessage("setoption name MultiPV value 8");
         this.evaluate(fen, targetDepth, verbose).then(res);
       });
     });
@@ -461,15 +514,59 @@ class Stockfish {
 }
 
 async function removeAllPaintedSquares() {
-  const allSquares = document.querySelectorAll("[data-square]");
-  allSquares.forEach((square) => {
-    square.style.backgroundColor = "";
+  let lightSquares = document.querySelectorAll(".white-1e1d7");
+  let darkSquares = document.querySelectorAll(".black-3c85d");
+
+  lightSquares.forEach((ls) => {
+    ls.style.backgroundColor = "";
   });
+  darkSquares.forEach((ds) => {
+    ds.style.backgroundColor = "";
+  });
+
+  // Default "blue"
+  if (theme == "") {
+    lightSquares.forEach((ls) => {
+      ls.style.backgroundColor = "";
+    });
+    darkSquares.forEach((ds) => {
+      ds.style.backgroundColor = "";
+    });
+  }
+  // Red
+  else if (theme == "red") {
+    lightSquares.forEach((ls) => {
+      ls.style.backgroundColor = "#e6c8cf";
+    });
+    darkSquares.forEach((ds) => {
+      ds.style.backgroundColor = "#e8829a";
+    });
+  }
+  // Green
+  else if (theme == "green") {
+    lightSquares.forEach((ls) => {
+      ls.style.backgroundColor = "#EBECD0";
+    });
+    darkSquares.forEach((ds) => {
+      ds.style.backgroundColor = "#739552";
+    });
+  }
+  // Classic
+  else if (theme == "classic") {
+    lightSquares.forEach((ls) => {
+      ls.style.backgroundColor = "#FCE4BE";
+    });
+    darkSquares.forEach((ds) => {
+      ds.style.backgroundColor = "#BE8F68";
+    });
+  }
 }
 
 let evalArr = [0];
 let typeArr = ["cp"];
 let bestMovesArr = ["e2e4"];
+let veryGoodMovesArr = [""];
+let goodMovesArr = [""];
 
 async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
   return new Promise((resolve, reject) => {
@@ -477,16 +574,32 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
     stockfish
       .generateBestPositions(fen, numLines, depth)
       .then(async (analyses) => {
+        const sortedAnalyses = analyses.sort((a, b) => a.id - b.id);
+
         removeAllPaintedSquares();
 
         const lastMove = game.history({ verbose: true }).pop();
 
         const playerMove = getMoveNotation(lastMove);
-        const evalsArr = analyses.map((analysis) => analysis.evaluation.value);
+        const evalsArr = sortedAnalyses.map(
+          (analysis) => analysis.evaluation.value
+        );
         const { moveEvaluationText, textColor, colorSquare } =
-          evaluateAndCheckMove(playerMove, fen, evalsArr, analyses, pgnClone);
+          evaluateAndCheckMove(
+            playerMove,
+            fen,
+            evalsArr,
+            sortedAnalyses,
+            pgnClone,
+            lastMove
+          );
         const { moveEvaluationText: updatedText, textColor: updatedTextColor } =
-          checkBestMove(moveEvaluationText, textColor, analyses, lastMove);
+          checkBestMove(
+            moveEvaluationText,
+            textColor,
+            sortedAnalyses,
+            lastMove
+          );
 
         resolve();
       })
@@ -504,8 +617,16 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
   function checkBestMove(moveEvaluationText, textColor, analyses, lastMove) {
     let currentPlayerMove = lastMove.from + lastMove.to;
     let engineBestMove = bestMovesArr[bestMovesArr.length - 1];
+    let engineVeryGoodMove = veryGoodMovesArr[veryGoodMovesArr.length - 1];
+    let engineGoodMove = goodMovesArr[goodMovesArr.length - 1];
 
     bestMovesArr.push(analyses[0].moveUCI);
+    if (analyses.length >= 3) {
+      veryGoodMovesArr.push(analyses[1].moveUCI + ", " + analyses[2].moveUCI);
+    }
+    if (analyses.length >= 5) {
+      goodMovesArr.push(analyses[3].moveUCI + ", " + analyses[4].moveUCI);
+    }
 
     raport.playerMoves.push(currentPlayerMove);
     raport.bestMoves.push(analyses[0].moveUCI);
@@ -527,21 +648,54 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
     blackAccMoves.push(blackMoves);
 
     const displayMovesDiv = document.getElementById("displayMoves");
-    displayMovesDiv.textContent = engineBestMove;
 
     if (currentPlayerMove == engineBestMove) {
-      displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #81b64c;"> ${engineBestMove} is the best move!</div>`;
+      displayMovesDiv.textContent = engineBestMove;
+      displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #3b79b3;"> ${engineBestMove} is the best move!</div>`;
+      raport.comment.push(displayMovesDiv.innerHTML);
+    } else if (engineVeryGoodMove.includes(currentPlayerMove)) {
+      displayMovesDiv.textContent = engineVeryGoodMove;
+      displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #81b64c;">${currentPlayerMove} is very good move!</div>
+      <div id="displayMoves" style="color: #3b79b3;">The best was: ${engineBestMove}</div>`;
+      raport.comment.push(displayMovesDiv.innerHTML);
+    } else if (engineGoodMove.includes(currentPlayerMove)) {
+      displayMovesDiv.textContent = engineGoodMove;
+      displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #95b776;">${currentPlayerMove} is a good move!</div>
+      <div id="displayMoves" style="color: #3b79b3;">The best was: ${engineBestMove}</div>`;
       raport.comment.push(displayMovesDiv.innerHTML);
     } else {
+      displayMovesDiv.textContent = engineBestMove;
       displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: ${textColor};">Move played: ${currentPlayerMove}</div>
-      <div id="displayMoves" style="color: #81b64c;">The best was: ${engineBestMove}</div>`;
+      <div id="displayMoves" style="color: #3b79b3;">The best was: ${engineBestMove}</div>`;
       raport.comment.push(displayMovesDiv.innerHTML);
     }
 
     return { moveEvaluationText, textColor };
   }
 
-  function evaluateAndCheckMove(playerMove, fen, evalsArr, analyses, pgnClone) {
+  function evaluateAndCheckMove(
+    playerMove,
+    fen,
+    evalsArr,
+    analyses,
+    pgnClone,
+    lastMove
+  ) {
+    let currentPlayerMove = lastMove.from + lastMove.to;
+    let engineBestMove = bestMovesArr[bestMovesArr.length - 1];
+    let engineVeryGoodMove = veryGoodMovesArr[veryGoodMovesArr.length - 1];
+    let engineGoodMove = goodMovesArr[goodMovesArr.length - 1];
+
+    // Colors
+    let brilliant = "#26c2a3";
+    // let great = "#749bbf";
+    let great = "#3b79b3";
+    let best = "#81b64c";
+    let good = "#95b776";
+    let inacuraccy = "#f7c631";
+    let mistake = "#FF8911";
+    let blunder = "#fa412d";
+
     let currMoveValue = analyses[0].evaluation.value;
     let currMoveType = analyses[0].evaluation.type;
     evalArr.push(currMoveValue);
@@ -563,121 +717,126 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
     const whiteDiff = currMove - prevMove;
     const blackDiff = prevMove - currMove;
 
-    if (analyses[0].evaluation.type == "cp") {
-      if (fen.includes(" b ")) {
-        if (
-          currMove >= prevMove &&
-          whiteDiff >= 0 &&
-          whiteDiff < 20 &&
-          prevType !== "mate"
-        ) {
-          moveEvaluationText = "Good move";
-          textColor = "#95b776";
-          colorSquare = "#95b776";
-        } else if (currMove >= prevMove && whiteDiff >= 20 && whiteDiff < 350) {
-          moveEvaluationText = "Very good move";
-          textColor = "#81b64c";
-          colorSquare = "#81b64c";
-        } else if (
-          currMove >= prevMove &&
-          whiteDiff >= 350 &&
-          whiteDiff < 550
-        ) {
-          moveEvaluationText = "Great move!";
-          textColor = "#749bbf";
-          colorSquare = "#749bbf";
-        } else if (currMove >= prevMove && whiteDiff > 550) {
-          moveEvaluationText = "Excellent move!!";
-          textColor = "#26c2a3";
-          colorSquare = "#26c2a3";
-        } else if (currMove <= prevMove && blackDiff > 0 && blackDiff <= 15) {
-          moveEvaluationText = "Inaccuracy";
-          textColor = "#f7c631";
-          colorSquare = "#f7c631";
-        } else if (currMove <= prevMove && blackDiff > 15 && blackDiff <= 35) {
-          moveEvaluationText = "Mistake";
-          textColor = "#ffa459";
-          colorSquare = "#ffa459";
-        } else if (prevType == "mate") {
-          if (currMove > prevMove) {
-            moveEvaluationText = "Mate in: " + analyses[0].evaluation.value;
-            textColor = "#95b776";
-            colorSquare = "#95b776";
-          } else if (currMove < prevMove) {
-            moveEvaluationText = "Mate in: " + analyses[0].evaluation.value;
-            textColor = "#95b776";
-            colorSquare = "#95b776";
-          }
-        } else if (currMove <= prevMove && blackDiff > 35) {
-          moveEvaluationText = "Blunder!";
-          textColor = "#fa412d";
-          colorSquare = "#fa412d";
-        }
-      } else if (fen.includes(" w ")) {
-        if (currMove <= prevMove && blackDiff >= 0 && blackDiff < 20) {
-          moveEvaluationText = "Good move";
-          textColor = "#95b776";
-          colorSquare = "#95b776";
-        } else if (currMove <= prevMove && blackDiff >= 20 && blackDiff < 350) {
-          moveEvaluationText = "Very good move";
-          textColor = "#81b64c";
-          colorSquare = "#81b64c";
-        } else if (
-          currMove <= prevMove &&
-          blackDiff >= 350 &&
-          blackDiff < 550
-        ) {
-          moveEvaluationText = "Great move!";
-          textColor = "#749bbf";
-          colorSquare = "#749bbf";
-        } else if (currMove <= prevMove && blackDiff >= 550) {
-          moveEvaluationText = "Excellent move!!";
-          textColor = "#26c2a3";
-          colorSquare = "#26c2a3";
-        } else if (currMove >= prevMove && whiteDiff > 0 && whiteDiff <= 15) {
-          moveEvaluationText = "Inaccuracy";
-          textColor = "#f7c631";
-          colorSquare = "#f7c631";
-        } else if (currMove >= prevMove && whiteDiff > 15 && whiteDiff <= 35) {
-          moveEvaluationText = "Mistake";
-          textColor = "#ffa459";
-          colorSquare = "#ffa459";
-        } else if (prevType == "mate") {
-          if (currMove > prevMove) {
-            moveEvaluationText = "Improvement for black!";
-            textColor = "#95b776";
-            colorSquare = "#95b776";
-          } else if (currMove < prevMove) {
-            moveEvaluationText = "Improvement for white!";
-            textColor = "#95b776";
-            colorSquare = "#95b776";
-          }
-        } else if (currMove >= prevMove && whiteDiff > 35) {
-          moveEvaluationText = "Blunder!";
-          textColor = "#fa412d";
-          colorSquare = "#fa412d";
-        }
+    // For white
+    if (fen.includes(" b ")) {
+      if (
+        (currMove >= prevMove &&
+          currMove - prevMove >= 0 &&
+          currMove - prevMove < 20) ||
+        engineGoodMove.includes(currentPlayerMove)
+      ) {
+        moveEvaluationText = "Good move";
+        textColor = good;
+        colorSquare = good;
+      } else if (
+        (currMove >= prevMove &&
+          currMove - prevMove >= 20 &&
+          currMove - prevMove < 350) ||
+        engineVeryGoodMove.includes(currentPlayerMove)
+      ) {
+        moveEvaluationText = "Very good move";
+        textColor = best;
+        colorSquare = best;
+      } else if (
+        (currMove >= prevMove &&
+          currMove - prevMove >= 350 &&
+          currMove - prevMove < 550) ||
+        engineBestMove.includes(currentPlayerMove)
+      ) {
+        moveEvaluationText = "Great move!";
+        textColor = great;
+        colorSquare = great;
+      } else if (currMove >= prevMove && currMove - prevMove < 550) {
+        moveEvaluationText = "Excellent move!";
+        textColor = brilliant;
+        colorSquare = brilliant;
+      } else if (
+        currMove <= prevMove &&
+        prevMove - currMove > 0 &&
+        prevMove - currMove < 100
+      ) {
+        moveEvaluationText = "Inacuraccy";
+        textColor = inacuraccy;
+        colorSquare = inacuraccy;
+      } else if (
+        currMove <= prevMove &&
+        prevMove - currMove > 100 &&
+        prevMove - currMove < 250
+      ) {
+        moveEvaluationText = "Mistake";
+        textColor = mistake;
+        colorSquare = mistake;
+      } else if (currMove <= prevMove && prevMove - currMove > 250) {
+        moveEvaluationText = "Blunder";
+        textColor = blunder;
+        colorSquare = blunder;
       }
-    } else if (analyses[0].evaluation.type == "mate") {
+      // For black
+    } else if (fen.includes(" w ")) {
+      if (
+        (currMove <= prevMove && prevMove - currMove < 20) ||
+        engineGoodMove.includes(currentPlayerMove)
+      ) {
+        moveEvaluationText = "Good move";
+        textColor = good;
+        colorSquare = good;
+      } else if (
+        (currMove <= prevMove &&
+          prevMove - currMove >= 20 &&
+          prevMove - currMove < 350) ||
+        engineVeryGoodMove.includes(currentPlayerMove)
+      ) {
+        moveEvaluationText = "Very good move";
+        textColor = best;
+        colorSquare = best;
+      } else if (
+        (currMove <= prevMove &&
+          prevMove - currMove >= 350 &&
+          prevMove - currMove < 550) ||
+        engineBestMove.includes(currentPlayerMove)
+      ) {
+        moveEvaluationText = "Great move!";
+        textColor = great;
+        colorSquare = great;
+      } else if (currMove <= prevMove && prevMove - currMove > 550) {
+        moveEvaluationText = "Excellent move!";
+        textColor = brilliant;
+        colorSquare = brilliant;
+      } else if (
+        currMove >= prevMove &&
+        currMove - prevMove > 0 &&
+        currMove - prevMove <= 100
+      ) {
+        moveEvaluationText = "Inacuraccy";
+        textColor = inacuraccy;
+        colorSquare = inacuraccy;
+      } else if (
+        currMove >= prevMove &&
+        currMove - prevMove > 100 &&
+        currMove - prevMove <= 250
+      ) {
+        moveEvaluationText = "Mistake";
+        textColor = mistake;
+        colorSquare = mistake;
+      } else if (currMove >= prevMove && currMove - prevMove > 250) {
+        moveEvaluationText = "Blunder";
+        textColor = blunder;
+        colorSquare = blunder;
+      }
+    }
+
+    if (analyses[0].evaluation.type == "mate") {
       if (fen.includes(" w ")) {
         if (currMove > prevMove) {
           moveEvaluationText = "Mate in: " + analyses[0].evaluation.value;
-          textColor = "#ffb6c1";
-          colorSquare = "#ffb6c1";
         } else if (currMove <= prevMove) {
           moveEvaluationText = "Mate in: " + analyses[0].evaluation.value;
-          textColor = "#ffb6c1";
-          colorSquare = "#ffb6c1";
         }
       } else if (fen.includes(" b ")) {
         if (currMove < prevMove) {
-          moveEvaluationText = "Improvement for white!";
-          textColor = "#ffb6c1";
-          colorSquare = "#ffb6c1";
+          moveEvaluationText = "Mate in: " + analyses[0].evaluation.value;
         } else if (currMove > prevMove) {
-          moveEvaluationText = "Improvement for black!";
-          textColor = "#ffb6c1";
-          colorSquare = "#ffb6c1";
+          moveEvaluationText = "Mate in: " + analyses[0].evaluation.value;
         }
       }
     }

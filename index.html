@@ -16,8 +16,8 @@
 
   <body>
     <header class="header">
-      <h1>Chess Game Raport</h1>
-      <p>v.1.0.0 (alpha)</p>
+      <h1>🐪 Chess Game Raport</h1>
+      <p>v.1.0.1 (alpha)</p>
     </header>
     <div class="container">
       <div id="evalbar"></div>
@@ -27,6 +27,26 @@
         <div id="whitePlayer">White</div>
       </div>
       <div id="rightHalf">
+        <div>
+          <button id="settingsBtn" class="clean-btn">🔧</button>
+          <button id="flipOrientationBtn" class="clean-btn">Board Flip</button>
+        </div>
+        <div class="settingsContainer">
+          <div>
+            <button id="displayThemesBtn" class="clean-btn">Themes:</button>
+          </div>
+          <div class="themesContainer">
+            <p>Themes:</p>
+            <button id="themeDefault" class="clean-btn">Default</button>
+            <button id="themeRed" class="clean-btn">Red</button>
+            <button id="themeGreen" class="clean-btn">Green</button>
+            <button id="themeClassic" class="clean-btn">Classic</button>
+          </div>
+          <button id="bestMoveAsistantBtn" class="clean-btn">
+            Best Moves: false
+          </button>
+        </div>
+
         <textarea
           id="pgnInput"
           rows="5"
@@ -75,6 +95,8 @@
     ></script>
     <script src="https://unpkg.com/chess.js@0.12.0/chess.js"></script>
     <script src="/stockfish/stockfish.js" type="module"></script>
+    <script src="/theme.js"></script>
+    <!-- <script src="/eco.js"></script> -->
     <script src="/engine.js"></script>
   </body>
 </html>
