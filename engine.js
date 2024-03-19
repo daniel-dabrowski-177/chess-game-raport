@@ -91,9 +91,9 @@ let bestMoveAsistantBtn = document.getElementById("bestMoveAsistantBtn");
 bestMoveAsistantBtn.addEventListener("click", () => {
   showEngineBestMoves = !showEngineBestMoves;
   if (showEngineBestMoves) {
-    bestMoveAsistantBtn.textContent = `Display Best Moves: no`;
-  } else {
     bestMoveAsistantBtn.textContent = `Display Best Moves: yes`;
+  } else {
+    bestMoveAsistantBtn.textContent = `Display Best Moves: no`;
   }
 });
 
@@ -546,13 +546,13 @@ async function removeAllPaintedSquares() {
       ds.style.backgroundColor = "#e8829a";
     });
   }
-  // Green
-  else if (theme == "green") {
+  // Tournament
+  else if (theme == "tournament") {
     lightSquares.forEach((ls) => {
-      ls.style.backgroundColor = "#EBECD0";
+      ls.style.backgroundColor = "#E9E9E5";
     });
     darkSquares.forEach((ds) => {
-      ds.style.backgroundColor = "#739552";
+      ds.style.backgroundColor = "#316549";
     });
   }
   // Classic

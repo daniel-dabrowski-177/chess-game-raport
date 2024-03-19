@@ -64,10 +64,10 @@ themeRed.addEventListener("click", () => {
   });
 });
 
-// Green
-let themeGreen = document.getElementById("themeGreen");
-themeGreen.addEventListener("click", () => {
-  theme = "green";
+// Tournament
+let themeTournament = document.getElementById("themeTournament");
+themeTournament.addEventListener("click", () => {
+  theme = "tournament";
   // declarations
   let body = document.querySelector("body");
   let button = document.querySelectorAll("button");
@@ -78,14 +78,14 @@ themeGreen.addEventListener("click", () => {
   body.style.color = "#d2b48c";
   body.style.backgroundColor = "#3B3028";
   button.forEach((btn) => {
-    btn.style.backgroundColor = "darkGreen";
+    btn.style.backgroundColor = "#168c4c";
   });
 
   lightSquares.forEach((ls) => {
-    ls.style.backgroundColor = "#EBECD0";
+    ls.style.backgroundColor = "#E9E9E5";
   });
   darkSquares.forEach((ds) => {
-    ds.style.backgroundColor = "#739552";
+    ds.style.backgroundColor = "#316549";
   });
 });
 
