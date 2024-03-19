@@ -204,6 +204,11 @@ textarea {
   color: #333;
 }
 
+.hint {
+  color: white;
+  font-size: 12px;
+}
+
 .color-good-move {
   font-weight: bold;
   color: #95b776;

@@ -29,11 +29,13 @@
       <div id="rightHalf">
         <div>
           <button id="settingsBtn" class="clean-btn">🔧</button>
-          <button id="flipOrientationBtn" class="clean-btn">Board Flip</button>
+          <button id="flipOrientationBtn" class="clean-btn">Flip Board</button>
         </div>
         <div class="settingsContainer">
           <div>
-            <button id="displayThemesBtn" class="clean-btn">Themes:</button>
+            <button id="displayThemesBtn" class="clean-btn">
+              Change Theme:
+            </button>
           </div>
           <div class="themesContainer">
             <p>Themes:</p>
@@ -43,8 +45,9 @@
             <button id="themeClassic" class="clean-btn">Classic</button>
           </div>
           <button id="bestMoveAsistantBtn" class="clean-btn">
-            Best Moves: false
+            Display Best Moves: yes
           </button>
+          <p class="hint">❔ additionally displays best moves on the board</p>
         </div>
 
         <textarea
@@ -53,6 +56,9 @@
           cols="30"
           placeholder="Enter PGN:"
         ></textarea>
+        <p class="hint">
+          ❔ please change settings before generating the report
+        </p>
         <div id="pgnStatus"></div>
         <p>Choose depth:</p>
 
@@ -68,6 +74,7 @@
           />
           <label id="depth-label" for="depth">Depth: 12</label>
         </div>
+
         <button id="generateRaport">Generate Raport</button>
         <div class="reportBtns">
           <button id="reviewBtnBackward"><</button>

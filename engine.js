@@ -90,7 +90,11 @@ let showEngineBestMoves = false;
 let bestMoveAsistantBtn = document.getElementById("bestMoveAsistantBtn");
 bestMoveAsistantBtn.addEventListener("click", () => {
   showEngineBestMoves = !showEngineBestMoves;
-  bestMoveAsistantBtn.textContent = `Best Moves: ${showEngineBestMoves}`;
+  if (showEngineBestMoves) {
+    bestMoveAsistantBtn.textContent = `Display Best Moves: no`;
+  } else {
+    bestMoveAsistantBtn.textContent = `Display Best Moves: yes`;
+  }
 });
 
 let currentMove = 0;
