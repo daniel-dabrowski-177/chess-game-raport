@@ -20,6 +20,7 @@ window.addEventListener("load", (event) => {
       themeClassic.click();
       break;
     default:
+      "default";
       themeDefault.click();
       break;
   }
@@ -96,7 +97,8 @@ pieceWikipedia.addEventListener("click", () => {
 // Default
 let themeDefault = document.getElementById("themeDefault");
 themeDefault.addEventListener("click", () => {
-  theme = "";
+  theme = "default";
+  localStorage.setItem("theme", "default");
   // declarations
   let body = document.querySelector("body");
   let button = document.querySelectorAll("button");

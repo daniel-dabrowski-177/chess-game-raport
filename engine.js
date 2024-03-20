@@ -355,8 +355,6 @@ function paintSquares(playerMove, curentColor) {
       if (squareFrom && squareTo) {
         squareFrom.style.backgroundColor = "#4d702c";
         squareTo.style.backgroundColor = "#4d702c";
-        // squareFrom.style.border = "2px solid #4d702c";
-        // squareTo.style.border = "2px solid #4d702c";
 
         let bestMoveClassificationDiv = document.createElement("div");
         bestMoveClassificationDiv.classList.add("icon");
@@ -584,7 +582,7 @@ async function removeAllPaintedSquares() {
   });
 
   // Default "blue"
-  if (theme == "") {
+  if (theme == "default") {
     lightSquares.forEach((ls) => {
       ls.style.backgroundColor = "";
     });
