@@ -3,6 +3,12 @@ let theme;
 window.addEventListener("load", (event) => {
   theme = localStorage.getItem("theme");
 
+  if (theme == null) {
+    localStorage.setItem("theme", "default");
+    localStorage.setItem("piecesSet", "uscf");
+    location.reload();
+  }
+
   switch (theme) {
     case "red":
       themeRed.click();
