@@ -1,4 +1,25 @@
-let theme = "";
+let theme;
+
+window.addEventListener("load", (event) => {
+  theme = localStorage.getItem("theme");
+
+  switch (theme) {
+    case "red":
+      themeRed.click();
+      break;
+    case "tournament":
+      themeTournament.click();
+      break;
+    case "classic":
+      themeClassic.click();
+      break;
+    default:
+      themeDefault.click();
+      break;
+  }
+});
+
+// Themes button
 let themesContainerDisplay = false;
 let themesContainer = document.querySelector(".themesContainer");
 let displayThemesBtn = document.getElementById("displayThemesBtn");
@@ -11,6 +32,58 @@ displayThemesBtn.addEventListener("click", () => {
     themesContainer.style.display = "block";
     themesContainerDisplay = true;
   }
+});
+
+// Pieces button
+let piecesContainerDisplay = false;
+let piecesContainer = document.querySelector(".piecesContainer");
+let displayPiecesBtn = document.getElementById("displayPiecesBtn");
+
+displayPiecesBtn.addEventListener("click", () => {
+  if (piecesContainerDisplay) {
+    piecesContainer.style.display = "none";
+    piecesContainerDisplay = false;
+  } else {
+    piecesContainer.style.display = "block";
+    piecesContainerDisplay = true;
+  }
+});
+
+// Pieces
+let pieceAlpha = document.getElementById("pieceAlpha");
+pieceAlpha.addEventListener("click", () => {
+  localStorage.setItem("piecesSet", "alpha");
+  location.reload();
+});
+
+let pieceChess24 = document.getElementById("pieceChess24");
+pieceChess24.addEventListener("click", () => {
+  localStorage.setItem("piecesSet", "chess24");
+  location.reload();
+});
+
+let pieceLeipzig = document.getElementById("pieceLeipzig");
+pieceLeipzig.addEventListener("click", () => {
+  localStorage.setItem("piecesSet", "leipzig");
+  location.reload();
+});
+
+let pieceSymbol = document.getElementById("pieceSymbol");
+pieceSymbol.addEventListener("click", () => {
+  localStorage.setItem("piecesSet", "symbol");
+  location.reload();
+});
+
+let pieceUscf = document.getElementById("pieceUscf");
+pieceUscf.addEventListener("click", () => {
+  localStorage.setItem("piecesSet", "uscf");
+  location.reload();
+});
+
+let pieceWikipedia = document.getElementById("pieceWikipedia");
+pieceWikipedia.addEventListener("click", () => {
+  localStorage.setItem("piecesSet", "wikipedia");
+  location.reload();
 });
 
 // Themes
@@ -43,6 +116,7 @@ themeDefault.addEventListener("click", () => {
 let themeRed = document.getElementById("themeRed");
 themeRed.addEventListener("click", () => {
   theme = "red";
+  localStorage.setItem("theme", "red");
   // declarations
   let body = document.querySelector("body");
   let button = document.querySelectorAll("button");
@@ -68,6 +142,8 @@ themeRed.addEventListener("click", () => {
 let themeTournament = document.getElementById("themeTournament");
 themeTournament.addEventListener("click", () => {
   theme = "tournament";
+  localStorage.setItem("theme", "tournament");
+
   // declarations
   let body = document.querySelector("body");
   let button = document.querySelectorAll("button");
@@ -93,6 +169,8 @@ themeTournament.addEventListener("click", () => {
 let themeClassic = document.getElementById("themeClassic");
 themeClassic.addEventListener("click", () => {
   theme = "classic";
+  localStorage.setItem("theme", "classic");
+
   // declarations
   let body = document.querySelector("body");
   let button = document.querySelectorAll("button");

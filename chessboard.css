@@ -39,13 +39,46 @@
 .white-1e1d7 {
   background-color: #d7e2e7;
   color: #7d9fb3;
+  position: relative;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 /* black square */
 .black-3c85d {
   background-color: #7d9fb3;
   color: #d7e2e7;
+  position: relative;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
+
+.icon {
+  position: absolute;
+  top: -15px;
+  right: -15px;
+  width: 30px;
+  height: 30px;
+  background-size: cover;
+  background-repeat: no-repeat;
+  z-index: 2;
+}
+
+/* .black-3c85d::after,
+.white-1e1d7::after {
+  content: "";
+  display: block;
+  border: 1px solid red;
+  background: url("/move_classifications/brilliant.png") no-repeat;
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 20px;
+  height: 20px;
+  z-index: 2;
+} */
 
 /* highlighted square */
 .highlight1-32417,

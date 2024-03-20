@@ -17,14 +17,16 @@
   <body>
     <header class="header">
       <h1>🐪 Chess Game Raport</h1>
-      <p>v.1.0.1 (alpha)</p>
+      <p>v.1.0.2 (alpha)</p>
     </header>
     <div class="container">
-      <div id="evalbar"></div>
-      <div id="leftHalf">
-        <div id="blackPlayer">Black</div>
-        <div id="myBoard"></div>
-        <div id="whitePlayer">White</div>
+      <div class="leftContainer">
+        <div id="evalbar"></div>
+        <div id="leftHalf">
+          <div id="blackPlayer">Black</div>
+          <div id="myBoard"></div>
+          <div id="whitePlayer">White</div>
+        </div>
       </div>
       <div id="rightHalf">
         <div>
@@ -39,10 +41,34 @@
           </div>
           <div class="themesContainer">
             <p>Themes:</p>
-            <button id="themeDefault" class="clean-btn">Default</button>
-            <button id="themeRed" class="clean-btn">Carmasin</button>
-            <button id="themeTournament" class="clean-btn">Tournament</button>
-            <button id="themeClassic" class="clean-btn">Classic</button>
+            <div>
+              <button id="themeDefault" class="clean-btn">Default</button>
+              <button id="themeRed" class="clean-btn">Carmasin</button>
+            </div>
+            <div>
+              <button id="themeTournament" class="clean-btn">Tournament</button>
+              <button id="themeClassic" class="clean-btn">Classic</button>
+            </div>
+            <br />
+          </div>
+          <div>
+            <button id="displayPiecesBtn" class="clean-btn">
+              Change Pieces:
+            </button>
+          </div>
+          <div class="piecesContainer">
+            <p>Pieces:</p>
+            <div>
+              <button id="pieceAlpha" class="clean-btn">Alpha</button>
+              <button id="pieceChess24" class="clean-btn">Chess24</button>
+              <button id="pieceLeipzig" class="clean-btn">Leipzig</button>
+            </div>
+            <div>
+              <button id="pieceSymbol" class="clean-btn">Symbol</button>
+              <button id="pieceUscf" class="clean-btn">Uscf</button>
+              <button id="pieceWikipedia" class="clean-btn">Wikipedia</button>
+            </div>
+            <br />
           </div>
           <button id="bestMoveAsistantBtn" class="clean-btn">
             Display Best Moves: no

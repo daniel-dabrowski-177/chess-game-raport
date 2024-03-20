@@ -58,11 +58,14 @@ function stringToMoveArray(pgnStr) {
 let pgn = [];
 let currentPgn = [];
 
+let piecesSet = localStorage.getItem("piecesSet");
+console.log(piecesSet);
+
 let board = Chessboard("myBoard", {
   position: "start",
   draggable: false,
   orientation: "white",
-  pieceTheme: `chesspieces/uscf/{piece}.png`,
+  pieceTheme: `chesspieces/${piecesSet}/{piece}.png`,
 });
 
 let flipOrientationBtn = document.getElementById("flipOrientationBtn");
@@ -301,6 +304,42 @@ function paintSquares(playerMove, curentColor) {
     if (squareFrom && squareTo) {
       squareFrom.style.backgroundColor = curentColor;
       squareTo.style.backgroundColor = curentColor;
+
+      // Validation
+      let moveClassificationDiv = document.createElement("div");
+      moveClassificationDiv.classList.add("icon");
+
+      switch (curentColor) {
+        case "#26c2a3":
+          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/brilliant.png")`;
+          break;
+        case "#5183b0":
+          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/great.png")`;
+          break;
+        case "#71a341":
+          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/best.png")`;
+          break;
+        case "#71a340":
+          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/very-good.png")`;
+          break;
+        case "#95b776":
+          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/good.png")`;
+          break;
+        case "#d9af32":
+          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/inaccuracy.png")`;
+          break;
+        case "#e07c16":
+          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/mistake.png")`;
+          break;
+        case "#d63624":
+          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/blunder.png")`;
+          break;
+        default:
+          // No image set for the backgroundImage property
+          break;
+      }
+
+      squareTo.appendChild(moveClassificationDiv);
     }
   }
 
@@ -314,8 +353,15 @@ function paintSquares(playerMove, curentColor) {
       );
       const squareTo = document.querySelector(`[data-square=${engineMoveTo}]`);
       if (squareFrom && squareTo) {
-        squareFrom.style.backgroundColor = "#3b79b3";
-        squareTo.style.backgroundColor = "#3b79b3";
+        squareFrom.style.backgroundColor = "#4d702c";
+        squareTo.style.backgroundColor = "#4d702c";
+        // squareFrom.style.border = "2px solid #4d702c";
+        // squareTo.style.border = "2px solid #4d702c";
+
+        let bestMoveClassificationDiv = document.createElement("div");
+        bestMoveClassificationDiv.classList.add("icon");
+        bestMoveClassificationDiv.style.backgroundImage = `url("/move_classifications/best.png")`;
+        squareTo.appendChild(bestMoveClassificationDiv);
       }
     }
   }
@@ -520,12 +566,21 @@ class Stockfish {
 async function removeAllPaintedSquares() {
   let lightSquares = document.querySelectorAll(".white-1e1d7");
   let darkSquares = document.querySelectorAll(".black-3c85d");
+  const iconElements = document.querySelectorAll(".icon");
+
+  iconElements.forEach((i) => {
+    i.remove();
+  });
 
   lightSquares.forEach((ls) => {
     ls.style.backgroundColor = "";
+    ls.style.border = "none";
+    ls.style.opacity = "1";
   });
   darkSquares.forEach((ds) => {
     ds.style.backgroundColor = "";
+    ds.style.border = "none";
+    ds.style.opacity = "1";
   });
 
   // Default "blue"
@@ -655,22 +710,22 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
 
     if (currentPlayerMove == engineBestMove) {
       displayMovesDiv.textContent = engineBestMove;
-      displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #3b79b3;"> ${engineBestMove} is the best move!</div>`;
+      displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #71a341;"> ${engineBestMove} is the best move!</div>`;
       raport.comment.push(displayMovesDiv.innerHTML);
     } else if (engineVeryGoodMove.includes(currentPlayerMove)) {
       displayMovesDiv.textContent = engineVeryGoodMove;
-      displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #81b64c;">${currentPlayerMove} is very good move!</div>
-      <div id="displayMoves" style="color: #3b79b3;">The best was: ${engineBestMove}</div>`;
+      displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #71a340;">${currentPlayerMove} is very good move!</div>
+      <div id="displayMoves" style="color: #71a341;">The best was: ${engineBestMove}</div>`;
       raport.comment.push(displayMovesDiv.innerHTML);
     } else if (engineGoodMove.includes(currentPlayerMove)) {
       displayMovesDiv.textContent = engineGoodMove;
       displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #95b776;">${currentPlayerMove} is a good move!</div>
-      <div id="displayMoves" style="color: #3b79b3;">The best was: ${engineBestMove}</div>`;
+      <div id="displayMoves" style="color: #71a341;">The best was: ${engineBestMove}</div>`;
       raport.comment.push(displayMovesDiv.innerHTML);
     } else {
       displayMovesDiv.textContent = engineBestMove;
       displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: ${textColor};">Move played: ${currentPlayerMove}</div>
-      <div id="displayMoves" style="color: #3b79b3;">The best was: ${engineBestMove}</div>`;
+      <div id="displayMoves" style="color: #71a341;">The best was: ${engineBestMove}</div>`;
       raport.comment.push(displayMovesDiv.innerHTML);
     }
 
@@ -692,13 +747,14 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
 
     // Colors
     let brilliant = "#26c2a3";
-    // let great = "#749bbf";
-    let great = "#3b79b3";
-    let best = "#81b64c";
+    // let great = "#5183b0";
+    let great = "#5183b0";
+    let best = "#71a341";
+    let veryGood = "#71a340";
     let good = "#95b776";
-    let inacuraccy = "#f7c631";
-    let mistake = "#FF8911";
-    let blunder = "#fa412d";
+    let inacuraccy = "#d9af32";
+    let mistake = "#e07c16";
+    let blunder = "#d63624";
 
     let currMoveValue = analyses[0].evaluation.value;
     let currMoveType = analyses[0].evaluation.type;
@@ -739,13 +795,16 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
         engineVeryGoodMove.includes(currentPlayerMove)
       ) {
         moveEvaluationText = "Very good move";
+        textColor = veryGood;
+        colorSquare = veryGood;
+      } else if (engineBestMove.includes(currentPlayerMove)) {
+        moveEvaluationText = "Best move!";
         textColor = best;
         colorSquare = best;
       } else if (
-        (currMove >= prevMove &&
-          currMove - prevMove >= 350 &&
-          currMove - prevMove < 550) ||
-        engineBestMove.includes(currentPlayerMove)
+        currMove >= prevMove &&
+        currMove - prevMove >= 350 &&
+        currMove - prevMove < 550
       ) {
         moveEvaluationText = "Great move!";
         textColor = great;
@@ -791,13 +850,16 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
         engineVeryGoodMove.includes(currentPlayerMove)
       ) {
         moveEvaluationText = "Very good move";
+        textColor = veryGood;
+        colorSquare = veryGood;
+      } else if (engineBestMove.includes(currentPlayerMove)) {
+        moveEvaluationText = "Best move!";
         textColor = best;
         colorSquare = best;
       } else if (
-        (currMove <= prevMove &&
-          prevMove - currMove >= 350 &&
-          prevMove - currMove < 550) ||
-        engineBestMove.includes(currentPlayerMove)
+        currMove <= prevMove &&
+        prevMove - currMove >= 350 &&
+        prevMove - currMove < 550
       ) {
         moveEvaluationText = "Great move!";
         textColor = great;
