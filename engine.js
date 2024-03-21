@@ -319,7 +319,7 @@ async function generateRaport(result) {
 
 function checkIfBookMove() {
   for (let i = 0; i < eco.length; i++) {
-    if (eco[i].moves === raport.pgnMoves[currentMove]) {
+    if (eco[i].moves === raport.pgnMoves[currentMove - 1]) {
       bookMove = true;
       openingName = eco[i].name;
       console.log(openingName);
