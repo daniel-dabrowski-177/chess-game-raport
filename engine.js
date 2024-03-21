@@ -145,6 +145,14 @@ document.addEventListener("keydown", function (event) {
     gameReview("backward");
   } else if (event.key === "ArrowRight") {
     gameReview("forward");
+  } else if (event.key === "e") {
+    let bestMoveAsistantBtn = document.getElementById("bestMoveAsistantBtn");
+    showEngineBestMoves = !showEngineBestMoves;
+    if (showEngineBestMoves) {
+      bestMoveAsistantBtn.textContent = `Engine Moves: yes`;
+    } else {
+      bestMoveAsistantBtn.textContent = `Engine Moves: no`;
+    }
   }
 });
 
