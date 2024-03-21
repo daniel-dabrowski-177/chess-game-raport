@@ -112,12 +112,16 @@ h1 {
 #rightHalf {
   display: flex;
   flex-direction: column;
-  width: 50%;
+  width: 70%;
   height: 490px;
-  margin: 32px 0 0 0;
+  margin: 0 0 0 0;
   padding: 5px 20px;
   background-color: rgba(0, 0, 0, 0.25);
   border-radius: 0 10px 10px 0;
+}
+
+.flexbox {
+  display: flex;
 }
 
 #generateRaport {
@@ -133,6 +137,7 @@ h1 {
 
 #displayMoves {
   margin: 5px 0;
+  max-width: 240px;
   font-size: 16px;
   font-weight: bold;
   text-align: center;
@@ -186,6 +191,8 @@ button:hover {
 
 textarea {
   width: 100%;
+  min-height: 80px;
+  max-height: 80px;
   margin: 0;
   box-sizing: border-box;
   border: 2px solid #d2b48c;

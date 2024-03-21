@@ -59,7 +59,6 @@ let pgn = [];
 let currentPgn = [];
 
 let piecesSet = localStorage.getItem("piecesSet");
-console.log(piecesSet);
 
 let board = Chessboard("myBoard", {
   position: "start",
@@ -89,14 +88,16 @@ settingsBtn.addEventListener("click", () => {
 });
 
 let showEngineBestMoves = false;
+let bookMove = false;
+let openingName;
 
 let bestMoveAsistantBtn = document.getElementById("bestMoveAsistantBtn");
 bestMoveAsistantBtn.addEventListener("click", () => {
   showEngineBestMoves = !showEngineBestMoves;
   if (showEngineBestMoves) {
-    bestMoveAsistantBtn.textContent = `Display Best Moves: yes`;
+    bestMoveAsistantBtn.textContent = `Engine Moves: yes`;
   } else {
-    bestMoveAsistantBtn.textContent = `Display Best Moves: no`;
+    bestMoveAsistantBtn.textContent = `Engine Moves: no`;
   }
 });
 
@@ -107,8 +108,9 @@ let raport = {
   bestMoves: ["e2e4, d2d4, c2c4, g1f3, b1c3"],
   evals: [0],
   types: ["cp"],
-  colors: [""],
+  colors: ["#4d702c"],
   pgn: {},
+  pgnMoves: [],
   fen: [],
   comment: [""],
   message: [""],
@@ -177,6 +179,27 @@ document
 
 let pgnArr = [];
 
+// Convert string
+function convertString(str) {
+  const moves = str.split(" ");
+
+  if (moves.length === 1) {
+    return "1. " + moves[0];
+  }
+
+  let convertedStr = "1. " + moves[0] + " " + moves[1];
+  let moveNumber = 2;
+
+  for (let i = 2; i < moves.length; i += 2) {
+    convertedStr += ` ${moveNumber}. ${moves[i]}`;
+    if (moves[i + 1]) {
+      convertedStr += " " + moves[i + 1];
+    }
+    moveNumber++;
+  }
+  return convertedStr;
+}
+
 async function generateRaport(result) {
   confirmPgn();
   pgn.push("");
@@ -186,6 +209,10 @@ async function generateRaport(result) {
       currentMove++;
       raport.fen.push(game.fen());
       let pgnClone = pgn.slice(0, currentMove).join(" ");
+
+      const convertedString = convertString(pgnClone);
+      raport.pgnMoves.push(convertedString);
+
       game.load_pgn(pgnClone);
       board.position(game.fen());
 
@@ -290,56 +317,102 @@ async function generateRaport(result) {
   }
 }
 
+function checkIfBookMove() {
+  for (let i = 0; i < eco.length; i++) {
+    if (eco[i].moves === raport.pgnMoves[currentMove]) {
+      bookMove = true;
+      openingName = eco[i].name;
+      console.log(openingName);
+      return;
+    }
+  }
+
+  bookMove = false;
+  console.log("not found");
+}
+
 function paintSquares(playerMove, curentColor) {
   removeAllPaintedSquares();
 
-  if (raport.playerMoves[currentMove]) {
-    let playerMoveFrom = raport.playerMoves[currentMove].substring(0, 2);
-    let playerMoveTo = raport.playerMoves[currentMove].substring(2);
+  checkIfBookMove();
 
-    const squareFrom = document.querySelector(
-      `[data-square=${playerMoveFrom}]`
-    );
-    const squareTo = document.querySelector(`[data-square=${playerMoveTo}]`);
-    if (squareFrom && squareTo) {
-      squareFrom.style.backgroundColor = curentColor;
-      squareTo.style.backgroundColor = curentColor;
+  if (bookMove == true) {
+    if (raport.playerMoves[currentMove]) {
+      let playerMoveFrom = raport.playerMoves[currentMove].substring(0, 2);
+      let playerMoveTo = raport.playerMoves[currentMove].substring(2);
 
-      // Validation
-      let moveClassificationDiv = document.createElement("div");
-      moveClassificationDiv.classList.add("icon");
+      const squareFrom = document.querySelector(
+        `[data-square=${playerMoveFrom}]`
+      );
+      const squareTo = document.querySelector(`[data-square=${playerMoveTo}]`);
 
-      switch (curentColor) {
-        case "#26c2a3":
-          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/brilliant.png")`;
-          break;
-        case "#5183b0":
-          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/great.png")`;
-          break;
-        case "#71a341":
-          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/best.png")`;
-          break;
-        case "#71a340":
-          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/very-good.png")`;
-          break;
-        case "#95b776":
-          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/good.png")`;
-          break;
-        case "#d9af32":
-          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/inaccuracy.png")`;
-          break;
-        case "#e07c16":
-          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/mistake.png")`;
-          break;
-        case "#d63624":
-          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/blunder.png")`;
-          break;
-        default:
-          // No image set for the backgroundImage property
-          break;
+      if (squareFrom && squareTo) {
+        squareFrom.style.backgroundColor = "#a17a5c";
+        squareTo.style.backgroundColor = "#a17a5c";
+
+        let moveClassificationDiv = document.createElement("div");
+        moveClassificationDiv.classList.add("icon");
+
+        // Validation
+        moveClassificationDiv.style.backgroundImage = `url("/move_classifications/book.png")`;
+
+        squareTo.appendChild(moveClassificationDiv);
+
+        let displayMovesDiv = document.getElementById("displayMoves");
+        const moveEvaluationDiv = document.getElementById("moveEvaluation");
+        displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #a17a5c;">${openingName}</div>`;
+        moveEvaluationDiv.innerHTML = `<span style="color: #a17a5c;"><b>Book Move</b></span>`;
       }
+    }
+  } else if (bookMove == false) {
+    if (raport.playerMoves[currentMove]) {
+      let playerMoveFrom = raport.playerMoves[currentMove].substring(0, 2);
+      let playerMoveTo = raport.playerMoves[currentMove].substring(2);
 
-      squareTo.appendChild(moveClassificationDiv);
+      const squareFrom = document.querySelector(
+        `[data-square=${playerMoveFrom}]`
+      );
+      const squareTo = document.querySelector(`[data-square=${playerMoveTo}]`);
+
+      if (squareFrom && squareTo) {
+        squareFrom.style.backgroundColor = curentColor;
+        squareTo.style.backgroundColor = curentColor;
+
+        let moveClassificationDiv = document.createElement("div");
+        moveClassificationDiv.classList.add("icon");
+
+        // Validation
+        switch (curentColor) {
+          case "#1f947d":
+            moveClassificationDiv.style.backgroundImage = `url("/move_classifications/brilliant.png")`;
+            break;
+          case "#5183b0":
+            moveClassificationDiv.style.backgroundImage = `url("/move_classifications/great.png")`;
+            break;
+          case "#71a341":
+            moveClassificationDiv.style.backgroundImage = `url("/move_classifications/best.png")`;
+            break;
+          case "#71a340":
+            moveClassificationDiv.style.backgroundImage = `url("/move_classifications/very-good.png")`;
+            break;
+          case "#95b776":
+            moveClassificationDiv.style.backgroundImage = `url("/move_classifications/good.png")`;
+            break;
+          case "#d9af32":
+            moveClassificationDiv.style.backgroundImage = `url("/move_classifications/inaccuracy.png")`;
+            break;
+          case "#e07c16":
+            moveClassificationDiv.style.backgroundImage = `url("/move_classifications/mistake.png")`;
+            break;
+          case "#d63624":
+            moveClassificationDiv.style.backgroundImage = `url("/move_classifications/blunder.png")`;
+            break;
+          default:
+            // No image set for the backgroundImage property
+            break;
+        }
+        squareTo.appendChild(moveClassificationDiv);
+      }
     }
   }
 
@@ -464,11 +537,11 @@ function gameReview(direction) {
     currentMove--;
   }
   board.position(raport.fen[currentMove]);
-  paintSquares(playerMove, curentColor);
   displayComment();
   displayEvalbar();
   fillEvalbar();
   checkResult();
+  paintSquares(playerMove, curentColor);
 }
 
 class Stockfish {
@@ -678,11 +751,28 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
     let engineGoodMove = goodMovesArr[goodMovesArr.length - 1];
 
     bestMovesArr.push(analyses[0].moveUCI);
-    if (analyses.length >= 3) {
+    if (analyses.length >= 3 && analyses[1].moveUCI && analyses[2].moveUCI) {
       veryGoodMovesArr.push(analyses[1].moveUCI + ", " + analyses[2].moveUCI);
     }
-    if (analyses.length >= 5) {
-      goodMovesArr.push(analyses[3].moveUCI + ", " + analyses[4].moveUCI);
+    if (
+      analyses.length >= 5 &&
+      analyses[3].moveUCI &&
+      analyses[4].moveUCI &&
+      analyses[5].moveUCI &&
+      analyses[6].moveUCI &&
+      analyses[7].moveUCI
+    ) {
+      goodMovesArr.push(
+        analyses[3].moveUCI +
+          ", " +
+          analyses[4].moveUCI +
+          ", " +
+          analyses[5].moveUCI +
+          ", " +
+          analyses[6].moveUCI +
+          ", " +
+          analyses[7].moveUCI
+      );
     }
 
     raport.playerMoves.push(currentPlayerMove);
@@ -744,9 +834,9 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
     let engineGoodMove = goodMovesArr[goodMovesArr.length - 1];
 
     // Colors
-    let brilliant = "#26c2a3";
-    // let great = "#5183b0";
+    let brilliant = "#1f947d";
     let great = "#5183b0";
+    let book = "#a17a5c";
     let best = "#71a341";
     let veryGood = "#71a340";
     let good = "#95b776";

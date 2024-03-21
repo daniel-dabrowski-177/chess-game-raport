@@ -17,7 +17,7 @@
   <body>
     <header class="header">
       <h1>🐪 Chess Game Raport</h1>
-      <p>v.1.0.2 (alpha)</p>
+      <p>v.1.0.3 (alpha)</p>
     </header>
     <div class="container">
       <div class="leftContainer">
@@ -28,94 +28,99 @@
           <div id="whitePlayer">White</div>
         </div>
       </div>
-      <div id="rightHalf">
-        <div>
+      <div>
+        <div class="flexbox">
           <button id="settingsBtn" class="clean-btn">🔧</button>
+          <button id="hintsBtn" class="clean-btn">❔</button>
           <button id="flipOrientationBtn" class="clean-btn">Flip Board</button>
-        </div>
-        <div class="settingsContainer">
-          <div>
-            <button id="displayThemesBtn" class="clean-btn">
-              Change Theme:
-            </button>
-          </div>
-          <div class="themesContainer">
-            <p>Themes:</p>
-            <div>
-              <button id="themeDefault" class="clean-btn">Default</button>
-              <button id="themeRed" class="clean-btn">Carmasin</button>
-            </div>
-            <div>
-              <button id="themeTournament" class="clean-btn">Tournament</button>
-              <button id="themeClassic" class="clean-btn">Classic</button>
-            </div>
-            <br />
-          </div>
-          <div>
-            <button id="displayPiecesBtn" class="clean-btn">
-              Change Pieces:
-            </button>
-          </div>
-          <div class="piecesContainer">
-            <p>Pieces:</p>
-            <div>
-              <button id="pieceAlpha" class="clean-btn">Alpha</button>
-              <button id="pieceChess24" class="clean-btn">Chess24</button>
-              <button id="pieceLeipzig" class="clean-btn">Leipzig</button>
-            </div>
-            <div>
-              <button id="pieceSymbol" class="clean-btn">Symbol</button>
-              <button id="pieceUscf" class="clean-btn">Uscf</button>
-              <button id="pieceWikipedia" class="clean-btn">Wikipedia</button>
-            </div>
-            <br />
-          </div>
           <button id="bestMoveAsistantBtn" class="clean-btn">
-            Display Best Moves: no
+            Engine Moves: no
           </button>
-          <p class="hint">❔ additionally displays best moves on the board</p>
         </div>
+        <div id="rightHalf">
+          <div class="settingsContainer">
+            <div>
+              <button id="displayThemesBtn" class="clean-btn">
+                Change Theme:
+              </button>
+            </div>
+            <div class="themesContainer">
+              <p>Themes:</p>
+              <div>
+                <button id="themeDefault" class="clean-btn">Default</button>
+                <button id="themeRed" class="clean-btn">Carmasin</button>
+              </div>
+              <div>
+                <button id="themeTournament" class="clean-btn">
+                  Tournament
+                </button>
+                <button id="themeClassic" class="clean-btn">Classic</button>
+              </div>
+              <br />
+            </div>
+            <div>
+              <button id="displayPiecesBtn" class="clean-btn">
+                Change Pieces:
+              </button>
+            </div>
+            <div class="piecesContainer">
+              <p>Pieces:</p>
+              <div>
+                <button id="pieceAlpha" class="clean-btn">Alpha</button>
+                <button id="pieceChess24" class="clean-btn">Chess24</button>
+                <button id="pieceLeipzig" class="clean-btn">Leipzig</button>
+              </div>
+              <div>
+                <button id="pieceSymbol" class="clean-btn">Symbol</button>
+                <button id="pieceUscf" class="clean-btn">Uscf</button>
+                <button id="pieceWikipedia" class="clean-btn">Wikipedia</button>
+              </div>
+              <br />
+            </div>
+            <p class="hint">
+              ❔ please change settings before generating the report
+            </p>
+            <p class="hint">
+              ❔ please refresh the page before generating new raport
+            </p>
+          </div>
 
-        <textarea
-          id="pgnInput"
-          rows="5"
-          cols="30"
-          placeholder="Enter PGN:"
-        ></textarea>
-        <p class="hint">
-          ❔ please change settings before generating the report
-        </p>
-        <p class="hint">
-          ❔ please refresh the page before generating new raport
-        </p>
-        <div id="pgnStatus"></div>
-        <p>Choose depth:</p>
+          <textarea
+            id="pgnInput"
+            rows="5"
+            cols="30"
+            placeholder="Enter PGN:"
+          ></textarea>
 
-        <div>
-          <input
-            id="depth-slider"
-            type="range"
-            id="depth"
-            name="depth"
-            value="12"
-            min="8"
-            max="16"
-          />
-          <label id="depth-label" for="depth">Depth: 12</label>
-        </div>
+          <div id="pgnStatus"></div>
+          <p>Choose depth:</p>
 
-        <button id="generateRaport">Generate Raport</button>
-        <div class="reportBtns">
-          <button id="reviewBtnBackward"><</button>
-          <button id="reviewBtnForward">></button>
+          <div>
+            <input
+              id="depth-slider"
+              type="range"
+              id="depth"
+              name="depth"
+              value="12"
+              min="8"
+              max="16"
+            />
+            <label id="depth-label" for="depth">Depth: 12</label>
+          </div>
+
+          <button id="generateRaport">Generate Raport</button>
+          <div class="reportBtns">
+            <button id="reviewBtnBackward"><</button>
+            <button id="reviewBtnForward">></button>
+          </div>
+          <div id="analiseProgress"></div>
+          <div class="accurary-container">
+            <div id="whiteAccuracy"></div>
+            <div id="blackAccuracy"></div>
+          </div>
+          <div id="displayMoves"></div>
+          <div id="moveEvaluation"></div>
         </div>
-        <div id="analiseProgress"></div>
-        <div class="accurary-container">
-          <div id="whiteAccuracy"></div>
-          <div id="blackAccuracy"></div>
-        </div>
-        <div id="displayMoves"></div>
-        <div id="moveEvaluation"></div>
       </div>
     </div>
 
@@ -132,7 +137,7 @@
     <script src="https://unpkg.com/chess.js@0.12.0/chess.js"></script>
     <script src="/stockfish/stockfish.js" type="module"></script>
     <script src="/theme.js"></script>
-    <!-- <script src="/eco.js"></script> -->
+    <script src="/eco.js"></script>
     <script src="/engine.js"></script>
   </body>
 </html>
