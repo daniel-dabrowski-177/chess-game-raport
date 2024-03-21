@@ -751,17 +751,33 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
     let engineGoodMove = goodMovesArr[goodMovesArr.length - 1];
 
     bestMovesArr.push(analyses[0].moveUCI);
-    if (analyses.length >= 3 && analyses[1].moveUCI && analyses[2].moveUCI) {
+    if (analyses.length >= 3) {
       veryGoodMovesArr.push(analyses[1].moveUCI + ", " + analyses[2].moveUCI);
     }
-    if (
-      analyses.length >= 5 &&
-      analyses[3].moveUCI &&
-      analyses[4].moveUCI &&
-      analyses[5].moveUCI &&
-      analyses[6].moveUCI &&
-      analyses[7].moveUCI
-    ) {
+    if (analyses.length >= 5) {
+      goodMovesArr.push(analyses[3].moveUCI + ", " + analyses[4].moveUCI);
+    }
+    if (analyses.length >= 6) {
+      goodMovesArr.push(
+        analyses[3].moveUCI +
+          ", " +
+          analyses[4].moveUCI +
+          ", " +
+          analyses[5].moveUCI
+      );
+    }
+    if (analyses.length >= 7) {
+      goodMovesArr.push(
+        analyses[3].moveUCI +
+          ", " +
+          analyses[4].moveUCI +
+          ", " +
+          analyses[5].moveUCI +
+          ", " +
+          analyses[6].moveUCI
+      );
+    }
+    if (analyses.length >= 8) {
       goodMovesArr.push(
         analyses[3].moveUCI +
           ", " +
@@ -781,13 +797,16 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
     let moves = "";
     let whiteMoves = "";
     let blackMoves = "";
+    let accurateTolerance = 5;
     for (let i = 0; i < analyses.length - 1; i++) {
-      moves += analyses[i].moveUCI + ", ";
+      if (i < accurateTolerance) {
+        moves += analyses[i].moveUCI + ", ";
 
-      if (isEven(i)) {
-        blackMoves += analyses[i].moveUCI + ", ";
-      } else {
-        whiteMoves += analyses[i].moveUCI + ", ";
+        if (isEven(i)) {
+          blackMoves += analyses[i].moveUCI + ", ";
+        } else {
+          whiteMoves += analyses[i].moveUCI + ", ";
+        }
       }
     }
     accurateMoves.push(moves);
