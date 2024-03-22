@@ -1009,7 +1009,9 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
     if (analyses[0].evaluation.type == "mate") {
       if (fen.includes(" w ")) {
         if (currMove > prevMove) {
-          moveEvaluationText = "Mate in: " + analyses[0].evaluation.value;
+          moveEvaluationText = "Good move";
+          textColor = good;
+          colorSquare = good;
         } else if (currMove <= prevMove) {
           moveEvaluationText = "Mate in: " + analyses[0].evaluation.value;
         }
@@ -1017,7 +1019,9 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
         if (currMove < prevMove) {
           moveEvaluationText = "Mate in: " + analyses[0].evaluation.value;
         } else if (currMove > prevMove) {
-          moveEvaluationText = "Mate in: " + analyses[0].evaluation.value;
+          moveEvaluationText = "Good move";
+          textColor = good;
+          colorSquare = good;
         }
       }
     }
