@@ -805,7 +805,7 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
     let moves = "";
     let whiteMoves = "";
     let blackMoves = "";
-    let accurateTolerance = 3;
+    let accurateTolerance = 5;
     for (let i = 0; i < analyses.length - 1; i++) {
       if (i < accurateTolerance) {
         moves += analyses[i].moveUCI + ", ";
