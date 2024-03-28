@@ -1,5 +1,14 @@
 let game = new Chess();
 
+let whitePlayer;
+let blackPlayer;
+let whiteElo;
+let blackElo;
+let timeControl;
+
+let whitePlayerDiv = document.getElementById("whitePlayer");
+let blackPlayerDiv = document.getElementById("blackPlayer");
+
 function stringToMoveArray(pgnStr) {
   const [metadata, moves] = pgnStr.trim().split(/\n\n/);
   const movesArray = moves.replace(/\d+\.\s/g, "").split(/\s/);
@@ -12,11 +21,11 @@ function stringToMoveArray(pgnStr) {
   }
 
   // Extracting required information
-  let whitePlayer = extractInfo(metadata, "White");
-  let blackPlayer = extractInfo(metadata, "Black");
-  let whiteElo = extractInfo(metadata, "WhiteElo");
-  let blackElo = extractInfo(metadata, "BlackElo");
-  let timeControl = extractInfo(metadata, "TimeControl");
+  whitePlayer = extractInfo(metadata, "White");
+  blackPlayer = extractInfo(metadata, "Black");
+  whiteElo = extractInfo(metadata, "WhiteElo");
+  blackElo = extractInfo(metadata, "BlackElo");
+  timeControl = extractInfo(metadata, "TimeControl");
 
   if (
     timeControl == "600" ||
@@ -47,8 +56,6 @@ function stringToMoveArray(pgnStr) {
     timeControl = "🤖";
   }
 
-  let whitePlayerDiv = document.getElementById("whitePlayer");
-  let blackPlayerDiv = document.getElementById("blackPlayer");
   whitePlayerDiv.innerHTML = `${whitePlayer}: ${timeControl}${whiteElo}`;
   blackPlayerDiv.innerHTML = `${blackPlayer}: ${timeControl}${blackElo}`;
 
@@ -67,10 +74,21 @@ let board = Chessboard("myBoard", {
   pieceTheme: `chesspieces/${piecesSet}/{piece}.png`,
 });
 
+let isBoardFlipped = false;
+
 let flipOrientationBtn = document.getElementById("flipOrientationBtn");
 flipOrientationBtn.addEventListener("click", () => {
   board.flip();
+  isBoardFlipped = !isBoardFlipped;
   removeAllPaintedSquares();
+
+  if (isBoardFlipped) {
+    whitePlayerDiv.innerHTML = `${blackPlayer}: ${timeControl}${blackElo}`;
+    blackPlayerDiv.innerHTML = `${whitePlayer}: ${timeControl}${whiteElo}`;
+  } else {
+    whitePlayerDiv.innerHTML = `${whitePlayer}: ${timeControl}${whiteElo}`;
+    blackPlayerDiv.innerHTML = `${blackPlayer}: ${timeControl}${blackElo}`;
+  }
 });
 
 let openSettings = false;
@@ -172,10 +190,8 @@ function confirmPgn() {
     currentMove = 0;
     game.reset();
     board.position(game.fen());
-    console.log("PGN confirmed. Starting game...");
     pgnStatus.textContent = `PGN loaded successfully`;
   } else {
-    console.log("Invalid PGN input.");
     pgnStatus.textContent = `Invalid PGN input`;
   }
 }
@@ -284,7 +300,10 @@ async function generateRaport(result) {
         return (currentMove = 0);
       } else {
         if (i >= 2) {
-          if (accurateMoves[i - 1].includes(raport.playerMoves[i])) {
+          if (
+            accurateMoves[i - 1].includes(raport.playerMoves[i]) ||
+            bookMove == true
+          ) {
             accuracyValue++;
             if (isEven(i)) {
               blackAccVal++;
@@ -330,13 +349,11 @@ function checkIfBookMove() {
     if (eco[i].moves === raport.pgnMoves[currentMove - 1]) {
       bookMove = true;
       openingName = eco[i].name;
-      console.log(openingName);
       return;
     }
   }
 
   bookMove = false;
-  console.log("not found");
 }
 
 function paintSquares(playerMove, curentColor) {
@@ -701,6 +718,7 @@ async function removeAllPaintedSquares() {
 }
 
 let evalArr = [0];
+let evalArr2 = [0];
 let typeArr = ["cp"];
 let bestMovesArr = ["e2e4"];
 let veryGoodMovesArr = [""];
@@ -876,21 +894,24 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
     evalArr.push(currMoveValue);
     typeArr.push(currMoveType);
 
+    let currMove2;
+
+    if (analyses.length > 1) {
+      let currMoveValue2 = analyses[1].evaluation.value;
+      evalArr2.push(currMoveValue2);
+      currMove2 = currMoveValue2;
+    }
+
     raport.evals.push(currMoveValue);
     raport.types.push(currMoveType);
 
     let currMove = currMoveValue;
-    let prevMove = evalArr[evalArr.length - 2];
 
-    let currType = currMoveType;
-    let prevType = typeArr[evalArr.length - 2];
+    let prevMove = evalArr[evalArr.length - 2];
 
     let moveEvaluationText;
     let textColor;
     let colorSquare;
-
-    const whiteDiff = currMove - prevMove;
-    const blackDiff = prevMove - currMove;
 
     // For white
     if (fen.includes(" b ")) {
@@ -906,7 +927,7 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
       } else if (
         (currMove >= prevMove &&
           currMove - prevMove >= 20 &&
-          currMove - prevMove < 350) ||
+          currMove - prevMove < 100) ||
         engineVeryGoodMove.includes(currentPlayerMove)
       ) {
         moveEvaluationText = "Very good move";
@@ -917,20 +938,8 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
         textColor = best;
         colorSquare = best;
       } else if (
-        currMove >= prevMove &&
-        currMove - prevMove >= 350 &&
-        currMove - prevMove < 550
-      ) {
-        moveEvaluationText = "Great move!";
-        textColor = great;
-        colorSquare = great;
-      } else if (currMove >= prevMove && currMove - prevMove < 550) {
-        moveEvaluationText = "Excellent move!";
-        textColor = brilliant;
-        colorSquare = brilliant;
-      } else if (
         currMove <= prevMove &&
-        prevMove - currMove > 0 &&
+        prevMove - currMove >= 0 &&
         prevMove - currMove < 100
       ) {
         moveEvaluationText = "Inacuraccy";
@@ -938,7 +947,7 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
         colorSquare = inacuraccy;
       } else if (
         currMove <= prevMove &&
-        prevMove - currMove > 100 &&
+        prevMove - currMove >= 100 &&
         prevMove - currMove < 250
       ) {
         moveEvaluationText = "Mistake";
@@ -949,10 +958,30 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
         textColor = blunder;
         colorSquare = blunder;
       }
+      // Check if Great or Brilliant
+      if (analyses[0].evaluation.type == "cp") {
+        if (
+          currMove >= prevMove &&
+          currMove - prevMove >= 100 &&
+          currMove - prevMove < 200
+        ) {
+          moveEvaluationText = "Great move!";
+          textColor = great;
+          colorSquare = great;
+        }
+        if (currMove >= prevMove && currMove - prevMove > 200) {
+          moveEvaluationText = "Excellent move!";
+          textColor = brilliant;
+          colorSquare = brilliant;
+        }
+      }
+
       // For black
     } else if (fen.includes(" w ")) {
       if (
-        (currMove <= prevMove && prevMove - currMove < 20) ||
+        (currMove <= prevMove &&
+          prevMove - currMove >= 0 &&
+          prevMove - currMove < 20) ||
         engineGoodMove.includes(currentPlayerMove)
       ) {
         moveEvaluationText = "Good move";
@@ -961,7 +990,7 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
       } else if (
         (currMove <= prevMove &&
           prevMove - currMove >= 20 &&
-          prevMove - currMove < 350) ||
+          prevMove - currMove < 100) ||
         engineVeryGoodMove.includes(currentPlayerMove)
       ) {
         moveEvaluationText = "Very good move";
@@ -972,29 +1001,17 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
         textColor = best;
         colorSquare = best;
       } else if (
-        currMove <= prevMove &&
-        prevMove - currMove >= 350 &&
-        prevMove - currMove < 550
-      ) {
-        moveEvaluationText = "Great move!";
-        textColor = great;
-        colorSquare = great;
-      } else if (currMove <= prevMove && prevMove - currMove > 550) {
-        moveEvaluationText = "Excellent move!";
-        textColor = brilliant;
-        colorSquare = brilliant;
-      } else if (
         currMove >= prevMove &&
-        currMove - prevMove > 0 &&
-        currMove - prevMove <= 100
+        currMove - prevMove >= 0 &&
+        currMove - prevMove < 100
       ) {
         moveEvaluationText = "Inacuraccy";
         textColor = inacuraccy;
         colorSquare = inacuraccy;
       } else if (
         currMove >= prevMove &&
-        currMove - prevMove > 100 &&
-        currMove - prevMove <= 250
+        currMove - prevMove >= 100 &&
+        currMove - prevMove < 250
       ) {
         moveEvaluationText = "Mistake";
         textColor = mistake;
@@ -1003,6 +1020,23 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
         moveEvaluationText = "Blunder";
         textColor = blunder;
         colorSquare = blunder;
+      }
+      // Check if Great or Brilliant
+      if (analyses[0].evaluation.type == "cp") {
+        if (
+          currMove <= prevMove &&
+          prevMove - currMove >= 100 &&
+          prevMove - currMove < 200
+        ) {
+          moveEvaluationText = "Great move!";
+          textColor = great;
+          colorSquare = great;
+        }
+        if (currMove <= prevMove && prevMove - currMove > 200) {
+          moveEvaluationText = "Excellent move!";
+          textColor = brilliant;
+          colorSquare = brilliant;
+        }
       }
     }
 
