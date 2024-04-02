@@ -17,8 +17,19 @@
   <body>
     <header class="header">
       <h1>🐪 Chess Game Raport</h1>
-      <p>v.1.0.3 (alpha)</p>
+      <p>v.1.0.4 (alpha)</p>
     </header>
+    <div class="flexbox">
+      <button id="settingsBtn" class="clean-btn">🔧</button>
+      <button id="hintsBtn" class="clean-btn">❔</button>
+      <button id="flipOrientationBtn" class="clean-btn">Flip Board</button>
+      <button id="bestMoveAsistantBtn" class="clean-btn">
+        Engine Moves: no
+      </button>
+      <!-- <button id="analiseCurrentPossitionBtn" class="clean-btn">
+        Enable analise: no
+      </button> -->
+    </div>
     <div class="container">
       <div class="leftContainer">
         <div id="evalbar"></div>
@@ -28,98 +39,234 @@
           <div id="whitePlayer">White</div>
         </div>
       </div>
-      <div>
-        <div class="flexbox">
-          <button id="settingsBtn" class="clean-btn">🔧</button>
-          <button id="hintsBtn" class="clean-btn">❔</button>
-          <button id="flipOrientationBtn" class="clean-btn">Flip Board</button>
-          <button id="bestMoveAsistantBtn" class="clean-btn">
-            Engine Moves: no
-          </button>
-        </div>
-        <div id="rightHalf">
-          <div class="settingsContainer">
-            <div>
-              <button id="displayThemesBtn" class="clean-btn">
-                Change Theme:
-              </button>
-            </div>
-            <div class="themesContainer">
-              <p>Themes:</p>
-              <div>
-                <button id="themeDefault" class="clean-btn">Default</button>
-                <button id="themeRed" class="clean-btn">Carmasin</button>
-              </div>
-              <div>
-                <button id="themeTournament" class="clean-btn">
-                  Tournament
-                </button>
-                <button id="themeClassic" class="clean-btn">Classic</button>
-              </div>
-              <br />
-            </div>
-            <div>
-              <button id="displayPiecesBtn" class="clean-btn">
-                Change Pieces:
-              </button>
-            </div>
-            <div class="piecesContainer">
-              <p>Pieces:</p>
-              <div>
-                <button id="pieceAlpha" class="clean-btn">Alpha</button>
-                <button id="pieceChess24" class="clean-btn">Chess24</button>
-                <button id="pieceLeipzig" class="clean-btn">Leipzig</button>
-              </div>
-              <div>
-                <button id="pieceSymbol" class="clean-btn">Symbol</button>
-                <button id="pieceUscf" class="clean-btn">Uscf</button>
-                <button id="pieceWikipedia" class="clean-btn">Wikipedia</button>
-              </div>
-              <br />
-            </div>
-            <p class="hint">
-              ❔ please change settings before generating the report
-            </p>
-            <p class="hint">
-              ❔ please refresh the page before generating new raport
-            </p>
-          </div>
-
-          <textarea
-            id="pgnInput"
-            rows="5"
-            cols="30"
-            placeholder="Enter PGN:"
-          ></textarea>
-
-          <div id="pgnStatus"></div>
-          <p>Choose depth:</p>
-
+      <div class="generalRaport">
+        <div class="settingsContainer">
           <div>
-            <input
-              id="depth-slider"
-              type="range"
-              id="depth"
-              name="depth"
-              value="12"
-              min="8"
-              max="16"
-            />
-            <label id="depth-label" for="depth">Depth: 12</label>
+            <button id="displayThemesBtn" class="clean-btn">
+              Change Theme:
+            </button>
           </div>
+          <div class="themesContainer">
+            <p>Themes:</p>
+            <div>
+              <button id="themeDefault" class="clean-btn">Default</button>
+              <button id="themeRed" class="clean-btn">Carmasin</button>
+            </div>
+            <div>
+              <button id="themeTournament" class="clean-btn">Tournament</button>
+              <button id="themeClassic" class="clean-btn">Classic</button>
+            </div>
+            <br />
+          </div>
+          <div>
+            <button id="displayPiecesBtn" class="clean-btn">
+              Change Pieces:
+            </button>
+          </div>
+          <div class="piecesContainer">
+            <p>Pieces:</p>
+            <div>
+              <button id="pieceAlpha" class="clean-btn">Alpha</button>
+              <button id="pieceChess24" class="clean-btn">Chess24</button>
+              <button id="pieceLeipzig" class="clean-btn">Leipzig</button>
+            </div>
+            <div>
+              <button id="pieceSymbol" class="clean-btn">Symbol</button>
+              <button id="pieceUscf" class="clean-btn">Uscf</button>
+              <button id="pieceWikipedia" class="clean-btn">Wikipedia</button>
+            </div>
+            <br />
+          </div>
+          <p class="hint">
+            ❔ please change settings before generating the report
+          </p>
+          <p class="hint">
+            ❔ please refresh the page before generating new raport
+          </p>
+        </div>
 
-          <button id="generateRaport">Generate Raport</button>
-          <div class="reportBtns">
-            <button id="reviewBtnBackward"><</button>
-            <button id="reviewBtnForward">></button>
-          </div>
-          <div id="analiseProgress"></div>
-          <div class="accurary-container">
-            <div id="whiteAccuracy"></div>
-            <div id="blackAccuracy"></div>
-          </div>
-          <div id="displayMoves"></div>
-          <div id="moveEvaluation"></div>
+        <textarea
+          id="pgnInput"
+          rows="5"
+          cols="30"
+          placeholder="Enter PGN:"
+        ></textarea>
+
+        <div id="pgnStatus"></div>
+        <p>Choose depth:</p>
+
+        <div>
+          <input
+            id="depth-slider"
+            type="range"
+            id="depth"
+            name="depth"
+            value="2"
+            min="2"
+            max="16"
+          />
+          <label id="depth-label" for="depth">Depth: 2</label>
+        </div>
+
+        <button id="generateRaport">Generate Raport</button>
+        <div class="reportBtns">
+          <button id="reviewBtnBackward"><</button>
+          <button id="reviewBtnForward">></button>
+        </div>
+        <div id="analiseProgress"></div>
+        <div id="displayMoves"></div>
+        <div id="moveEvaluation"></div>
+      </div>
+      <div class="moreDetails">
+        <div class="accurary-container">
+          <h4 class="accuracy">Accuracy:</h4>
+          <div id="whiteAccuracy"></div>
+          <div id="blackAccuracy"></div>
+        </div>
+        <div class="tallies-component">
+          <ul>
+            <li class="color-excellent tallies-element">
+              <p class="tallies-element-counter excellentCounterWhite">0</p>
+              <div>
+                <img
+                  src="/move_classifications/brilliant.png"
+                  alt=""
+                  width="12px"
+                  height="12px"
+                />
+                Excellent Move
+              </div>
+              <p class="tallies-element-counter excellentCounterBlack">0</p>
+            </li>
+            <li class="color-great-move tallies-element">
+              <p class="tallies-element-counter greatCounterWhite">0</p>
+              <div>
+                <img
+                  src="/move_classifications/great.png"
+                  alt=""
+                  width="12px"
+                  height="12px"
+                />
+                Great Move
+              </div>
+              <p class="tallies-element-counter greatCounterBlack">0</p>
+            </li>
+            <li class="color-very-good-move tallies-element">
+              <p class="tallies-element-counter bestCounterWhite">0</p>
+              <div>
+                <img
+                  src="/move_classifications/best.png"
+                  alt=""
+                  width="12px"
+                  height="12px"
+                />
+                Best Move
+              </div>
+              <p class="tallies-element-counter bestCounterBlack">0</p>
+            </li>
+            <li class="color-very-good-move tallies-element">
+              <p class="tallies-element-counter veryGoodCounterWhite">0</p>
+              <div>
+                <img
+                  src="/move_classifications/very-good.png"
+                  alt=""
+                  width="12px"
+                  height="12px"
+                />
+                Very Good
+              </div>
+              <p class="tallies-element-counter veryGoodCounterBlack">0</p>
+            </li>
+            <li class="color-good-move tallies-element">
+              <p class="tallies-element-counter goodCounterWhite">0</p>
+              <div>
+                <img
+                  src="/move_classifications/good.png"
+                  alt=""
+                  width="12px"
+                  height="12px"
+                />
+                Good Move
+              </div>
+              <p class="tallies-element-counter goodCounterBlack">0</p>
+            </li>
+            <li class="color-book-move tallies-element">
+              <p class="tallies-element-counter bookCounterWhite">0</p>
+              <div>
+                <img
+                  src="/move_classifications/book.png"
+                  alt=""
+                  width="12px"
+                  height="12px"
+                />
+                Book Move
+              </div>
+              <p class="tallies-element-counter bookCounterBlack">0</p>
+            </li>
+            <li class="color-inaccuracy tallies-element">
+              <p class="tallies-element-counter inaccuracyCounterWhite">0</p>
+              <div>
+                <img
+                  src="/move_classifications/inaccuracy.png"
+                  alt=""
+                  width="12px"
+                  height="12px"
+                />
+                Inacurracy
+              </div>
+              <p class="tallies-element-counter inaccuracyCounterBlack">0</p>
+            </li>
+            <li class="color-mistake tallies-element">
+              <p class="tallies-element-counter mistakeCounterWhite">0</p>
+              <div>
+                <img
+                  src="/move_classifications/mistake.png"
+                  alt=""
+                  width="12px"
+                  height="12px"
+                />
+                Mistake
+              </div>
+              <p class="tallies-element-counter mistakeCounterBlack">0</p>
+            </li>
+            <li class="color-blunder tallies-element">
+              <p class="tallies-element-counter blunderCounterWhite">0</p>
+              <div>
+                <img
+                  src="/move_classifications/blunder.png"
+                  alt=""
+                  width="12px"
+                  height="12px"
+                />
+                Blunder
+              </div>
+              <p class="tallies-element-counter blunderCounterBlack">0</p>
+            </li>
+          </ul>
+        </div>
+        <div class="ranking-container">
+          <ul>
+            <li class="tallies-element ranking-element">
+              <h3 class="tallies-element-counter avgWhiteRanking">?</h3>
+              <p>Ranking</p>
+              <h3 class="tallies-element-counter avgBlackRanking">?</h3>
+            </li>
+            <li class="tallies-element">
+              <p class="tallies-element-counter openingWhite">?</p>
+              <p>Opening</p>
+              <p class="tallies-element-counter openingBlack">?</p>
+            </li>
+            <li class="tallies-element">
+              <p class="tallies-element-counter middlegameWhite">?</p>
+              <p>Middlegame</p>
+              <p class="tallies-element-counter middlegameBlack">?</p>
+            </li>
+            <li class="tallies-element">
+              <p class="tallies-element-counter endgameWhite">?</p>
+              <p>Endgame</p>
+              <p class="tallies-element-counter endgameBlack">?</p>
+            </li>
+          </ul>
         </div>
       </div>
     </div>

@@ -67,12 +67,91 @@ let currentPgn = [];
 
 let piecesSet = localStorage.getItem("piecesSet");
 
+//////////////////////////////////////
+// Legal Moves
+
+var $status = $("#status");
+var $fen = $("#fen");
+var $pgn = $("#pgn");
+
+function onDragStart(source, piece, position, orientation) {
+  // do not pick up pieces if the game is over
+  if (game.game_over()) return false;
+
+  // only pick up pieces for the side to move
+  if (
+    (game.turn() === "w" && piece.search(/^b/) !== -1) ||
+    (game.turn() === "b" && piece.search(/^w/) !== -1)
+  ) {
+    return false;
+  }
+}
+
+function onDrop(source, target) {
+  // see if the move is legal
+  var move = game.move({
+    from: source,
+    to: target,
+    promotion: "q", // NOTE: always promote to a queen for example simplicity
+  });
+
+  // illegal move
+  if (move === null) return "snapback";
+
+  updateStatus();
+}
+
+// update the board position after the piece snap
+// for castling, en passant, pawn promotion
+function onSnapEnd() {
+  board.position(game.fen());
+}
+
+function updateStatus() {
+  var status = "";
+
+  var moveColor = "White";
+  if (game.turn() === "b") {
+    moveColor = "Black";
+  }
+
+  // checkmate?
+  if (game.in_checkmate()) {
+    status = "Game over, " + moveColor + " is in checkmate.";
+  }
+
+  // draw?
+  else if (game.in_draw()) {
+    status = "Game over, drawn position";
+  }
+
+  // game still on
+  else {
+    status = moveColor + " to move";
+
+    // check?
+    if (game.in_check()) {
+      status += ", " + moveColor + " is in check";
+    }
+  }
+
+  $status.html(status);
+  $fen.html(game.fen());
+  $pgn.html(game.pgn());
+}
+//////////////////////////////////////
+
 let board = Chessboard("myBoard", {
   position: "start",
   draggable: false,
   orientation: "white",
   pieceTheme: `chesspieces/${piecesSet}/{piece}.png`,
+  onDragStart: onDragStart,
+  onDrop: onDrop,
+  onSnapEnd: onSnapEnd,
 });
+
+updateStatus();
 
 let isBoardFlipped = false;
 
@@ -106,6 +185,7 @@ settingsBtn.addEventListener("click", () => {
 });
 
 let showEngineBestMoves = false;
+let showAnalise = false;
 let bookMove = false;
 let openingName;
 
@@ -118,6 +198,56 @@ bestMoveAsistantBtn.addEventListener("click", () => {
     bestMoveAsistantBtn.textContent = `Engine Moves: no`;
   }
 });
+
+// let analiseCurrentPossitionBtn = document.getElementById(
+//   "analiseCurrentPossitionBtn"
+// );
+// let outputfen;
+
+// analiseCurrentPossitionBtn.addEventListener("click", () => {
+//   outputfen = raport.fen[currentMove];
+//   showAnalise = !showAnalise;
+//   if (showAnalise) {
+//     removeAllPaintedSquares();
+//     analiseCurrentPossitionBtn.textContent = `Enable analise: yes`;
+//     board = Chessboard("myBoard", {
+//       position: board.fen(),
+//       draggable: true,
+//       orientation: "white",
+//       pieceTheme: `chesspieces/${piecesSet}/{piece}.png`,
+//       // onDrop: onDrop,
+//     });
+//     outputfen = outputfen.split(" ")[0];
+//     paintSquares();
+//   } else {
+//     removeAllPaintedSquares();
+//     analiseCurrentPossitionBtn.textContent = `Enable analise: no`;
+//     board = Chessboard("myBoard", {
+//       position: board.fen(),
+//       draggable: false,
+//       orientation: "white",
+//       pieceTheme: `chesspieces/${piecesSet}/{piece}.png`,
+//     });
+//     paintSquares();
+//   }
+// });
+
+// async function onDrop() {
+//   removeAllPaintedSquares();
+
+//   let fen = board.fen();
+//   let stockfish = new Stockfish();
+//   let numLines = 8;
+//   let depth = 4;
+
+//   let analyses = await stockfish.generateBestPositions(fen, numLines, depth);
+
+//   setTimeout(() => {
+//     console.log(analyses[0].evaluation.value);
+//   }, 0);
+
+//   paintSquares();
+// }
 
 let currentMove = 0;
 
@@ -141,6 +271,22 @@ let blackAccMoves = [""];
 let accuracyValue = 0;
 let whiteAccVal = 0;
 let blackAccVal = 0;
+
+let openingMoveCoutner = 2;
+let openingWhiteValue = 0;
+let openingBlackValue = 0;
+
+let middlegameTrigger = false;
+let middlegameMoveCoutner = 0;
+let middlegameWhiteValue = 0;
+let middlegameBlackValue = 0;
+
+let endgameTrigger = false;
+let endgameMoveCoutner = 0;
+let endgameWhiteValue = 0;
+let endgameBlackValue = 0;
+
+let avgWhiteAcc;
 
 let depthSlider = document.getElementById("depth-slider");
 let depthLabel = document.getElementById("depth-label");
@@ -266,6 +412,9 @@ async function generateRaport(result) {
         analiseProgressDiv.innerHTML = `<div id="analizeProgress" style="color: #fff;">Analysis completed!</div>`;
         board.position(raport.fen[0]);
         displayAccuracy();
+        countTallies();
+        displayTallies();
+        displayRanking();
 
         moveEvaluationDiv.innerHTML = `<span style="color: #FFD700;"><b>Checkmate!</b></span>`;
         raport.message.push(moveEvaluationDiv.innerHTML);
@@ -296,19 +445,57 @@ async function generateRaport(result) {
 
         board.position(raport.fen[0]);
         displayAccuracy();
+        countTallies();
+        displayTallies();
+        displayRanking();
 
         return (currentMove = 0);
       } else {
+        if (currentMove <= 17) {
+          openingMoveCoutner++;
+        }
+        if (currentMove > 16) {
+          middlegameTrigger = true;
+          middlegameMoveCoutner++;
+        }
+        if (endgameTrigger == true) {
+          endgameMoveCoutner++;
+        }
+
         if (i >= 2) {
+          let fen = game.fen();
+          isEndgame(fen);
+
           if (
             accurateMoves[i - 1].includes(raport.playerMoves[i]) ||
             bookMove == true
           ) {
             accuracyValue++;
+
             if (isEven(i)) {
               blackAccVal++;
+
+              if (currentMove <= 17) {
+                openingBlackValue++;
+              }
+              if (currentMove > 16 && endgameTrigger == false) {
+                middlegameBlackValue++;
+              }
+              if (endgameTrigger == true) {
+                endgameBlackValue++;
+              }
             } else {
               whiteAccVal++;
+
+              if (currentMove <= 17) {
+                openingWhiteValue++;
+              }
+              if (currentMove > 16 && endgameTrigger == false) {
+                middlegameWhiteValue++;
+              }
+              if (endgameTrigger == true) {
+                endgameWhiteValue++;
+              }
             }
           }
         }
@@ -328,6 +515,9 @@ async function generateRaport(result) {
         analiseProgressDiv.innerHTML = `<div id="analizeProgress" style="color: #fff;">Analysis completed!</div>`;
         board.position(raport.fen[0]);
         displayAccuracy();
+        countTallies();
+        displayTallies();
+        displayRanking();
         return (currentMove = 0);
       }
 
@@ -345,10 +535,15 @@ async function generateRaport(result) {
 }
 
 function checkIfBookMove() {
+  let pgnStatusDiv = document.querySelector("#pgnStatus");
+
   for (let i = 0; i < eco.length; i++) {
     if (eco[i].moves === raport.pgnMoves[currentMove - 1]) {
       bookMove = true;
       openingName = eco[i].name;
+      pgnStatusDiv.innerHTML = openingName;
+      pgnStatusDiv.style.color = "#a17a5c";
+      pgnStatusDiv.style.fontWeight = "bold";
       return;
     }
   }
@@ -390,7 +585,11 @@ function paintSquares(playerMove, curentColor) {
       }
     }
   } else if (bookMove == false) {
-    if (raport.playerMoves[currentMove]) {
+    if (
+      raport.playerMoves[currentMove] &&
+      raport.evals[currentMove] > -500 &&
+      raport.evals[currentMove] < 500
+    ) {
       let playerMoveFrom = raport.playerMoves[currentMove].substring(0, 2);
       let playerMoveTo = raport.playerMoves[currentMove].substring(2);
 
@@ -438,6 +637,48 @@ function paintSquares(playerMove, curentColor) {
         }
         squareTo.appendChild(moveClassificationDiv);
       }
+    } else {
+      let playerMoveFrom = raport.playerMoves[currentMove].substring(0, 2);
+      let playerMoveTo = raport.playerMoves[currentMove].substring(2);
+
+      const squareFrom = document.querySelector(
+        `[data-square=${playerMoveFrom}]`
+      );
+      const squareTo = document.querySelector(`[data-square=${playerMoveTo}]`);
+
+      if (squareFrom && squareTo) {
+        squareFrom.style.backgroundColor = curentColor;
+        squareTo.style.backgroundColor = curentColor;
+
+        let moveClassificationDiv = document.createElement("div");
+        moveClassificationDiv.classList.add("icon");
+
+        // Validation
+        switch (curentColor) {
+          case "#71a341":
+            moveClassificationDiv.style.backgroundImage = `url("/move_classifications/best.png")`;
+            break;
+          case "#71a340":
+            moveClassificationDiv.style.backgroundImage = `url("/move_classifications/very-good.png")`;
+            break;
+          case "#95b776":
+            moveClassificationDiv.style.backgroundImage = `url("/move_classifications/good.png")`;
+            break;
+          case "#d9af32":
+            moveClassificationDiv.style.backgroundImage = `url("/move_classifications/inaccuracy.png")`;
+            break;
+          case "#e07c16":
+            moveClassificationDiv.style.backgroundImage = `url("/move_classifications/mistake.png")`;
+            break;
+          case "#d63624":
+            moveClassificationDiv.style.backgroundImage = `url("/move_classifications/blunder.png")`;
+            break;
+          default:
+            // No image set for the backgroundImage property
+            break;
+        }
+        squareTo.appendChild(moveClassificationDiv);
+      }
     }
   }
 
@@ -461,6 +702,298 @@ function paintSquares(playerMove, curentColor) {
       }
     }
   }
+
+  if (
+    raport.types[currentMove - 1] == "mate" &&
+    raport.types[currentMove] == "cp"
+  ) {
+    let missMoveFrom = raport.playerMoves[currentMove].substring(0, 2);
+    let missMoveTo = raport.playerMoves[currentMove].substring(2);
+
+    const squareFrom = document.querySelector(`[data-square=${missMoveFrom}]`);
+    const squareTo = document.querySelector(`[data-square=${missMoveTo}]`);
+    if (squareFrom && squareTo) {
+      squareFrom.style.backgroundColor = "#c96157";
+      squareTo.style.backgroundColor = "#c96157";
+
+      let missClassificationDiv = document.createElement("div");
+      missClassificationDiv.classList.add("icon");
+      missClassificationDiv.style.backgroundImage = `url("/move_classifications/miss.png")`;
+      squareTo.appendChild(missClassificationDiv);
+
+      const displayMovesDiv = document.getElementById("displayMoves");
+      const moveEvaluationDiv = document.getElementById("moveEvaluation");
+
+      displayMovesDiv.style.color = "#FF7769";
+      moveEvaluationDiv.innerHTML = `<span style="color: #FF7769;"><b>Missed win</b></span>`;
+    }
+  }
+}
+
+let excellentCounterWhite = 0;
+let greatCounterWhite = 0;
+let bestCounterWhite = 0;
+let veryGoodCounterWhite = 0;
+let goodCounterWhite = 0;
+let bookCounterWhite = 0;
+let inaccuracyCounterWhite = 0;
+let mistakeCounterWhite = 0;
+let blunderCounterWhite = 0;
+
+let excellentCounterBlack = 0;
+let greatCounterBlack = 0;
+let bestCounterBlack = 0;
+let veryGoodCounterBlack = 0;
+let goodCounterBlack = 0;
+let bookCounterBlack = 0;
+let inaccuracyCounterBlack = 0;
+let mistakeCounterBlack = 0;
+let blunderCounterBlack = 0;
+
+let excellentCounterWhiteDiv = document.querySelector(".excellentCounterWhite");
+let greatCounterWhiteDiv = document.querySelector(".greatCounterWhite");
+let bestCounterWhiteDiv = document.querySelector(".bestCounterWhite");
+let veryGoodCounterWhiteDiv = document.querySelector(".veryGoodCounterWhite");
+let goodCounterWhiteDiv = document.querySelector(".goodCounterWhite");
+let bookCounterWhiteDiv = document.querySelector(".bookCounterWhite");
+let inaccuracyCounterWhiteDiv = document.querySelector(
+  ".inaccuracyCounterWhite"
+);
+let mistakeCounterWhiteDiv = document.querySelector(".mistakeCounterWhite");
+let blunderCounterWhiteDiv = document.querySelector(".blunderCounterWhite");
+
+let excellentCounterBlackDiv = document.querySelector(".excellentCounterBlack");
+let greatCounterBlackDiv = document.querySelector(".greatCounterBlack");
+let bestCounterBlackDiv = document.querySelector(".bestCounterBlack");
+let veryGoodCounterBlackDiv = document.querySelector(".veryGoodCounterBlack");
+let goodCounterBlackDiv = document.querySelector(".goodCounterBlack");
+let bookCounterBlackDiv = document.querySelector(".bookCounterBlack");
+let inaccuracyCounterBlackDiv = document.querySelector(
+  ".inaccuracyCounterBlack"
+);
+let mistakeCounterBlackDiv = document.querySelector(".mistakeCounterBlack");
+let blunderCounterBlackDiv = document.querySelector(".blunderCounterBlack");
+
+function countTallies() {
+  for (let i = 0; i <= raport.colors.length; i++) {
+    if (isEven(i)) {
+      if (raport.colors[i] == "#1f947d") {
+        excellentCounterBlack++;
+        excellentCounterBlackDiv.textContent = excellentCounterBlack;
+      }
+      if (raport.colors[i] == "#5183b0") {
+        greatCounterBlack++;
+        greatCounterBlackDiv.textContent = greatCounterBlack;
+      }
+      if (raport.colors[i] == "#71a341") {
+        bestCounterBlack++;
+        bestCounterBlackDiv.textContent = bestCounterBlack;
+      }
+      if (raport.colors[i] == "#71a340") {
+        veryGoodCounterBlack++;
+        veryGoodCounterBlackDiv.textContent = veryGoodCounterBlack;
+      }
+      if (raport.colors[i] == "#95b776") {
+        goodCounterBlack++;
+        goodCounterBlackDiv.textContent = goodCounterBlack;
+      }
+      if (raport.colors[i] == "#a17a5c") {
+        bookCounterBlack++;
+        bookCounterBlackDiv.textContent = bookCounterBlack;
+      }
+      if (raport.colors[i] == "#d9af32") {
+        inaccuracyCounterBlack++;
+        inaccuracyCounterBlackDiv.textContent = inaccuracyCounterBlack;
+      }
+      if (raport.colors[i] == "#e07c16") {
+        mistakeCounterBlack++;
+        mistakeCounterBlackDiv.textContent = mistakeCounterBlack;
+      }
+      if (raport.colors[i] == "#d63624") {
+        blunderCounterBlack++;
+        blunderCounterBlackDiv.textContent = blunderCounterBlack;
+      }
+    } else {
+      if (raport.colors[i] == "#1f947d") {
+        excellentCounterWhite++;
+        excellentCounterWhiteDiv.textContent = excellentCounterWhite;
+      }
+      if (raport.colors[i] == "#5183b0") {
+        greatCounterWhite++;
+        greatCounterWhiteDiv.textContent = greatCounterWhite;
+      }
+      if (raport.colors[i] == "#71a341") {
+        bestCounterWhite++;
+        bestCounterWhiteDiv.textContent = bestCounterWhite;
+      }
+      if (raport.colors[i] == "#71a340") {
+        veryGoodCounterWhite++;
+        veryGoodCounterWhiteDiv.textContent = veryGoodCounterWhite;
+      }
+      if (raport.colors[i] == "#95b776") {
+        goodCounterWhite++;
+        goodCounterWhiteDiv.textContent = goodCounterWhite;
+      }
+      if (raport.colors[i] == "#a17a5c") {
+        bookCounterWhite++;
+        bookCounterWhiteDiv.textContent = bookCounterWhite;
+      }
+      if (raport.colors[i] == "#d9af32") {
+        inaccuracyCounterWhite++;
+        inaccuracyCounterWhiteDiv.textContent = inaccuracyCounterWhite;
+      }
+      if (raport.colors[i] == "#e07c16") {
+        mistakeCounterWhite++;
+        mistakeCounterWhiteDiv.textContent = mistakeCounterWhite;
+      }
+      if (raport.colors[i] == "#d63624") {
+        blunderCounterWhite++;
+        blunderCounterWhiteDiv.textContent = blunderCounterWhite;
+      }
+    }
+  }
+}
+
+function displayTallies() {
+  excellentCounterWhiteDiv.textContent = excellentCounterWhite;
+  greatCounterWhiteDiv.textContent = greatCounterWhite;
+  bestCounterWhiteDiv.textContent = bestCounterWhite;
+  veryGoodCounterWhiteDiv.textContent = veryGoodCounterWhite;
+  goodCounterWhiteDiv.textContent = goodCounterWhite;
+  bookCounterWhiteDiv.textContent = bookCounterWhite;
+  inaccuracyCounterWhiteDiv.textContent = inaccuracyCounterWhite;
+  mistakeCounterWhiteDiv.textContent = mistakeCounterWhite;
+  blunderCounterWhiteDiv.textContent = blunderCounterWhite;
+
+  excellentCounterBlackDiv.textContent = excellentCounterBlack;
+  greatCounterBlackDiv.textContent = greatCounterBlack;
+  bestCounterBlackDiv.textContent = bestCounterBlack;
+  veryGoodCounterBlackDiv.textContent = veryGoodCounterBlack;
+  goodCounterBlackDiv.textContent = goodCounterBlack;
+  bookCounterBlackDiv.textContent = bookCounterBlack;
+  inaccuracyCounterBlackDiv.textContent = inaccuracyCounterBlack;
+  mistakeCounterBlackDiv.textContent = mistakeCounterBlack;
+  blunderCounterBlackDiv.textContent = blunderCounterBlack;
+}
+
+function getPieceValue(piece) {
+  const pieceValues = {
+    P: 1, // Pawn
+    N: 3, // Knight
+    B: 3, // Bishop
+    R: 5, // Rook
+    Q: 9, // Queen
+    K: 0, // King (no material value)
+  };
+  return pieceValues[piece.toUpperCase()] || 0;
+}
+
+function isEndgame(fen) {
+  const fenParts = fen.split(" ");
+  const position = fenParts[0];
+  const rows = position.split("/");
+
+  let pieceCount = 0;
+  let totalMaterial = 0;
+
+  for (const row of rows) {
+    for (const char of row) {
+      if (isNaN(char)) {
+        pieceCount++;
+        totalMaterial += getPieceValue(char);
+      }
+    }
+  }
+
+  // Check if either condition is met
+  if (pieceCount <= 8 || totalMaterial <= 40) {
+    endgameTrigger = true;
+  }
+
+  return endgameTrigger;
+}
+
+function displayRanking() {
+  let avgWhiteRankingDiv = document.querySelector(".avgWhiteRanking");
+  let avgBlackRankingDiv = document.querySelector(".avgBlackRanking");
+
+  let whiteAccuracy = (
+    (whiteAccVal / (raport.playerMoves.length / 2)) *
+    100
+  ).toFixed(1);
+
+  let blackAccuracy = (
+    (blackAccVal / (raport.playerMoves.length / 2)) *
+    100
+  ).toFixed(1);
+
+  let avgWhiteRanking = 0;
+  let avgBlackRanking = 0;
+
+  if (whiteAccuracy >= 0 && whiteAccuracy < 55) {
+    avgWhiteRanking = 100;
+  }
+  if (whiteAccuracy >= 55 && whiteAccuracy < 60) {
+    avgWhiteRanking = 350;
+  }
+  if (whiteAccuracy >= 60 && whiteAccuracy < 65) {
+    avgWhiteRanking = 700;
+  }
+  if (whiteAccuracy >= 65 && whiteAccuracy < 70) {
+    avgWhiteRanking = 1100;
+  }
+  if (whiteAccuracy >= 70 && whiteAccuracy < 75) {
+    avgWhiteRanking = 1500;
+  }
+  if (whiteAccuracy >= 75 && whiteAccuracy < 80) {
+    avgWhiteRanking = 1900;
+  }
+  if (whiteAccuracy >= 80 && whiteAccuracy < 85) {
+    avgWhiteRanking = 2200;
+  }
+  if (whiteAccuracy >= 85 && whiteAccuracy < 90) {
+    avgWhiteRanking = 2700;
+  }
+  if (whiteAccuracy >= 90 && whiteAccuracy < 95) {
+    avgWhiteRanking = 3100;
+  }
+  if (whiteAccuracy > 95) {
+    avgWhiteRanking = 3500;
+  }
+
+  if (blackAccuracy >= 0 && blackAccuracy < 55) {
+    avgBlackRanking = 100;
+  }
+  if (blackAccuracy >= 55 && blackAccuracy < 60) {
+    avgBlackRanking = 350;
+  }
+  if (blackAccuracy >= 60 && blackAccuracy < 65) {
+    avgBlackRanking = 700;
+  }
+  if (blackAccuracy >= 65 && blackAccuracy < 70) {
+    avgBlackRanking = 1100;
+  }
+  if (blackAccuracy >= 70 && blackAccuracy < 75) {
+    avgBlackRanking = 1500;
+  }
+  if (blackAccuracy >= 75 && blackAccuracy < 80) {
+    avgBlackRanking = 1900;
+  }
+  if (blackAccuracy >= 80 && blackAccuracy < 85) {
+    avgBlackRanking = 2200;
+  }
+  if (blackAccuracy >= 85 && blackAccuracy < 90) {
+    avgBlackRanking = 2700;
+  }
+  if (blackAccuracy >= 90 && blackAccuracy < 95) {
+    avgBlackRanking = 3100;
+  }
+  if (blackAccuracy > 95) {
+    avgWhiteRanking = 3500;
+  }
+
+  avgWhiteRankingDiv.innerHTML = avgWhiteRanking;
+  avgBlackRankingDiv.innerHTML = avgBlackRanking;
 }
 
 function displayComment() {
@@ -514,7 +1047,46 @@ function fillEvalbar() {
     evalBarAfterStyle.innerHTML = `
       #evalbar::after {
         content: "${(raport.evals[currentMove] / 100).toFixed(1)}";
+        color: #7f7f7f;
         height: calc((${percValue} / 100) * 496px);
+      }
+    `;
+    document.head.appendChild(evalBarAfterStyle);
+  }
+
+  if (raport.evals[currentMove] >= 0) {
+    const evalBarAfterStyle = document.createElement("style");
+    evalBarAfterStyle.innerHTML = `
+      #evalbar::after {
+        content: "${(raport.evals[currentMove] / 100).toFixed(1)}";
+        height: calc((${percValue} / 100) * 496px);
+        color: #7f7f7f;
+        font-weight: bold;
+      }
+    `;
+    document.head.appendChild(evalBarAfterStyle);
+  }
+
+  if (raport.types[currentMove] == "mate" && raport.evals[currentMove] > 0) {
+    const evalBarAfterStyle = document.createElement("style");
+    evalBarAfterStyle.innerHTML = `
+      #evalbar::after {
+        content: "M${raport.evals[currentMove]}";
+        color: #7f7f7f;
+        height: 496px;
+      }
+    `;
+    document.head.appendChild(evalBarAfterStyle);
+  }
+
+  if (raport.types[currentMove] == "mate" && raport.evals[currentMove] < 0) {
+    const evalBarAfterStyle = document.createElement("style");
+    evalBarAfterStyle.innerHTML = `
+      #evalbar::after {
+        content: "M${raport.evals[currentMove]}";
+        height: 0px;
+        color: #7f7f7f;
+        font-weight: bold;
       }
     `;
     document.head.appendChild(evalBarAfterStyle);
@@ -526,13 +1098,62 @@ function displayAccuracy() {
   whiteAccuracyDiv.innerHTML =
     "White accuracy: " +
     ((whiteAccVal / (raport.playerMoves.length / 2)) * 100).toFixed(1) +
-    "%";
+    " %";
 
   blackAccuracyDiv = document.getElementById("blackAccuracy");
   blackAccuracyDiv.innerHTML =
     "Black accuracy: " +
     ((blackAccVal / (raport.playerMoves.length / 2)) * 100).toFixed(1) +
-    "%";
+    " %";
+
+  // Opening
+  let openingWhiteDiv = document.querySelector(".openingWhite");
+  let openingBlackDiv = document.querySelector(".openingBlack");
+  if (raport.playerMoves.length >= 16) {
+    openingWhiteDiv.innerHTML =
+      ((openingWhiteValue / 8) * 100).toFixed(1) + " %";
+  } else {
+    openingWhiteDiv.innerHTML =
+      ((openingWhiteValue / (openingMoveCoutner / 2)) * 100).toFixed(1) + " %";
+  }
+
+  if (raport.playerMoves.length >= 16) {
+    openingBlackDiv.innerHTML =
+      ((openingBlackValue / 8) * 100).toFixed(1) + " %";
+  } else {
+    openingBlackDiv.innerHTML =
+      ((openingBlackValue / (openingMoveCoutner / 2)) * 100).toFixed(1) + " %";
+  }
+
+  // Middlegame
+  let middlegameWhiteDiv = document.querySelector(".middlegameWhite");
+  let middlegameBlackDiv = document.querySelector(".middlegameBlack");
+  if (middlegameTrigger == true) {
+    middlegameWhiteDiv.innerHTML =
+      ((middlegameWhiteValue / (middlegameMoveCoutner / 2)) * 100).toFixed(1) +
+      " %";
+
+    middlegameBlackDiv.innerHTML =
+      ((middlegameBlackValue / (middlegameMoveCoutner / 2)) * 100).toFixed(1) +
+      " %";
+  } else {
+    middlegameWhiteDiv.innerHTML = "    -   ";
+    middlegameBlackDiv.innerHTML = "    -   ";
+  }
+
+  // Endgame
+  let endgameWhiteDiv = document.querySelector(".endgameWhite");
+  let endgameBlackDiv = document.querySelector(".endgameBlack");
+  if (endgameTrigger == true) {
+    endgameWhiteDiv.innerHTML =
+      ((endgameWhiteValue / (endgameMoveCoutner / 2)) * 100).toFixed(1) + " %";
+
+    endgameBlackDiv.innerHTML =
+      ((endgameBlackValue / (endgameMoveCoutner / 2)) * 100).toFixed(1) + " %";
+  } else {
+    endgameWhiteDiv.innerHTML = "    -   ";
+    endgameBlackDiv.innerHTML = "    -   ";
+  }
 }
 
 function checkResult() {
@@ -757,7 +1378,8 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
             lastMove
           );
 
-        resolve();
+        onDrop(analyses); // Pass the analyses array
+        resolve(analyses);
       })
       .catch((error) => {
         reject(error);
@@ -913,6 +1535,8 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
     let textColor;
     let colorSquare;
 
+    checkIfBookMove();
+
     // For white
     if (fen.includes(" b ")) {
       if (
@@ -963,17 +1587,30 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
         if (
           currMove >= prevMove &&
           currMove - prevMove >= 100 &&
-          currMove - prevMove < 200
+          currMove - prevMove < 200 &&
+          currMove > -500 &&
+          currMove < 500
         ) {
           moveEvaluationText = "Great move!";
           textColor = great;
           colorSquare = great;
         }
-        if (currMove >= prevMove && currMove - prevMove > 200) {
+        if (
+          currMove >= prevMove &&
+          currMove - prevMove > 200 &&
+          currMove > -500 &&
+          currMove < 500
+        ) {
           moveEvaluationText = "Excellent move!";
           textColor = brilliant;
           colorSquare = brilliant;
         }
+      }
+
+      if (bookMove == true) {
+        moveEvaluationText = "Book move!";
+        textColor = book;
+        colorSquare = book;
       }
 
       // For black
@@ -1026,17 +1663,30 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
         if (
           currMove <= prevMove &&
           prevMove - currMove >= 100 &&
-          prevMove - currMove < 200
+          prevMove - currMove < 200 &&
+          currMove > -500 &&
+          currMove < 500
         ) {
           moveEvaluationText = "Great move!";
           textColor = great;
           colorSquare = great;
         }
-        if (currMove <= prevMove && prevMove - currMove > 200) {
+        if (
+          currMove <= prevMove &&
+          prevMove - currMove > 200 &&
+          currMove > -500 &&
+          currMove < 500
+        ) {
           moveEvaluationText = "Excellent move!";
           textColor = brilliant;
           colorSquare = brilliant;
         }
+      }
+
+      if (bookMove == true) {
+        moveEvaluationText = "Book move!";
+        textColor = book;
+        colorSquare = book;
       }
     }
 
