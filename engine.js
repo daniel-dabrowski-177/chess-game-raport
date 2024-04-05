@@ -10,8 +10,19 @@ let whitePlayerDiv = document.getElementById("whitePlayer");
 let blackPlayerDiv = document.getElementById("blackPlayer");
 
 function stringToMoveArray(pgnStr) {
-  const [metadata, moves] = pgnStr.trim().split(/\n\n/);
-  const movesArray = moves.replace(/\d+\.\s/g, "").split(/\s/);
+  let [metadata, moves] = pgnStr.trim().split(/\n\n/);
+  let movesArray = removeUnnecessaryLetters(moves);
+
+  function removeUnnecessaryLetters(moves) {
+    let outputString = moves
+      .replace(/\$\d+/g, "")
+      .replace(/\d+\.\s/g, "")
+      .split(/\s/);
+
+    outputString = outputString.filter((item) => item !== "");
+
+    return outputString;
+  }
 
   // Extract information from metadata
   function extractInfo(metadata, tag) {
@@ -38,6 +49,7 @@ function stringToMoveArray(pgnStr) {
     timeControl = "⏱";
   } else if (
     timeControl == "180" ||
+    timeControl == "180+1" ||
     timeControl == "180+2" ||
     timeControl == "300" ||
     timeControl == "300+5" ||
@@ -1399,44 +1411,11 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
     let engineGoodMove = goodMovesArr[goodMovesArr.length - 1];
 
     bestMovesArr.push(analyses[0].moveUCI);
+    if (analyses.length >= 2) {
+      veryGoodMovesArr.push(analyses[1].moveUCI);
+    }
     if (analyses.length >= 3) {
-      veryGoodMovesArr.push(analyses[1].moveUCI + ", " + analyses[2].moveUCI);
-    }
-    if (analyses.length >= 5) {
-      goodMovesArr.push(analyses[3].moveUCI + ", " + analyses[4].moveUCI);
-    }
-    if (analyses.length >= 6) {
-      goodMovesArr.push(
-        analyses[3].moveUCI +
-          ", " +
-          analyses[4].moveUCI +
-          ", " +
-          analyses[5].moveUCI
-      );
-    }
-    if (analyses.length >= 7) {
-      goodMovesArr.push(
-        analyses[3].moveUCI +
-          ", " +
-          analyses[4].moveUCI +
-          ", " +
-          analyses[5].moveUCI +
-          ", " +
-          analyses[6].moveUCI
-      );
-    }
-    if (analyses.length >= 8) {
-      goodMovesArr.push(
-        analyses[3].moveUCI +
-          ", " +
-          analyses[4].moveUCI +
-          ", " +
-          analyses[5].moveUCI +
-          ", " +
-          analyses[6].moveUCI +
-          ", " +
-          analyses[7].moveUCI
-      );
+      goodMovesArr.push(analyses[2].moveUCI);
     }
 
     raport.playerMoves.push(currentPlayerMove);

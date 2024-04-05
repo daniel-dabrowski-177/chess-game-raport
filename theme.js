@@ -5,7 +5,7 @@ window.addEventListener("load", (event) => {
 
   if (theme == null) {
     localStorage.setItem("theme", "default");
-    localStorage.setItem("piecesSet", "uscf");
+    localStorage.setItem("piecesSet", "neowood");
     location.reload();
   }
 
@@ -90,6 +90,42 @@ pieceUscf.addEventListener("click", () => {
 let pieceWikipedia = document.getElementById("pieceWikipedia");
 pieceWikipedia.addEventListener("click", () => {
   localStorage.setItem("piecesSet", "wikipedia");
+  location.reload();
+});
+
+let pieceBases = document.getElementById("pieceBases");
+pieceBases.addEventListener("click", () => {
+  localStorage.setItem("piecesSet", "bases");
+  location.reload();
+});
+
+let pieceNeo = document.getElementById("pieceNeo");
+pieceNeo.addEventListener("click", () => {
+  localStorage.setItem("piecesSet", "neo");
+  location.reload();
+});
+
+let pieceClassic = document.getElementById("pieceClassic");
+pieceClassic.addEventListener("click", () => {
+  localStorage.setItem("piecesSet", "classic");
+  location.reload();
+});
+
+let pieceNeowood = document.getElementById("pieceNeowood");
+pieceNeowood.addEventListener("click", () => {
+  localStorage.setItem("piecesSet", "neowood");
+  location.reload();
+});
+
+let pieceCases = document.getElementById("pieceCases");
+pieceCases.addEventListener("click", () => {
+  localStorage.setItem("piecesSet", "cases");
+  location.reload();
+});
+
+let pieceTournament = document.getElementById("pieceTournament");
+pieceTournament.addEventListener("click", () => {
+  localStorage.setItem("piecesSet", "tournament");
   location.reload();
 });
 
