@@ -79,99 +79,32 @@ let currentPgn = [];
 
 let piecesSet = localStorage.getItem("piecesSet");
 
-//////////////////////////////////////
-// Legal Moves
-
-var $status = $("#status");
-var $fen = $("#fen");
-var $pgn = $("#pgn");
-
-function onDragStart(source, piece, position, orientation) {
-  // do not pick up pieces if the game is over
-  if (game.game_over()) return false;
-
-  // only pick up pieces for the side to move
-  if (
-    (game.turn() === "w" && piece.search(/^b/) !== -1) ||
-    (game.turn() === "b" && piece.search(/^w/) !== -1)
-  ) {
-    return false;
-  }
-}
-
-function onDrop(source, target) {
-  // see if the move is legal
-  var move = game.move({
-    from: source,
-    to: target,
-    promotion: "q", // NOTE: always promote to a queen for example simplicity
-  });
-
-  // illegal move
-  if (move === null) return "snapback";
-
-  updateStatus();
-}
-
-// update the board position after the piece snap
-// for castling, en passant, pawn promotion
-function onSnapEnd() {
-  board.position(game.fen());
-}
-
-function updateStatus() {
-  var status = "";
-
-  var moveColor = "White";
-  if (game.turn() === "b") {
-    moveColor = "Black";
-  }
-
-  // checkmate?
-  if (game.in_checkmate()) {
-    status = "Game over, " + moveColor + " is in checkmate.";
-  }
-
-  // draw?
-  else if (game.in_draw()) {
-    status = "Game over, drawn position";
-  }
-
-  // game still on
-  else {
-    status = moveColor + " to move";
-
-    // check?
-    if (game.in_check()) {
-      status += ", " + moveColor + " is in check";
-    }
-  }
-
-  $status.html(status);
-  $fen.html(game.fen());
-  $pgn.html(game.pgn());
-}
-//////////////////////////////////////
-
 let board = Chessboard("myBoard", {
   position: "start",
   draggable: false,
   orientation: "white",
   pieceTheme: `chesspieces/${piecesSet}/{piece}.png`,
-  onDragStart: onDragStart,
-  onDrop: onDrop,
-  onSnapEnd: onSnapEnd,
 });
-
-updateStatus();
 
 let isBoardFlipped = false;
 
 let flipOrientationBtn = document.getElementById("flipOrientationBtn");
 flipOrientationBtn.addEventListener("click", () => {
   board.flip();
+
   isBoardFlipped = !isBoardFlipped;
   removeAllPaintedSquares();
+
+  if (showAnalise) {
+    let lightSquares = document.querySelectorAll(".white-1e1d7");
+    let darkSquares = document.querySelectorAll(".black-3c85d");
+    lightSquares.forEach((ls) => {
+      ls.style.backgroundColor = "#FCE4BE";
+    });
+    darkSquares.forEach((ds) => {
+      ds.style.backgroundColor = "#BE8F68";
+    });
+  }
 
   if (isBoardFlipped) {
     whitePlayerDiv.innerHTML = `${blackPlayer}: ${timeControl}${blackElo}`;
@@ -211,55 +144,93 @@ bestMoveAsistantBtn.addEventListener("click", () => {
   }
 });
 
-// let analiseCurrentPossitionBtn = document.getElementById(
-//   "analiseCurrentPossitionBtn"
-// );
-// let outputfen;
+let analiseCurrentPossitionBtn = document.getElementById(
+  "analiseCurrentPossitionBtn"
+);
 
-// analiseCurrentPossitionBtn.addEventListener("click", () => {
-//   outputfen = raport.fen[currentMove];
-//   showAnalise = !showAnalise;
-//   if (showAnalise) {
-//     removeAllPaintedSquares();
-//     analiseCurrentPossitionBtn.textContent = `Enable analise: yes`;
-//     board = Chessboard("myBoard", {
-//       position: board.fen(),
-//       draggable: true,
-//       orientation: "white",
-//       pieceTheme: `chesspieces/${piecesSet}/{piece}.png`,
-//       // onDrop: onDrop,
-//     });
-//     outputfen = outputfen.split(" ")[0];
-//     paintSquares();
-//   } else {
-//     removeAllPaintedSquares();
-//     analiseCurrentPossitionBtn.textContent = `Enable analise: no`;
-//     board = Chessboard("myBoard", {
-//       position: board.fen(),
-//       draggable: false,
-//       orientation: "white",
-//       pieceTheme: `chesspieces/${piecesSet}/{piece}.png`,
-//     });
-//     paintSquares();
-//   }
-// });
+function onDrop() {
+  // setTimeout(() => {
+  //   let newFen = board.fen();
+  //   let newNumLines = 1;
+  //   let newDepth = 2;
+  //   const newStockfish = new Stockfish();
+  //   newStockfish
+  //     .generateBestPositions(newFen, newNumLines, newDepth)
+  //     .then((analyses) => {
+  //       console.log(analyses);
+  //     });
+  // }, 0);
+}
 
-// async function onDrop() {
-//   removeAllPaintedSquares();
+analiseCurrentPossitionBtn.addEventListener("click", () => {
+  showAnalise = !showAnalise;
+  if (showAnalise) {
+    removeAllPaintedSquares();
+    analiseCurrentPossitionBtn.textContent = `Enable Analise: yes`;
+    board = Chessboard("myBoard", {
+      position: board.fen(),
+      draggable: true,
+      pieceTheme: `chesspieces/${piecesSet}/{piece}.png`,
+      onDrop: onDrop,
+    });
 
-//   let fen = board.fen();
-//   let stockfish = new Stockfish();
-//   let numLines = 8;
-//   let depth = 4;
+    // Analysis
+    analysis = "true";
+    localStorage.setItem("analysis", "true");
 
-//   let analyses = await stockfish.generateBestPositions(fen, numLines, depth);
+    // declarations
+    let body = document.querySelector("body");
+    let button = document.querySelectorAll("button");
+    let lightSquares = document.querySelectorAll(".white-1e1d7");
+    let darkSquares = document.querySelectorAll(".black-3c85d");
+    let boardStyle = document.querySelector(".board-b72b1");
 
-//   setTimeout(() => {
-//     console.log(analyses[0].evaluation.value);
-//   }, 0);
+    // styles
+    body.style.color = "#d2b48c";
+    body.style.backgroundColor = "#262421";
+    boardStyle.style.border = "6px solid #ff0000";
+    boardStyle.style.padding = "0 0 -4px 0";
+    button.forEach((btn) => {
+      btn.style.backgroundColor = "#7e5634";
+    });
 
-//   paintSquares();
-// }
+    lightSquares.forEach((ls) => {
+      ls.style.backgroundColor = "#FCE4BE";
+    });
+    darkSquares.forEach((ds) => {
+      ds.style.backgroundColor = "#BE8F68";
+    });
+  } else {
+    removeAllPaintedSquares();
+    analiseCurrentPossitionBtn.textContent = `Enable Analise: no`;
+    board = Chessboard("myBoard", {
+      position: board.fen(),
+      draggable: false,
+      pieceTheme: `chesspieces/${piecesSet}/{piece}.png`,
+    });
+    paintSquares();
+  }
+
+  if (!showAnalise) {
+    theme = localStorage.getItem("theme");
+
+    switch (theme) {
+      case "red":
+        themeRed.click();
+        break;
+      case "tournament":
+        themeTournament.click();
+        break;
+      case "classic":
+        themeClassic.click();
+        break;
+      default:
+        "default";
+        themeDefault.click();
+        break;
+    }
+  }
+});
 
 let currentMove = 0;
 
@@ -319,8 +290,16 @@ document
 document.addEventListener("keydown", function (event) {
   if (event.key === "ArrowLeft") {
     gameReview("backward");
+    if (showAnalise) {
+      $("#analiseCurrentPossitionBtn").trigger("click");
+      localStorage.setItem("analysis", "false");
+    }
   } else if (event.key === "ArrowRight") {
     gameReview("forward");
+    if (showAnalise) {
+      $("#analiseCurrentPossitionBtn").trigger("click");
+      localStorage.setItem("analysis", "false");
+    }
   } else if (event.key === "e") {
     let bestMoveAsistantBtn = document.getElementById("bestMoveAsistantBtn");
     showEngineBestMoves = !showEngineBestMoves;
@@ -329,6 +308,10 @@ document.addEventListener("keydown", function (event) {
     } else {
       bestMoveAsistantBtn.textContent = `Engine Moves: no`;
     }
+  } else if (event.key === "a") {
+    $("#analiseCurrentPossitionBtn").trigger("click");
+  } else if (event.key === "f") {
+    $("#flipOrientationBtn").trigger("click");
   }
 });
 
@@ -1389,8 +1372,6 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
             sortedAnalyses,
             lastMove
           );
-
-        onDrop(analyses); // Pass the analyses array
         resolve(analyses);
       })
       .catch((error) => {
