@@ -1411,11 +1411,47 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
     let engineGoodMove = goodMovesArr[goodMovesArr.length - 1];
 
     bestMovesArr.push(analyses[0].moveUCI);
-    if (analyses.length >= 2) {
-      veryGoodMovesArr.push(analyses[1].moveUCI);
-    }
+
+    bestMovesArr.push(analyses[0].moveUCI);
+
     if (analyses.length >= 3) {
-      goodMovesArr.push(analyses[2].moveUCI);
+      veryGoodMovesArr.push(analyses[1].moveUCI + ", " + analyses[2].moveUCI);
+    }
+    if (analyses.length >= 5) {
+      goodMovesArr.push(analyses[3].moveUCI + ", " + analyses[4].moveUCI);
+    }
+    if (analyses.length >= 6) {
+      goodMovesArr.push(
+        analyses[3].moveUCI +
+          ", " +
+          analyses[4].moveUCI +
+          ", " +
+          analyses[5].moveUCI
+      );
+    }
+    if (analyses.length >= 7) {
+      goodMovesArr.push(
+        analyses[3].moveUCI +
+          ", " +
+          analyses[4].moveUCI +
+          ", " +
+          analyses[5].moveUCI +
+          ", " +
+          analyses[6].moveUCI
+      );
+    }
+    if (analyses.length >= 8) {
+      goodMovesArr.push(
+        analyses[3].moveUCI +
+          ", " +
+          analyses[4].moveUCI +
+          ", " +
+          analyses[5].moveUCI +
+          ", " +
+          analyses[6].moveUCI +
+          ", " +
+          analyses[7].moveUCI
+      );
     }
 
     raport.playerMoves.push(currentPlayerMove);
@@ -1518,15 +1554,10 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
 
     // For white
     if (fen.includes(" b ")) {
-      if (
-        (currMove >= prevMove &&
-          currMove - prevMove >= 0 &&
-          currMove - prevMove < 20) ||
-        engineGoodMove.includes(currentPlayerMove)
-      ) {
-        moveEvaluationText = "Good move";
-        textColor = good;
-        colorSquare = good;
+      if (engineBestMove.includes(currentPlayerMove)) {
+        moveEvaluationText = "Best move!";
+        textColor = best;
+        colorSquare = best;
       } else if (
         (currMove >= prevMove &&
           currMove - prevMove >= 20 &&
@@ -1536,10 +1567,15 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
         moveEvaluationText = "Very good move";
         textColor = veryGood;
         colorSquare = veryGood;
-      } else if (engineBestMove.includes(currentPlayerMove)) {
-        moveEvaluationText = "Best move!";
-        textColor = best;
-        colorSquare = best;
+      } else if (
+        (currMove >= prevMove &&
+          currMove - prevMove >= 0 &&
+          currMove - prevMove < 20) ||
+        engineGoodMove.includes(currentPlayerMove)
+      ) {
+        moveEvaluationText = "Good move";
+        textColor = good;
+        colorSquare = good;
       } else if (
         currMove <= prevMove &&
         prevMove - currMove >= 0 &&
@@ -1594,15 +1630,10 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
 
       // For black
     } else if (fen.includes(" w ")) {
-      if (
-        (currMove <= prevMove &&
-          prevMove - currMove >= 0 &&
-          prevMove - currMove < 20) ||
-        engineGoodMove.includes(currentPlayerMove)
-      ) {
-        moveEvaluationText = "Good move";
-        textColor = good;
-        colorSquare = good;
+      if (engineBestMove.includes(currentPlayerMove)) {
+        moveEvaluationText = "Best move!";
+        textColor = best;
+        colorSquare = best;
       } else if (
         (currMove <= prevMove &&
           prevMove - currMove >= 20 &&
@@ -1612,10 +1643,15 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
         moveEvaluationText = "Very good move";
         textColor = veryGood;
         colorSquare = veryGood;
-      } else if (engineBestMove.includes(currentPlayerMove)) {
-        moveEvaluationText = "Best move!";
-        textColor = best;
-        colorSquare = best;
+      } else if (
+        (currMove <= prevMove &&
+          prevMove - currMove >= 0 &&
+          prevMove - currMove < 20) ||
+        engineGoodMove.includes(currentPlayerMove)
+      ) {
+        moveEvaluationText = "Good move";
+        textColor = good;
+        colorSquare = good;
       } else if (
         currMove >= prevMove &&
         currMove - prevMove >= 0 &&
