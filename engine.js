@@ -149,17 +149,33 @@ let analiseCurrentPossitionBtn = document.getElementById(
 );
 
 function onDrop() {
-  // setTimeout(() => {
-  //   let newFen = board.fen();
-  //   let newNumLines = 1;
-  //   let newDepth = 2;
-  //   const newStockfish = new Stockfish();
-  //   newStockfish
-  //     .generateBestPositions(newFen, newNumLines, newDepth)
-  //     .then((analyses) => {
-  //       console.log(analyses);
-  //     });
-  // }, 0);
+  setTimeout(() => {
+    let newFen = board.fen();
+    let newNumLines = 1;
+    let newDepth = depthSlider.value;
+
+    const newStockfish = new Stockfish();
+    newStockfish
+      .generateBestPositions(newFen, newNumLines, newDepth)
+      .then((analyses) => {
+        let newAnalysis = analyses[0].evaluation.value * -1;
+
+        let percValue = calcPerc(newAnalysis / 100).valueForWhite;
+        const evalBar = document.getElementById("evalbar");
+        const evalBarAfter = window
+          .getComputedStyle(evalBar, "::after")
+          .getPropertyValue("content");
+        const evalBarAfterStyle = document.createElement("style");
+        evalBarAfterStyle.innerHTML = `
+          #evalbar::after {
+            content: "${(newAnalysis / 100).toFixed(1)}";
+            color: #7f7f7f;
+            height: calc((${percValue} / 100) * 496px);
+          }
+        `;
+        document.head.appendChild(evalBarAfterStyle);
+      });
+  }, 0);
 }
 
 analiseCurrentPossitionBtn.addEventListener("click", () => {
@@ -172,6 +188,8 @@ analiseCurrentPossitionBtn.addEventListener("click", () => {
       draggable: true,
       pieceTheme: `chesspieces/${piecesSet}/{piece}.png`,
       onDrop: onDrop,
+      dropOffBoard: "trash",
+      sparePieces: true,
     });
 
     // Analysis
@@ -185,11 +203,20 @@ analiseCurrentPossitionBtn.addEventListener("click", () => {
     let darkSquares = document.querySelectorAll(".black-3c85d");
     let boardStyle = document.querySelector(".board-b72b1");
 
+    let generalRaport = document.querySelector(".generalRaport");
+    let moreDetails = document.querySelector(".moreDetails");
+    let evalbar = document.querySelector("#evalbar");
+
     // styles
     body.style.color = "#d2b48c";
     body.style.backgroundColor = "#262421";
     boardStyle.style.border = "6px solid #ff0000";
     boardStyle.style.padding = "0 0 -4px 0";
+
+    generalRaport.style.margin = "100px 0 0";
+    moreDetails.style.margin = "100px 0 0";
+    evalbar.style.margin = "100px 20px";
+
     button.forEach((btn) => {
       btn.style.backgroundColor = "#7e5634";
     });
@@ -208,6 +235,14 @@ analiseCurrentPossitionBtn.addEventListener("click", () => {
       draggable: false,
       pieceTheme: `chesspieces/${piecesSet}/{piece}.png`,
     });
+
+    let generalRaport = document.querySelector(".generalRaport");
+    let moreDetails = document.querySelector(".moreDetails");
+    let evalbar = document.querySelector("#evalbar");
+    generalRaport.style.margin = "28px 0 0";
+    moreDetails.style.margin = "28px 0 0";
+    evalbar.style.margin = "30px 20px";
+
     paintSquares();
   }
 
@@ -308,7 +343,7 @@ document.addEventListener("keydown", function (event) {
     } else {
       bestMoveAsistantBtn.textContent = `Engine Moves: no`;
     }
-  } else if (event.key === "a") {
+  } else if (event.key === "q") {
     $("#analiseCurrentPossitionBtn").trigger("click");
   } else if (event.key === "f") {
     $("#flipOrientationBtn").trigger("click");
