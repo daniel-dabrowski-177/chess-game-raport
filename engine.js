@@ -137,6 +137,8 @@ let openingName;
 let bestMoveAsistantBtn = document.getElementById("bestMoveAsistantBtn");
 bestMoveAsistantBtn.addEventListener("click", () => {
   showEngineBestMoves = !showEngineBestMoves;
+  removeAllPaintedSquares();
+  paintSquares();
   if (showEngineBestMoves) {
     bestMoveAsistantBtn.textContent = `Engine Moves: yes`;
   } else {
@@ -148,17 +150,50 @@ let analiseCurrentPossitionBtn = document.getElementById(
   "analiseCurrentPossitionBtn"
 );
 
+let analysisMove = 0;
+let turn = "white";
+
+function onDragStart() {
+  // do not pick up pieces if the game is over
+  if (game.game_over()) return false;
+
+  // only pick up pieces for the side to move
+  if (game.turn() === "w" || game.turn() === "b") {
+    return false;
+  }
+}
+
 function onDrop() {
   setTimeout(() => {
     let newFen = board.fen();
+
     let newNumLines = 1;
     let newDepth = depthSlider.value;
+
+    console.log(newFen);
+
+    let gameTurnDiv = document.querySelector(".gameTurn");
+
+    if (turn == "black") {
+      newFen = board.fen() + " b ";
+      turn = "white";
+      gameTurnDiv.textContent = "White to play";
+    } else if (turn == "white") {
+      newFen = board.fen() + " w ";
+      turn = "black";
+      gameTurnDiv.textContent = "Black to play";
+    }
+
+    console.log("new fen is: " + newFen);
+
+    analysisMove++;
+    console.log(analysisMove);
 
     const newStockfish = new Stockfish();
     newStockfish
       .generateBestPositions(newFen, newNumLines, newDepth)
       .then((analyses) => {
-        let newAnalysis = analyses[0].evaluation.value * -1;
+        let newAnalysis = analyses[0].evaluation.value;
 
         let percValue = calcPerc(newAnalysis / 100).valueForWhite;
         const evalBar = document.getElementById("evalbar");
@@ -191,6 +226,12 @@ analiseCurrentPossitionBtn.addEventListener("click", () => {
       dropOffBoard: "trash",
       sparePieces: true,
     });
+
+    if (raport.fen[currentMove].includes(" w ")) {
+      turn = "white";
+    } else if (raport.fen[currentMove].includes(" b ")) {
+      turn = "black";
+    }
 
     // Analysis
     analysis = "true";
@@ -228,6 +269,9 @@ analiseCurrentPossitionBtn.addEventListener("click", () => {
       ds.style.backgroundColor = "#BE8F68";
     });
   } else {
+    let gameTurnDiv = document.querySelector(".gameTurn");
+    gameTurnDiv.textContent = "";
+    analysisMove = 0;
     removeAllPaintedSquares();
     analiseCurrentPossitionBtn.textContent = `Enable Analise: no`;
     board = Chessboard("myBoard", {
@@ -338,6 +382,8 @@ document.addEventListener("keydown", function (event) {
   } else if (event.key === "e") {
     let bestMoveAsistantBtn = document.getElementById("bestMoveAsistantBtn");
     showEngineBestMoves = !showEngineBestMoves;
+    removeAllPaintedSquares();
+    paintSquares();
     if (showEngineBestMoves) {
       bestMoveAsistantBtn.textContent = `Engine Moves: yes`;
     } else {
