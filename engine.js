@@ -205,6 +205,17 @@ function onDrop() {
         `;
         document.head.appendChild(evalBarAfterStyle);
 
+        removeAllPaintedSquares();
+
+        let lightSquares = document.querySelectorAll(".white-1e1d7");
+        let darkSquares = document.querySelectorAll(".black-3c85d");
+        lightSquares.forEach((ls) => {
+          ls.style.backgroundColor = "#FCE4BE";
+        });
+        darkSquares.forEach((ds) => {
+          ds.style.backgroundColor = "#BE8F68";
+        });
+
         let positionEvaluationDiv = document.querySelector(
           ".positionEvaluation"
         );
@@ -228,6 +239,57 @@ function onDrop() {
               sortedAnalyses[4].evaluation.value / 100
             ).toFixed(1)}</p>
         `;
+
+            // third move
+            let thirdMoveFrom = sortedAnalyses[2].moveUCI.substring(0, 2);
+            let thirdMoveTo = sortedAnalyses[2].moveUCI.substring(2);
+            const thirdSquareFrom = document.querySelector(
+              `[data-square=${thirdMoveFrom}]`
+            );
+            const thirdSquareTo = document.querySelector(
+              `[data-square=${thirdMoveTo}]`
+            );
+            thirdSquareFrom.style.backgroundColor = "#2D6585";
+            thirdSquareTo.style.backgroundColor = "#2D6585";
+
+            let thirdMoveClassificationDiv = document.createElement("div");
+            thirdMoveClassificationDiv.classList.add("icon");
+            thirdMoveClassificationDiv.style.backgroundImage = `url("/move_classifications/number3.png")`;
+            thirdSquareTo.appendChild(thirdMoveClassificationDiv);
+
+            // second move
+            let secondMoveFrom = sortedAnalyses[1].moveUCI.substring(0, 2);
+            let secondMoveTo = sortedAnalyses[1].moveUCI.substring(2);
+            const secondSquareFrom = document.querySelector(
+              `[data-square=${secondMoveFrom}]`
+            );
+            const secondSquareTo = document.querySelector(
+              `[data-square=${secondMoveTo}]`
+            );
+            secondSquareFrom.style.backgroundColor = "#3D856F";
+            secondSquareTo.style.backgroundColor = "#3D856F";
+
+            let secondMoveClassificationDiv = document.createElement("div");
+            secondMoveClassificationDiv.classList.add("icon");
+            secondMoveClassificationDiv.style.backgroundImage = `url("/move_classifications/number2.png")`;
+            secondSquareTo.appendChild(secondMoveClassificationDiv);
+
+            // top move
+            let topMoveFrom = sortedAnalyses[0].moveUCI.substring(0, 2);
+            let topMoveTo = sortedAnalyses[0].moveUCI.substring(2);
+            const topSquareFrom = document.querySelector(
+              `[data-square=${topMoveFrom}]`
+            );
+            const topSquareTo = document.querySelector(
+              `[data-square=${topMoveTo}]`
+            );
+            topSquareFrom.style.backgroundColor = "#537B2F";
+            topSquareTo.style.backgroundColor = "#537B2F";
+
+            let topMoveClassificationDiv = document.createElement("div");
+            topMoveClassificationDiv.classList.add("icon");
+            topMoveClassificationDiv.style.backgroundImage = `url("/move_classifications/best.png")`;
+            topSquareTo.appendChild(topMoveClassificationDiv);
           }
         }
 
@@ -247,6 +309,57 @@ function onDrop() {
               sortedAnalyses[3].evaluation.value / 100
             ).toFixed(1)}</p>
         `;
+
+            // third move
+            let thirdMoveFrom = sortedAnalyses[2].moveUCI.substring(0, 2);
+            let thirdMoveTo = sortedAnalyses[2].moveUCI.substring(2);
+            const thirdSquareFrom = document.querySelector(
+              `[data-square=${thirdMoveFrom}]`
+            );
+            const thirdSquareTo = document.querySelector(
+              `[data-square=${thirdMoveTo}]`
+            );
+            thirdSquareFrom.style.backgroundColor = "#2D6585";
+            thirdSquareTo.style.backgroundColor = "#2D6585";
+
+            let thirdMoveClassificationDiv = document.createElement("div");
+            thirdMoveClassificationDiv.classList.add("icon");
+            thirdMoveClassificationDiv.style.backgroundImage = `url("/move_classifications/number3.png")`;
+            thirdSquareTo.appendChild(thirdMoveClassificationDiv);
+
+            // second move
+            let secondMoveFrom = sortedAnalyses[1].moveUCI.substring(0, 2);
+            let secondMoveTo = sortedAnalyses[1].moveUCI.substring(2);
+            const secondSquareFrom = document.querySelector(
+              `[data-square=${secondMoveFrom}]`
+            );
+            const secondSquareTo = document.querySelector(
+              `[data-square=${secondMoveTo}]`
+            );
+            secondSquareFrom.style.backgroundColor = "#3D856F";
+            secondSquareTo.style.backgroundColor = "#3D856F";
+
+            let secondMoveClassificationDiv = document.createElement("div");
+            secondMoveClassificationDiv.classList.add("icon");
+            secondMoveClassificationDiv.style.backgroundImage = `url("/move_classifications/number2.png")`;
+            secondSquareTo.appendChild(secondMoveClassificationDiv);
+
+            // top move
+            let topMoveFrom = sortedAnalyses[0].moveUCI.substring(0, 2);
+            let topMoveTo = sortedAnalyses[0].moveUCI.substring(2);
+            const topSquareFrom = document.querySelector(
+              `[data-square=${topMoveFrom}]`
+            );
+            const topSquareTo = document.querySelector(
+              `[data-square=${topMoveTo}]`
+            );
+            topSquareFrom.style.backgroundColor = "#537B2F";
+            topSquareTo.style.backgroundColor = "#537B2F";
+
+            let topMoveClassificationDiv = document.createElement("div");
+            topMoveClassificationDiv.classList.add("icon");
+            topMoveClassificationDiv.style.backgroundImage = `url("/move_classifications/best.png")`;
+            topSquareTo.appendChild(topMoveClassificationDiv);
           }
         }
 
@@ -263,6 +376,57 @@ function onDrop() {
               sortedAnalyses[2].evaluation.value / 100
             ).toFixed(1)}</p>
         `;
+
+            // third move
+            let thirdMoveFrom = sortedAnalyses[2].moveUCI.substring(0, 2);
+            let thirdMoveTo = sortedAnalyses[2].moveUCI.substring(2);
+            const thirdSquareFrom = document.querySelector(
+              `[data-square=${thirdMoveFrom}]`
+            );
+            const thirdSquareTo = document.querySelector(
+              `[data-square=${thirdMoveTo}]`
+            );
+            thirdSquareFrom.style.backgroundColor = "#2D6585";
+            thirdSquareTo.style.backgroundColor = "#2D6585";
+
+            let thirdMoveClassificationDiv = document.createElement("div");
+            thirdMoveClassificationDiv.classList.add("icon");
+            thirdMoveClassificationDiv.style.backgroundImage = `url("/move_classifications/number3.png")`;
+            thirdSquareTo.appendChild(thirdMoveClassificationDiv);
+
+            // second move
+            let secondMoveFrom = sortedAnalyses[1].moveUCI.substring(0, 2);
+            let secondMoveTo = sortedAnalyses[1].moveUCI.substring(2);
+            const secondSquareFrom = document.querySelector(
+              `[data-square=${secondMoveFrom}]`
+            );
+            const secondSquareTo = document.querySelector(
+              `[data-square=${secondMoveTo}]`
+            );
+            secondSquareFrom.style.backgroundColor = "#3D856F";
+            secondSquareTo.style.backgroundColor = "#3D856F";
+
+            let secondMoveClassificationDiv = document.createElement("div");
+            secondMoveClassificationDiv.classList.add("icon");
+            secondMoveClassificationDiv.style.backgroundImage = `url("/move_classifications/number2.png")`;
+            secondSquareTo.appendChild(secondMoveClassificationDiv);
+
+            // top move
+            let topMoveFrom = sortedAnalyses[0].moveUCI.substring(0, 2);
+            let topMoveTo = sortedAnalyses[0].moveUCI.substring(2);
+            const topSquareFrom = document.querySelector(
+              `[data-square=${topMoveFrom}]`
+            );
+            const topSquareTo = document.querySelector(
+              `[data-square=${topMoveTo}]`
+            );
+            topSquareFrom.style.backgroundColor = "#537B2F";
+            topSquareTo.style.backgroundColor = "#537B2F";
+
+            let topMoveClassificationDiv = document.createElement("div");
+            topMoveClassificationDiv.classList.add("icon");
+            topMoveClassificationDiv.style.backgroundImage = `url("/move_classifications/best.png")`;
+            topSquareTo.appendChild(topMoveClassificationDiv);
           }
         }
 
@@ -276,6 +440,40 @@ function onDrop() {
               sortedAnalyses[1].evaluation.value / 100
             ).toFixed(1)}</p>
         `;
+
+            // second move
+            let secondMoveFrom = sortedAnalyses[1].moveUCI.substring(0, 2);
+            let secondMoveTo = sortedAnalyses[1].moveUCI.substring(2);
+            const secondSquareFrom = document.querySelector(
+              `[data-square=${secondMoveFrom}]`
+            );
+            const secondSquareTo = document.querySelector(
+              `[data-square=${secondMoveTo}]`
+            );
+            secondSquareFrom.style.backgroundColor = "#3D856F";
+            secondSquareTo.style.backgroundColor = "#3D856F";
+
+            let secondMoveClassificationDiv = document.createElement("div");
+            secondMoveClassificationDiv.classList.add("icon");
+            secondMoveClassificationDiv.style.backgroundImage = `url("/move_classifications/number2.png")`;
+            secondSquareTo.appendChild(secondMoveClassificationDiv);
+
+            // top move
+            let topMoveFrom = sortedAnalyses[0].moveUCI.substring(0, 2);
+            let topMoveTo = sortedAnalyses[0].moveUCI.substring(2);
+            const topSquareFrom = document.querySelector(
+              `[data-square=${topMoveFrom}]`
+            );
+            const topSquareTo = document.querySelector(
+              `[data-square=${topMoveTo}]`
+            );
+            topSquareFrom.style.backgroundColor = "#537B2F";
+            topSquareTo.style.backgroundColor = "#537B2F";
+
+            let topMoveClassificationDiv = document.createElement("div");
+            topMoveClassificationDiv.classList.add("icon");
+            topMoveClassificationDiv.style.backgroundImage = `url("/move_classifications/best.png")`;
+            topSquareTo.appendChild(topMoveClassificationDiv);
           }
         }
 
@@ -286,70 +484,25 @@ function onDrop() {
               sortedAnalyses[0].evaluation.value / 100
             ).toFixed(1)}</p>
         `;
+
+            // top move
+            let topMoveFrom = sortedAnalyses[0].moveUCI.substring(0, 2);
+            let topMoveTo = sortedAnalyses[0].moveUCI.substring(2);
+            const topSquareFrom = document.querySelector(
+              `[data-square=${topMoveFrom}]`
+            );
+            const topSquareTo = document.querySelector(
+              `[data-square=${topMoveTo}]`
+            );
+            topSquareFrom.style.backgroundColor = "#537B2F";
+            topSquareTo.style.backgroundColor = "#537B2F";
+
+            let topMoveClassificationDiv = document.createElement("div");
+            topMoveClassificationDiv.classList.add("icon");
+            topMoveClassificationDiv.style.backgroundImage = `url("/move_classifications/best.png")`;
+            topSquareTo.appendChild(topMoveClassificationDiv);
           }
         }
-
-        removeAllPaintedSquares();
-
-        let lightSquares = document.querySelectorAll(".white-1e1d7");
-        let darkSquares = document.querySelectorAll(".black-3c85d");
-        lightSquares.forEach((ls) => {
-          ls.style.backgroundColor = "#FCE4BE";
-        });
-        darkSquares.forEach((ds) => {
-          ds.style.backgroundColor = "#BE8F68";
-        });
-
-        // third move
-        let thirdMoveFrom = sortedAnalyses[2].moveUCI.substring(0, 2);
-        let thirdMoveTo = sortedAnalyses[2].moveUCI.substring(2);
-        const thirdSquareFrom = document.querySelector(
-          `[data-square=${thirdMoveFrom}]`
-        );
-        const thirdSquareTo = document.querySelector(
-          `[data-square=${thirdMoveTo}]`
-        );
-        thirdSquareFrom.style.backgroundColor = "#2D6585";
-        thirdSquareTo.style.backgroundColor = "#2D6585";
-
-        let thirdMoveClassificationDiv = document.createElement("div");
-        thirdMoveClassificationDiv.classList.add("icon");
-        thirdMoveClassificationDiv.style.backgroundImage = `url("/move_classifications/number3.png")`;
-        thirdSquareTo.appendChild(thirdMoveClassificationDiv);
-
-        // second move
-        let secondMoveFrom = sortedAnalyses[1].moveUCI.substring(0, 2);
-        let secondMoveTo = sortedAnalyses[1].moveUCI.substring(2);
-        const secondSquareFrom = document.querySelector(
-          `[data-square=${secondMoveFrom}]`
-        );
-        const secondSquareTo = document.querySelector(
-          `[data-square=${secondMoveTo}]`
-        );
-        secondSquareFrom.style.backgroundColor = "#3D856F";
-        secondSquareTo.style.backgroundColor = "#3D856F";
-
-        let secondMoveClassificationDiv = document.createElement("div");
-        secondMoveClassificationDiv.classList.add("icon");
-        secondMoveClassificationDiv.style.backgroundImage = `url("/move_classifications/number2.png")`;
-        secondSquareTo.appendChild(secondMoveClassificationDiv);
-
-        // top move
-        let topMoveFrom = sortedAnalyses[0].moveUCI.substring(0, 2);
-        let topMoveTo = sortedAnalyses[0].moveUCI.substring(2);
-        const topSquareFrom = document.querySelector(
-          `[data-square=${topMoveFrom}]`
-        );
-        const topSquareTo = document.querySelector(
-          `[data-square=${topMoveTo}]`
-        );
-        topSquareFrom.style.backgroundColor = "#537B2F";
-        topSquareTo.style.backgroundColor = "#537B2F";
-
-        let topMoveClassificationDiv = document.createElement("div");
-        topMoveClassificationDiv.classList.add("icon");
-        topMoveClassificationDiv.style.backgroundImage = `url("/move_classifications/best.png")`;
-        topSquareTo.appendChild(topMoveClassificationDiv);
       });
   }, 0);
 }
