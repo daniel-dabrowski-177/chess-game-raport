@@ -210,28 +210,30 @@ function onDrop() {
         `;
         document.head.appendChild(evalBarAfterStyle);
 
-        console.log(sortedAnalyses);
-
         let positionEvaluationDiv = document.querySelector(
           ".positionEvaluation"
         );
-        positionEvaluationDiv.innerHTML = `
-    <p>${sortedAnalyses[0].moveUCI}: ${(
-          sortedAnalyses[0].evaluation.value / 100
-        ).toFixed(1)}</p>
-    <p>${sortedAnalyses[1].moveUCI}: ${(
-          sortedAnalyses[1].evaluation.value / 100
-        ).toFixed(1)}</p>
-    <p>${sortedAnalyses[2].moveUCI}: ${(
-          sortedAnalyses[2].evaluation.value / 100
-        ).toFixed(1)}</p>
-    <p>${sortedAnalyses[3].moveUCI}: ${(
-          sortedAnalyses[3].evaluation.value / 100
-        ).toFixed(1)}</p>
-    <p>${sortedAnalyses[4].moveUCI}: ${(
-          sortedAnalyses[4].evaluation.value / 100
-        ).toFixed(1)}</p>
-    `;
+        if (showAnalise) {
+          positionEvaluationDiv.innerHTML = `
+      <p>${sortedAnalyses[0].moveUCI}: ${(
+            sortedAnalyses[0].evaluation.value / 100
+          ).toFixed(1)}</p>
+      <p>${sortedAnalyses[1].moveUCI}: ${(
+            sortedAnalyses[1].evaluation.value / 100
+          ).toFixed(1)}</p>
+      <p>${sortedAnalyses[2].moveUCI}: ${(
+            sortedAnalyses[2].evaluation.value / 100
+          ).toFixed(1)}</p>
+      <p>${sortedAnalyses[3].moveUCI}: ${(
+            sortedAnalyses[3].evaluation.value / 100
+          ).toFixed(1)}</p>
+      <p>${sortedAnalyses[4].moveUCI}: ${(
+            sortedAnalyses[4].evaluation.value / 100
+          ).toFixed(1)}</p>
+      `;
+        } else {
+          positionEvaluationDiv.innerHTML = "";
+        }
 
         removeAllPaintedSquares();
 
