@@ -174,19 +174,16 @@ function onDrop() {
     let gameTurnDiv = document.querySelector(".gameTurn");
 
     if (turn == "white") {
-      newFen = board.fen() + " b ";
-      turn = "black";
-      gameTurnDiv.textContent = "Black to play";
-    } else if (turn == "black") {
       newFen = board.fen() + " w ";
-      turn = "white";
+      turn = "black";
       gameTurnDiv.textContent = "White to play";
+    } else if (turn == "black") {
+      newFen = board.fen() + " b ";
+      turn = "white";
+      gameTurnDiv.textContent = "Black to play";
     }
 
-    console.log("new fen is: " + newFen);
-
     analysisMove++;
-    console.log(analysisMove);
 
     const newStockfish = new Stockfish();
     newStockfish
@@ -231,8 +228,6 @@ function onDrop() {
             sortedAnalyses[4].evaluation.value / 100
           ).toFixed(1)}</p>
       `;
-        } else {
-          positionEvaluationDiv.innerHTML = "";
         }
 
         removeAllPaintedSquares();
@@ -302,6 +297,9 @@ function onDrop() {
 
 analiseCurrentPossitionBtn.addEventListener("click", () => {
   showAnalise = !showAnalise;
+
+  let positionEvaluationDiv = document.querySelector(".positionEvaluation");
+  positionEvaluationDiv.innerHTML = "";
 
   if (showAnalise) {
     removeAllPaintedSquares();
