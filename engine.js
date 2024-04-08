@@ -220,7 +220,81 @@ function onDrop() {
           ".positionEvaluation"
         );
 
-        if (sortedAnalyses.length >= 5) {
+        if (sortedAnalyses.length >= 1) {
+          if (showAnalise) {
+            positionEvaluationDiv.innerHTML = `
+        <p>${sortedAnalyses[0].moveUCI}: ${(
+              sortedAnalyses[0].evaluation.value / 100
+            ).toFixed(1)}</p>
+        `;
+
+            // top move
+            let topMoveFrom = sortedAnalyses[0].moveUCI.substring(0, 2);
+            let topMoveTo = sortedAnalyses[0].moveUCI.substring(2);
+            const topSquareFrom = document.querySelector(
+              `[data-square=${topMoveFrom}]`
+            );
+            const topSquareTo = document.querySelector(
+              `[data-square=${topMoveTo}]`
+            );
+            topSquareFrom.style.backgroundColor = "#537B2F";
+            topSquareTo.style.backgroundColor = "#537B2F";
+
+            let topMoveClassificationDiv = document.createElement("div");
+            topMoveClassificationDiv.classList.add("icon");
+            topMoveClassificationDiv.style.backgroundImage = `url("/move_classifications/best.png")`;
+            topSquareTo.appendChild(topMoveClassificationDiv);
+          }
+        }
+
+        if (sortedAnalyses.length >= 2) {
+          if (showAnalise) {
+            positionEvaluationDiv.innerHTML = `
+        <p>${sortedAnalyses[0].moveUCI}: ${(
+              sortedAnalyses[0].evaluation.value / 100
+            ).toFixed(1)}</p>
+        <p>${sortedAnalyses[1].moveUCI}: ${(
+              sortedAnalyses[1].evaluation.value / 100
+            ).toFixed(1)}</p>
+        `;
+
+            // second move
+            let secondMoveFrom = sortedAnalyses[1].moveUCI.substring(0, 2);
+            let secondMoveTo = sortedAnalyses[1].moveUCI.substring(2);
+            const secondSquareFrom = document.querySelector(
+              `[data-square=${secondMoveFrom}]`
+            );
+            const secondSquareTo = document.querySelector(
+              `[data-square=${secondMoveTo}]`
+            );
+            secondSquareFrom.style.backgroundColor = "#3D856F";
+            secondSquareTo.style.backgroundColor = "#3D856F";
+
+            let secondMoveClassificationDiv = document.createElement("div");
+            secondMoveClassificationDiv.classList.add("icon");
+            secondMoveClassificationDiv.style.backgroundImage = `url("/move_classifications/number2.png")`;
+            secondSquareTo.appendChild(secondMoveClassificationDiv);
+
+            // top move
+            let topMoveFrom = sortedAnalyses[0].moveUCI.substring(0, 2);
+            let topMoveTo = sortedAnalyses[0].moveUCI.substring(2);
+            const topSquareFrom = document.querySelector(
+              `[data-square=${topMoveFrom}]`
+            );
+            const topSquareTo = document.querySelector(
+              `[data-square=${topMoveTo}]`
+            );
+            topSquareFrom.style.backgroundColor = "#537B2F";
+            topSquareTo.style.backgroundColor = "#537B2F";
+
+            let topMoveClassificationDiv = document.createElement("div");
+            topMoveClassificationDiv.classList.add("icon");
+            topMoveClassificationDiv.style.backgroundImage = `url("/move_classifications/best.png")`;
+            topSquareTo.appendChild(topMoveClassificationDiv);
+          }
+        }
+
+        if (sortedAnalyses.length >= 3) {
           if (showAnalise) {
             positionEvaluationDiv.innerHTML = `
         <p>${sortedAnalyses[0].moveUCI}: ${(
@@ -231,12 +305,6 @@ function onDrop() {
             ).toFixed(1)}</p>
         <p>${sortedAnalyses[2].moveUCI}: ${(
               sortedAnalyses[2].evaluation.value / 100
-            ).toFixed(1)}</p>
-        <p>${sortedAnalyses[3].moveUCI}: ${(
-              sortedAnalyses[3].evaluation.value / 100
-            ).toFixed(1)}</p>
-        <p>${sortedAnalyses[4].moveUCI}: ${(
-              sortedAnalyses[4].evaluation.value / 100
             ).toFixed(1)}</p>
         `;
 
@@ -363,7 +431,7 @@ function onDrop() {
           }
         }
 
-        if (sortedAnalyses.length >= 3) {
+        if (sortedAnalyses.length >= 5) {
           if (showAnalise) {
             positionEvaluationDiv.innerHTML = `
         <p>${sortedAnalyses[0].moveUCI}: ${(
@@ -374,6 +442,12 @@ function onDrop() {
             ).toFixed(1)}</p>
         <p>${sortedAnalyses[2].moveUCI}: ${(
               sortedAnalyses[2].evaluation.value / 100
+            ).toFixed(1)}</p>
+        <p>${sortedAnalyses[3].moveUCI}: ${(
+              sortedAnalyses[3].evaluation.value / 100
+            ).toFixed(1)}</p>
+        <p>${sortedAnalyses[4].moveUCI}: ${(
+              sortedAnalyses[4].evaluation.value / 100
             ).toFixed(1)}</p>
         `;
 
@@ -410,80 +484,6 @@ function onDrop() {
             secondMoveClassificationDiv.classList.add("icon");
             secondMoveClassificationDiv.style.backgroundImage = `url("/move_classifications/number2.png")`;
             secondSquareTo.appendChild(secondMoveClassificationDiv);
-
-            // top move
-            let topMoveFrom = sortedAnalyses[0].moveUCI.substring(0, 2);
-            let topMoveTo = sortedAnalyses[0].moveUCI.substring(2);
-            const topSquareFrom = document.querySelector(
-              `[data-square=${topMoveFrom}]`
-            );
-            const topSquareTo = document.querySelector(
-              `[data-square=${topMoveTo}]`
-            );
-            topSquareFrom.style.backgroundColor = "#537B2F";
-            topSquareTo.style.backgroundColor = "#537B2F";
-
-            let topMoveClassificationDiv = document.createElement("div");
-            topMoveClassificationDiv.classList.add("icon");
-            topMoveClassificationDiv.style.backgroundImage = `url("/move_classifications/best.png")`;
-            topSquareTo.appendChild(topMoveClassificationDiv);
-          }
-        }
-
-        if (sortedAnalyses.length >= 2) {
-          if (showAnalise) {
-            positionEvaluationDiv.innerHTML = `
-        <p>${sortedAnalyses[0].moveUCI}: ${(
-              sortedAnalyses[0].evaluation.value / 100
-            ).toFixed(1)}</p>
-        <p>${sortedAnalyses[1].moveUCI}: ${(
-              sortedAnalyses[1].evaluation.value / 100
-            ).toFixed(1)}</p>
-        `;
-
-            // second move
-            let secondMoveFrom = sortedAnalyses[1].moveUCI.substring(0, 2);
-            let secondMoveTo = sortedAnalyses[1].moveUCI.substring(2);
-            const secondSquareFrom = document.querySelector(
-              `[data-square=${secondMoveFrom}]`
-            );
-            const secondSquareTo = document.querySelector(
-              `[data-square=${secondMoveTo}]`
-            );
-            secondSquareFrom.style.backgroundColor = "#3D856F";
-            secondSquareTo.style.backgroundColor = "#3D856F";
-
-            let secondMoveClassificationDiv = document.createElement("div");
-            secondMoveClassificationDiv.classList.add("icon");
-            secondMoveClassificationDiv.style.backgroundImage = `url("/move_classifications/number2.png")`;
-            secondSquareTo.appendChild(secondMoveClassificationDiv);
-
-            // top move
-            let topMoveFrom = sortedAnalyses[0].moveUCI.substring(0, 2);
-            let topMoveTo = sortedAnalyses[0].moveUCI.substring(2);
-            const topSquareFrom = document.querySelector(
-              `[data-square=${topMoveFrom}]`
-            );
-            const topSquareTo = document.querySelector(
-              `[data-square=${topMoveTo}]`
-            );
-            topSquareFrom.style.backgroundColor = "#537B2F";
-            topSquareTo.style.backgroundColor = "#537B2F";
-
-            let topMoveClassificationDiv = document.createElement("div");
-            topMoveClassificationDiv.classList.add("icon");
-            topMoveClassificationDiv.style.backgroundImage = `url("/move_classifications/best.png")`;
-            topSquareTo.appendChild(topMoveClassificationDiv);
-          }
-        }
-
-        if (sortedAnalyses.length >= 1) {
-          if (showAnalise) {
-            positionEvaluationDiv.innerHTML = `
-        <p>${sortedAnalyses[0].moveUCI}: ${(
-              sortedAnalyses[0].evaluation.value / 100
-            ).toFixed(1)}</p>
-        `;
 
             // top move
             let topMoveFrom = sortedAnalyses[0].moveUCI.substring(0, 2);
