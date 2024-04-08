@@ -169,8 +169,6 @@ function onDrop() {
     let newNumLines = 8;
     let newDepth = depthSlider.value;
 
-    console.log(newFen);
-
     let gameTurnDiv = document.querySelector(".gameTurn");
 
     if (turn == "white") {
@@ -397,6 +395,8 @@ analiseCurrentPossitionBtn.addEventListener("click", () => {
   } else if (showAnalise) {
     onDrop();
   }
+
+  paintSquares();
 });
 
 let currentMove = 0;
