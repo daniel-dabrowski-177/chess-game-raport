@@ -82,7 +82,6 @@ let piecesSet = localStorage.getItem("piecesSet");
 let board = Chessboard("myBoard", {
   position: "start",
   draggable: false,
-  orientation: "white",
   pieceTheme: `chesspieces/${piecesSet}/{piece}.png`,
 });
 
@@ -167,21 +166,21 @@ function onDrop() {
   setTimeout(() => {
     let newFen = board.fen();
 
-    let newNumLines = 1;
+    let newNumLines = 8;
     let newDepth = depthSlider.value;
 
     console.log(newFen);
 
     let gameTurnDiv = document.querySelector(".gameTurn");
 
-    if (turn == "black") {
+    if (turn == "white") {
       newFen = board.fen() + " b ";
-      turn = "white";
-      gameTurnDiv.textContent = "White to play";
-    } else if (turn == "white") {
-      newFen = board.fen() + " w ";
       turn = "black";
       gameTurnDiv.textContent = "Black to play";
+    } else if (turn == "black") {
+      newFen = board.fen() + " w ";
+      turn = "white";
+      gameTurnDiv.textContent = "White to play";
     }
 
     console.log("new fen is: " + newFen);
@@ -193,7 +192,8 @@ function onDrop() {
     newStockfish
       .generateBestPositions(newFen, newNumLines, newDepth)
       .then((analyses) => {
-        let newAnalysis = analyses[0].evaluation.value;
+        const sortedAnalyses = analyses.sort((a, b) => a.id - b.id);
+        let newAnalysis = sortedAnalyses[0].evaluation.value;
 
         let percValue = calcPerc(newAnalysis / 100).valueForWhite;
         const evalBar = document.getElementById("evalbar");
@@ -209,12 +209,98 @@ function onDrop() {
           }
         `;
         document.head.appendChild(evalBarAfterStyle);
+
+        console.log(sortedAnalyses);
+
+        let positionEvaluationDiv = document.querySelector(
+          ".positionEvaluation"
+        );
+        positionEvaluationDiv.innerHTML = `
+    <p>${sortedAnalyses[0].moveUCI}: ${(
+          sortedAnalyses[0].evaluation.value / 100
+        ).toFixed(1)}</p>
+    <p>${sortedAnalyses[1].moveUCI}: ${(
+          sortedAnalyses[1].evaluation.value / 100
+        ).toFixed(1)}</p>
+    <p>${sortedAnalyses[2].moveUCI}: ${(
+          sortedAnalyses[2].evaluation.value / 100
+        ).toFixed(1)}</p>
+    <p>${sortedAnalyses[3].moveUCI}: ${(
+          sortedAnalyses[3].evaluation.value / 100
+        ).toFixed(1)}</p>
+    <p>${sortedAnalyses[4].moveUCI}: ${(
+          sortedAnalyses[4].evaluation.value / 100
+        ).toFixed(1)}</p>
+    `;
+
+        removeAllPaintedSquares();
+
+        let lightSquares = document.querySelectorAll(".white-1e1d7");
+        let darkSquares = document.querySelectorAll(".black-3c85d");
+        lightSquares.forEach((ls) => {
+          ls.style.backgroundColor = "#FCE4BE";
+        });
+        darkSquares.forEach((ds) => {
+          ds.style.backgroundColor = "#BE8F68";
+        });
+
+        // third move
+        let thirdMoveFrom = sortedAnalyses[2].moveUCI.substring(0, 2);
+        let thirdMoveTo = sortedAnalyses[2].moveUCI.substring(2);
+        const thirdSquareFrom = document.querySelector(
+          `[data-square=${thirdMoveFrom}]`
+        );
+        const thirdSquareTo = document.querySelector(
+          `[data-square=${thirdMoveTo}]`
+        );
+        thirdSquareFrom.style.backgroundColor = "#2D6585";
+        thirdSquareTo.style.backgroundColor = "#2D6585";
+
+        let thirdMoveClassificationDiv = document.createElement("div");
+        thirdMoveClassificationDiv.classList.add("icon");
+        thirdMoveClassificationDiv.style.backgroundImage = `url("/move_classifications/number3.png")`;
+        thirdSquareTo.appendChild(thirdMoveClassificationDiv);
+
+        // second move
+        let secondMoveFrom = sortedAnalyses[1].moveUCI.substring(0, 2);
+        let secondMoveTo = sortedAnalyses[1].moveUCI.substring(2);
+        const secondSquareFrom = document.querySelector(
+          `[data-square=${secondMoveFrom}]`
+        );
+        const secondSquareTo = document.querySelector(
+          `[data-square=${secondMoveTo}]`
+        );
+        secondSquareFrom.style.backgroundColor = "#3D856F";
+        secondSquareTo.style.backgroundColor = "#3D856F";
+
+        let secondMoveClassificationDiv = document.createElement("div");
+        secondMoveClassificationDiv.classList.add("icon");
+        secondMoveClassificationDiv.style.backgroundImage = `url("/move_classifications/number2.png")`;
+        secondSquareTo.appendChild(secondMoveClassificationDiv);
+
+        // top move
+        let topMoveFrom = sortedAnalyses[0].moveUCI.substring(0, 2);
+        let topMoveTo = sortedAnalyses[0].moveUCI.substring(2);
+        const topSquareFrom = document.querySelector(
+          `[data-square=${topMoveFrom}]`
+        );
+        const topSquareTo = document.querySelector(
+          `[data-square=${topMoveTo}]`
+        );
+        topSquareFrom.style.backgroundColor = "#537B2F";
+        topSquareTo.style.backgroundColor = "#537B2F";
+
+        let topMoveClassificationDiv = document.createElement("div");
+        topMoveClassificationDiv.classList.add("icon");
+        topMoveClassificationDiv.style.backgroundImage = `url("/move_classifications/best.png")`;
+        topSquareTo.appendChild(topMoveClassificationDiv);
       });
   }, 0);
 }
 
 analiseCurrentPossitionBtn.addEventListener("click", () => {
   showAnalise = !showAnalise;
+
   if (showAnalise) {
     removeAllPaintedSquares();
     analiseCurrentPossitionBtn.textContent = `Enable Analise: yes`;
@@ -308,6 +394,8 @@ analiseCurrentPossitionBtn.addEventListener("click", () => {
         themeDefault.click();
         break;
     }
+  } else if (showAnalise) {
+    onDrop();
   }
 });
 
@@ -382,8 +470,8 @@ document.addEventListener("keydown", function (event) {
   } else if (event.key === "e") {
     let bestMoveAsistantBtn = document.getElementById("bestMoveAsistantBtn");
     showEngineBestMoves = !showEngineBestMoves;
-    removeAllPaintedSquares();
-    paintSquares();
+    $("#reviewBtnBackward").trigger("click");
+    $("#reviewBtnForward").trigger("click");
     if (showEngineBestMoves) {
       bestMoveAsistantBtn.textContent = `Engine Moves: yes`;
     } else {
