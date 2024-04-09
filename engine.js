@@ -1720,6 +1720,7 @@ let evalArr = [0];
 let evalArr2 = [0];
 let typeArr = ["cp"];
 let bestMovesArr = ["e2e4"];
+let bestMovesArrEval = ["0.2"];
 let veryGoodMovesArr = [""];
 let goodMovesArr = [""];
 
@@ -1771,12 +1772,18 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
   function checkBestMove(moveEvaluationText, textColor, analyses, lastMove) {
     let currentPlayerMove = lastMove.from + lastMove.to;
     let engineBestMove = bestMovesArr[bestMovesArr.length - 1];
+    let engineBestMoveEval = (
+      bestMovesArrEval[bestMovesArrEval.length - 1] / 100
+    ).toFixed(1);
+
     let engineVeryGoodMove = veryGoodMovesArr[veryGoodMovesArr.length - 1];
     let engineGoodMove = goodMovesArr[goodMovesArr.length - 1];
 
     bestMovesArr.push(analyses[0].moveUCI);
-
     bestMovesArr.push(analyses[0].moveUCI);
+
+    bestMovesArrEval.push(analyses[0].evaluation.value);
+    bestMovesArrEval.push(analyses[0].evaluation.value);
 
     if (analyses.length >= 3) {
       veryGoodMovesArr.push(analyses[1].moveUCI + ", " + analyses[2].moveUCI);
@@ -1844,22 +1851,23 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
 
     if (currentPlayerMove == engineBestMove) {
       displayMovesDiv.textContent = engineBestMove;
-      displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #71a341;"> ${engineBestMove} is the best move!</div>`;
+      displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #71a341;"><div style="color:#fff">${engineBestMove} | ${engineBestMoveEval}</div>
+       is the best move!</div>`;
       raport.comment.push(displayMovesDiv.innerHTML);
     } else if (engineVeryGoodMove.includes(currentPlayerMove)) {
       displayMovesDiv.textContent = engineVeryGoodMove;
       displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #71a340;">${currentPlayerMove} is very good move!</div>
-      <div id="displayMoves" style="color: #71a341;">The best was: ${engineBestMove}</div>`;
+      <div id="displayMoves" style="color: #71a341;">The best was: <span style="color:#fff">${engineBestMove} | ${engineBestMoveEval}</span></div>`;
       raport.comment.push(displayMovesDiv.innerHTML);
     } else if (engineGoodMove.includes(currentPlayerMove)) {
       displayMovesDiv.textContent = engineGoodMove;
       displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #95b776;">${currentPlayerMove} is a good move!</div>
-      <div id="displayMoves" style="color: #71a341;">The best was: ${engineBestMove}</div>`;
+      <div id="displayMoves" style="color: #71a341;">The best was: <span style="color:#fff"> ${engineBestMove} | ${engineBestMoveEval}</span></div>`;
       raport.comment.push(displayMovesDiv.innerHTML);
     } else {
       displayMovesDiv.textContent = engineBestMove;
       displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: ${textColor};">Move played: ${currentPlayerMove}</div>
-      <div id="displayMoves" style="color: #71a341;">The best was: ${engineBestMove}</div>`;
+      <div id="displayMoves" style="color: #71a341;">The best was: <span style="color:#fff">${engineBestMove} | ${engineBestMoveEval}</span></div>`;
       raport.comment.push(displayMovesDiv.innerHTML);
     }
 

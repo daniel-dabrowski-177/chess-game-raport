@@ -38,6 +38,15 @@ h1 {
   justify-content: center;
 }
 
+.player-color {
+  display: flex;
+  justify-content: space-between;
+}
+
+.player-color h3 {
+  margin: 10px 0 0 0;
+}
+
 .positionEvaluation p {
   display: flex;
   justify-content: center;
