@@ -143,16 +143,16 @@ themeDefault.addEventListener("click", () => {
 
   // styles
   body.style.color = "#d2b48c";
-  body.style.backgroundColor = "#0a2240";
+  body.style.background = "#1e1f22";
   button.forEach((btn) => {
-    btn.style.backgroundColor = "#0a5898";
+    btn.style.background = "#0a5898";
   });
 
   lightSquares.forEach((ls) => {
-    ls.style.backgroundColor = "";
+    ls.style.background = "";
   });
   darkSquares.forEach((ds) => {
-    ds.style.backgroundColor = "";
+    ds.style.background = "";
   });
 });
 
@@ -169,16 +169,16 @@ themeRed.addEventListener("click", () => {
 
   // styles
   body.style.color = "#f75c80";
-  body.style.backgroundColor = "#74182e";
+  body.style.background = "#1e1f22";
   button.forEach((btn) => {
-    btn.style.backgroundColor = "#b63e5a";
+    btn.style.background = "#b63e5a";
   });
 
   lightSquares.forEach((ls) => {
-    ls.style.backgroundColor = "#e6c8cf";
+    ls.style.background = "#e6c8cf";
   });
   darkSquares.forEach((ds) => {
-    ds.style.backgroundColor = "#e8829a";
+    ds.style.background = "#e8829a";
   });
 });
 
@@ -196,16 +196,16 @@ themeTournament.addEventListener("click", () => {
 
   // styles
   body.style.color = "#d2b48c";
-  body.style.backgroundColor = "#3B3028";
+  body.style.background = "#1e1f22";
   button.forEach((btn) => {
-    btn.style.backgroundColor = "#168c4c";
+    btn.style.background = "#168c4c";
   });
 
   lightSquares.forEach((ls) => {
-    ls.style.backgroundColor = "#E9E9E5";
+    ls.style.background = "#65b27a";
   });
   darkSquares.forEach((ds) => {
-    ds.style.backgroundColor = "#316549";
+    ds.style.background = "#257a3c";
   });
 });
 
@@ -223,15 +223,15 @@ themeClassic.addEventListener("click", () => {
 
   // styles
   body.style.color = "#d2b48c";
-  body.style.backgroundColor = "#262421";
+  body.style.background = "#1e1f22";
   button.forEach((btn) => {
-    btn.style.backgroundColor = "#7e5634";
+    btn.style.background = "#7e5634";
   });
 
   lightSquares.forEach((ls) => {
-    ls.style.backgroundColor = "#FCE4BE";
+    ls.style.background = "#FCE4BE";
   });
   darkSquares.forEach((ds) => {
-    ds.style.backgroundColor = "#BE8F68";
+    ds.style.background = "#BE8F68";
   });
 });

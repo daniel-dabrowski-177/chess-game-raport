@@ -98,10 +98,10 @@ flipOrientationBtn.addEventListener("click", () => {
     let lightSquares = document.querySelectorAll(".white-1e1d7");
     let darkSquares = document.querySelectorAll(".black-3c85d");
     lightSquares.forEach((ls) => {
-      ls.style.backgroundColor = "#FCE4BE";
+      ls.style.background = "#FCE4BE";
     });
     darkSquares.forEach((ds) => {
-      ds.style.backgroundColor = "#BE8F68";
+      ds.style.background = "#BE8F68";
     });
   }
 
@@ -129,6 +129,7 @@ settingsBtn.addEventListener("click", () => {
 });
 
 let showEngineBestMoves = false;
+let showThreats = true;
 let showAnalise = false;
 let bookMove = false;
 let openingName;
@@ -142,6 +143,18 @@ bestMoveAsistantBtn.addEventListener("click", () => {
     bestMoveAsistantBtn.textContent = `Engine Moves: yes`;
   } else {
     bestMoveAsistantBtn.textContent = `Engine Moves: no`;
+  }
+});
+
+let showThreatsBtn = document.getElementById("showThreatsBtn");
+showThreatsBtn.addEventListener("click", () => {
+  showThreats = !showThreats;
+  removeAllPaintedSquares();
+  paintSquares();
+  if (!showThreats) {
+    showThreatsBtn.textContent = `Show Threats: no`;
+  } else {
+    showThreatsBtn.textContent = `Show Threats: yes`;
   }
 });
 
@@ -210,10 +223,10 @@ function onDrop() {
         let lightSquares = document.querySelectorAll(".white-1e1d7");
         let darkSquares = document.querySelectorAll(".black-3c85d");
         lightSquares.forEach((ls) => {
-          ls.style.backgroundColor = "#FCE4BE";
+          ls.style.background = "#FCE4BE";
         });
         darkSquares.forEach((ds) => {
-          ds.style.backgroundColor = "#BE8F68";
+          ds.style.background = "#BE8F68";
         });
 
         let positionEvaluationDiv = document.querySelector(
@@ -237,8 +250,8 @@ function onDrop() {
             const topSquareTo = document.querySelector(
               `[data-square=${topMoveTo}]`
             );
-            topSquareFrom.style.backgroundColor = "#537B2F";
-            topSquareTo.style.backgroundColor = "#537B2F";
+            topSquareFrom.style.background = "#537B2F";
+            topSquareTo.style.background = "#537B2F";
 
             let topMoveClassificationDiv = document.createElement("div");
             topMoveClassificationDiv.classList.add("icon");
@@ -267,8 +280,8 @@ function onDrop() {
             const secondSquareTo = document.querySelector(
               `[data-square=${secondMoveTo}]`
             );
-            secondSquareFrom.style.backgroundColor = "#3D856F";
-            secondSquareTo.style.backgroundColor = "#3D856F";
+            secondSquareFrom.style.background = "#3D856F";
+            secondSquareTo.style.background = "#3D856F";
 
             let secondMoveClassificationDiv = document.createElement("div");
             secondMoveClassificationDiv.classList.add("icon");
@@ -284,8 +297,8 @@ function onDrop() {
             const topSquareTo = document.querySelector(
               `[data-square=${topMoveTo}]`
             );
-            topSquareFrom.style.backgroundColor = "#537B2F";
-            topSquareTo.style.backgroundColor = "#537B2F";
+            topSquareFrom.style.background = "#537B2F";
+            topSquareTo.style.background = "#537B2F";
 
             let topMoveClassificationDiv = document.createElement("div");
             topMoveClassificationDiv.classList.add("icon");
@@ -317,8 +330,8 @@ function onDrop() {
             const thirdSquareTo = document.querySelector(
               `[data-square=${thirdMoveTo}]`
             );
-            thirdSquareFrom.style.backgroundColor = "#2D6585";
-            thirdSquareTo.style.backgroundColor = "#2D6585";
+            thirdSquareFrom.style.background = "#2D6585";
+            thirdSquareTo.style.background = "#2D6585";
 
             let thirdMoveClassificationDiv = document.createElement("div");
             thirdMoveClassificationDiv.classList.add("icon");
@@ -334,8 +347,8 @@ function onDrop() {
             const secondSquareTo = document.querySelector(
               `[data-square=${secondMoveTo}]`
             );
-            secondSquareFrom.style.backgroundColor = "#3D856F";
-            secondSquareTo.style.backgroundColor = "#3D856F";
+            secondSquareFrom.style.background = "#3D856F";
+            secondSquareTo.style.background = "#3D856F";
 
             let secondMoveClassificationDiv = document.createElement("div");
             secondMoveClassificationDiv.classList.add("icon");
@@ -351,8 +364,8 @@ function onDrop() {
             const topSquareTo = document.querySelector(
               `[data-square=${topMoveTo}]`
             );
-            topSquareFrom.style.backgroundColor = "#537B2F";
-            topSquareTo.style.backgroundColor = "#537B2F";
+            topSquareFrom.style.background = "#537B2F";
+            topSquareTo.style.background = "#537B2F";
 
             let topMoveClassificationDiv = document.createElement("div");
             topMoveClassificationDiv.classList.add("icon");
@@ -387,8 +400,8 @@ function onDrop() {
             const thirdSquareTo = document.querySelector(
               `[data-square=${thirdMoveTo}]`
             );
-            thirdSquareFrom.style.backgroundColor = "#2D6585";
-            thirdSquareTo.style.backgroundColor = "#2D6585";
+            thirdSquareFrom.style.background = "#2D6585";
+            thirdSquareTo.style.background = "#2D6585";
 
             let thirdMoveClassificationDiv = document.createElement("div");
             thirdMoveClassificationDiv.classList.add("icon");
@@ -404,8 +417,8 @@ function onDrop() {
             const secondSquareTo = document.querySelector(
               `[data-square=${secondMoveTo}]`
             );
-            secondSquareFrom.style.backgroundColor = "#3D856F";
-            secondSquareTo.style.backgroundColor = "#3D856F";
+            secondSquareFrom.style.background = "#3D856F";
+            secondSquareTo.style.background = "#3D856F";
 
             let secondMoveClassificationDiv = document.createElement("div");
             secondMoveClassificationDiv.classList.add("icon");
@@ -421,8 +434,8 @@ function onDrop() {
             const topSquareTo = document.querySelector(
               `[data-square=${topMoveTo}]`
             );
-            topSquareFrom.style.backgroundColor = "#537B2F";
-            topSquareTo.style.backgroundColor = "#537B2F";
+            topSquareFrom.style.background = "#537B2F";
+            topSquareTo.style.background = "#537B2F";
 
             let topMoveClassificationDiv = document.createElement("div");
             topMoveClassificationDiv.classList.add("icon");
@@ -460,8 +473,8 @@ function onDrop() {
             const thirdSquareTo = document.querySelector(
               `[data-square=${thirdMoveTo}]`
             );
-            thirdSquareFrom.style.backgroundColor = "#2D6585";
-            thirdSquareTo.style.backgroundColor = "#2D6585";
+            thirdSquareFrom.style.background = "#2D6585";
+            thirdSquareTo.style.background = "#2D6585";
 
             let thirdMoveClassificationDiv = document.createElement("div");
             thirdMoveClassificationDiv.classList.add("icon");
@@ -477,8 +490,8 @@ function onDrop() {
             const secondSquareTo = document.querySelector(
               `[data-square=${secondMoveTo}]`
             );
-            secondSquareFrom.style.backgroundColor = "#3D856F";
-            secondSquareTo.style.backgroundColor = "#3D856F";
+            secondSquareFrom.style.background = "#3D856F";
+            secondSquareTo.style.background = "#3D856F";
 
             let secondMoveClassificationDiv = document.createElement("div");
             secondMoveClassificationDiv.classList.add("icon");
@@ -494,8 +507,8 @@ function onDrop() {
             const topSquareTo = document.querySelector(
               `[data-square=${topMoveTo}]`
             );
-            topSquareFrom.style.backgroundColor = "#537B2F";
-            topSquareTo.style.backgroundColor = "#537B2F";
+            topSquareFrom.style.background = "#537B2F";
+            topSquareTo.style.background = "#537B2F";
 
             let topMoveClassificationDiv = document.createElement("div");
             topMoveClassificationDiv.classList.add("icon");
@@ -548,7 +561,7 @@ analiseCurrentPossitionBtn.addEventListener("click", () => {
 
     // styles
     body.style.color = "#d2b48c";
-    body.style.backgroundColor = "#262421";
+    body.style.background = "#262421";
     boardStyle.style.border = "6px solid #ff0000";
     boardStyle.style.padding = "0 0 -4px 0";
 
@@ -557,14 +570,14 @@ analiseCurrentPossitionBtn.addEventListener("click", () => {
     evalbar.style.margin = "100px 20px";
 
     button.forEach((btn) => {
-      btn.style.backgroundColor = "#7e5634";
+      btn.style.background = "#7e5634";
     });
 
     lightSquares.forEach((ls) => {
-      ls.style.backgroundColor = "#FCE4BE";
+      ls.style.background = "#FCE4BE";
     });
     darkSquares.forEach((ds) => {
-      ds.style.backgroundColor = "#BE8F68";
+      ds.style.background = "#BE8F68";
     });
   } else {
     let gameTurnDiv = document.querySelector(".gameTurn");
@@ -695,6 +708,8 @@ document.addEventListener("keydown", function (event) {
     $("#analiseCurrentPossitionBtn").trigger("click");
   } else if (event.key === "f") {
     $("#flipOrientationBtn").trigger("click");
+  } else if (event.key === "t") {
+    $("#showThreatsBtn").trigger("click");
   }
 });
 
@@ -945,8 +960,8 @@ function paintSquares(playerMove, curentColor) {
       const squareTo = document.querySelector(`[data-square=${playerMoveTo}]`);
 
       if (squareFrom && squareTo) {
-        squareFrom.style.backgroundColor = "#a17a5c";
-        squareTo.style.backgroundColor = "#a17a5c";
+        squareFrom.style.background = "#a17a5c";
+        squareTo.style.background = "#a17a5c";
 
         let moveClassificationDiv = document.createElement("div");
         moveClassificationDiv.classList.add("icon");
@@ -977,8 +992,8 @@ function paintSquares(playerMove, curentColor) {
       const squareTo = document.querySelector(`[data-square=${playerMoveTo}]`);
 
       if (squareFrom && squareTo) {
-        squareFrom.style.backgroundColor = curentColor;
-        squareTo.style.backgroundColor = curentColor;
+        squareFrom.style.background = curentColor;
+        squareTo.style.background = curentColor;
 
         let moveClassificationDiv = document.createElement("div");
         moveClassificationDiv.classList.add("icon");
@@ -1025,8 +1040,8 @@ function paintSquares(playerMove, curentColor) {
       const squareTo = document.querySelector(`[data-square=${playerMoveTo}]`);
 
       if (squareFrom && squareTo) {
-        squareFrom.style.backgroundColor = curentColor;
-        squareTo.style.backgroundColor = curentColor;
+        squareFrom.style.background = curentColor;
+        squareTo.style.background = curentColor;
 
         let moveClassificationDiv = document.createElement("div");
         moveClassificationDiv.classList.add("icon");
@@ -1070,8 +1085,8 @@ function paintSquares(playerMove, curentColor) {
       );
       const squareTo = document.querySelector(`[data-square=${engineMoveTo}]`);
       if (squareFrom && squareTo) {
-        squareFrom.style.backgroundColor = "#4d702c";
-        squareTo.style.backgroundColor = "#4d702c";
+        squareFrom.style.background = "#4d702c";
+        squareTo.style.background = "#4d702c";
 
         let bestMoveClassificationDiv = document.createElement("div");
         bestMoveClassificationDiv.classList.add("icon");
@@ -1091,8 +1106,8 @@ function paintSquares(playerMove, curentColor) {
     const squareFrom = document.querySelector(`[data-square=${missMoveFrom}]`);
     const squareTo = document.querySelector(`[data-square=${missMoveTo}]`);
     if (squareFrom && squareTo) {
-      squareFrom.style.backgroundColor = "#c96157";
-      squareTo.style.backgroundColor = "#c96157";
+      squareFrom.style.background = "#c96157";
+      squareTo.style.background = "#c96157";
 
       let missClassificationDiv = document.createElement("div");
       missClassificationDiv.classList.add("icon");
@@ -1104,6 +1119,67 @@ function paintSquares(playerMove, curentColor) {
 
       displayMovesDiv.style.color = "#FF7769";
       moveEvaluationDiv.innerHTML = `<span style="color: #FF7769;"><b>Missed win</b></span>`;
+    }
+  }
+
+  if (showThreats) {
+    let playerMoveTo = raport.playerMoves[currentMove].substring(2);
+
+    if (
+      raport.colors[currentMove] == "#d63624" ||
+      raport.colors[currentMove] == "#e07c16"
+    ) {
+      let threateningMoveFrom = raport.bestMoves[currentMove].substring(0, 2);
+      let threateningMoveTo = raport.bestMoves[currentMove].substring(2);
+
+      const squareFrom = document.querySelector(
+        `[data-square=${threateningMoveFrom}]`
+      );
+      const squareTo = document.querySelector(
+        `[data-square=${threateningMoveTo}]`
+      );
+      if (squareFrom && squareTo) {
+        squareFrom.style.background = "#912dd6";
+        squareTo.style.background = "#912dd6";
+
+        let bestMoveClassificationDiv = document.createElement("div");
+        bestMoveClassificationDiv.classList.add("icon");
+        bestMoveClassificationDiv.style.backgroundImage = `url("/move_classifications/threat.png")`;
+        squareTo.appendChild(bestMoveClassificationDiv);
+      }
+
+      let moveEvaluationDiv = document.querySelector("#moveEvaluation");
+
+      if (raport.colors[currentMove] == "#e07c16") {
+        moveEvaluationDiv.innerHTML = `<div style="color: #e07c16">Mistake</div><div style="color: #fff">${raport.bestMoves[currentMove]}<span style="color: #912dd6"> threatens!</span></div>`;
+      }
+
+      if (raport.colors[currentMove] == "#d63624") {
+        moveEvaluationDiv.innerHTML = `<div style="color: #d63624">Blunder</div><div style="color: #fff">${raport.bestMoves[currentMove]}<span style="color: #912dd6"> threatens!
+    </span></div>`;
+      }
+
+      if (threateningMoveTo == playerMoveTo) {
+        if (raport.colors[currentMove] == "#e07c16") {
+          squareTo.style.background =
+            "linear-gradient(135deg, rgba(106,22,164,1) 20%, rgba(255,115,0,1) 90%)";
+
+          let bestMoveClassificationDiv = document.createElement("div");
+          bestMoveClassificationDiv.classList.add("icon");
+          bestMoveClassificationDiv.style.backgroundImage = `url("/move_classifications/mistake.png")`;
+          squareTo.appendChild(bestMoveClassificationDiv);
+        }
+
+        if (raport.colors[currentMove] == "#d63624") {
+          squareTo.style.background =
+            "linear-gradient(135deg, rgba(106,22,164,1) 20%, rgba(214,54,36,1) 90%)";
+
+          let bestMoveClassificationDiv = document.createElement("div");
+          bestMoveClassificationDiv.classList.add("icon");
+          bestMoveClassificationDiv.style.backgroundImage = `url("/move_classifications/blunder.png")`;
+          squareTo.appendChild(bestMoveClassificationDiv);
+        }
+      }
     }
   }
 }
@@ -1668,12 +1744,12 @@ async function removeAllPaintedSquares() {
   });
 
   lightSquares.forEach((ls) => {
-    ls.style.backgroundColor = "";
+    ls.style.background = "";
     ls.style.border = "none";
     ls.style.opacity = "1";
   });
   darkSquares.forEach((ds) => {
-    ds.style.backgroundColor = "";
+    ds.style.background = "";
     ds.style.border = "none";
     ds.style.opacity = "1";
   });
@@ -1681,37 +1757,37 @@ async function removeAllPaintedSquares() {
   // Default "blue"
   if (theme == "default") {
     lightSquares.forEach((ls) => {
-      ls.style.backgroundColor = "";
+      ls.style.background = "";
     });
     darkSquares.forEach((ds) => {
-      ds.style.backgroundColor = "";
+      ds.style.background = "";
     });
   }
   // Red
   else if (theme == "red") {
     lightSquares.forEach((ls) => {
-      ls.style.backgroundColor = "#e6c8cf";
+      ls.style.background = "#e6c8cf";
     });
     darkSquares.forEach((ds) => {
-      ds.style.backgroundColor = "#e8829a";
+      ds.style.background = "#e8829a";
     });
   }
   // Tournament
   else if (theme == "tournament") {
     lightSquares.forEach((ls) => {
-      ls.style.backgroundColor = "#E9E9E5";
+      ls.style.background = "#65b27a";
     });
     darkSquares.forEach((ds) => {
-      ds.style.backgroundColor = "#316549";
+      ds.style.background = "#257a3c";
     });
   }
   // Classic
   else if (theme == "classic") {
     lightSquares.forEach((ls) => {
-      ls.style.backgroundColor = "#FCE4BE";
+      ls.style.background = "#FCE4BE";
     });
     darkSquares.forEach((ds) => {
-      ds.style.backgroundColor = "#BE8F68";
+      ds.style.background = "#BE8F68";
     });
   }
 }
