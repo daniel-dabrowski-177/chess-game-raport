@@ -1193,9 +1193,9 @@ function paintSquares(playerMove, curentColor) {
     }
   }
 
-  // If blunder -> great move
+  // If mistake -> great move
   if (
-    raport.colors[currentMove - 1] == "#ec6354" &&
+    raport.colors[currentMove - 1] == "#ef9e4c" &&
     raport.colors[currentMove] == "#71a341"
   ) {
     let greatMoveFrom = raport.playerMoves[currentMove].substring(0, 2);
@@ -1218,6 +1218,36 @@ function paintSquares(playerMove, curentColor) {
 
       const moveEvaluationDiv = document.getElementById("moveEvaluation");
       moveEvaluationDiv.innerHTML = `<span style="color: #5183b0;"><b>Great Answer!</b></span>`;
+    }
+  }
+
+  // If blunder -> brilliant move
+  if (
+    raport.colors[currentMove - 1] == "#ec6354" &&
+    raport.colors[currentMove] == "#71a341"
+  ) {
+    let excellentMoveFrom = raport.playerMoves[currentMove].substring(0, 2);
+    let excellentMoveTo = raport.playerMoves[currentMove].substring(2);
+
+    const squareFrom = document.querySelector(
+      `[data-square=${excellentMoveFrom}]`
+    );
+    const squareTo = document.querySelector(`[data-square=${excellentMoveTo}]`);
+
+    if (squareFrom && squareTo) {
+      squareFrom.style.background = "#1f947d";
+      squareTo.style.background = "#1f947d";
+
+      let moveClassificationDiv = document.createElement("div");
+      moveClassificationDiv.classList.add("icon");
+
+      // Validation
+      moveClassificationDiv.style.backgroundImage = `url("/move_classifications/brilliant.png")`;
+
+      squareTo.appendChild(moveClassificationDiv);
+
+      const moveEvaluationDiv = document.getElementById("moveEvaluation");
+      moveEvaluationDiv.innerHTML = `<span style="color: #1f947d;"><b>Excellent Answer!</b></span>`;
     }
   }
 
@@ -1261,7 +1291,8 @@ function paintSquares(playerMove, curentColor) {
     raport.colors[currentMove - 4] == "#71a341" &&
     raport.colors[currentMove - 6] == "#71a341" &&
     raport.colors[currentMove - 8] == "#71a341" &&
-    raport.colors[currentMove - 10] == "#71a341"
+    raport.colors[currentMove - 10] == "#71a341" &&
+    raport.colors[currentMove - 12] == "#71a341"
   ) {
     let brilliantMoveFrom = raport.playerMoves[currentMove].substring(0, 2);
     let brilliantMoveTo = raport.playerMoves[currentMove].substring(2);
@@ -2132,20 +2163,20 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
       } else if (
         currMove <= prevMove &&
         prevMove - currMove >= 0 &&
-        prevMove - currMove < 100
+        prevMove - currMove < 150
       ) {
         moveEvaluationText = "Inacuraccy";
         textColor = inacuraccy;
         colorSquare = inacuraccy;
       } else if (
         currMove <= prevMove &&
-        prevMove - currMove >= 100 &&
-        prevMove - currMove < 250
+        prevMove - currMove >= 150 &&
+        prevMove - currMove < 325
       ) {
         moveEvaluationText = "Mistake";
         textColor = mistake;
         colorSquare = mistake;
-      } else if (currMove <= prevMove && prevMove - currMove > 250) {
+      } else if (currMove <= prevMove && prevMove - currMove > 325) {
         moveEvaluationText = "Blunder";
         textColor = blunder;
         colorSquare = blunder;
@@ -2208,20 +2239,20 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
       } else if (
         currMove >= prevMove &&
         currMove - prevMove >= 0 &&
-        currMove - prevMove < 100
+        currMove - prevMove < 150
       ) {
         moveEvaluationText = "Inacuraccy";
         textColor = inacuraccy;
         colorSquare = inacuraccy;
       } else if (
         currMove >= prevMove &&
-        currMove - prevMove >= 100 &&
-        currMove - prevMove < 250
+        currMove - prevMove >= 150 &&
+        currMove - prevMove < 325
       ) {
         moveEvaluationText = "Mistake";
         textColor = mistake;
         colorSquare = mistake;
-      } else if (currMove >= prevMove && currMove - prevMove > 250) {
+      } else if (currMove >= prevMove && currMove - prevMove > 325) {
         moveEvaluationText = "Blunder";
         textColor = blunder;
         colorSquare = blunder;
