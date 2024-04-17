@@ -710,6 +710,16 @@ document.addEventListener("keydown", function (event) {
     $("#flipOrientationBtn").trigger("click");
   } else if (event.key === "t") {
     $("#showThreatsBtn").trigger("click");
+  } else if (event.key === "ArrowDown") {
+    currentMove = 0;
+    board.position("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    removeAllPaintedSquares();
+    $("#reviewBtnBackward").trigger("click");
+  } else if (event.key === "ArrowUp") {
+    currentMove = raport.pgnMoves.length;
+    board.position(raport.fen[currentMove]);
+    removeAllPaintedSquares();
+    $("#reviewBtnForward").trigger("click");
   }
 });
 
@@ -1018,10 +1028,10 @@ function paintSquares(playerMove, curentColor) {
           case "#d9af32":
             moveClassificationDiv.style.backgroundImage = `url("/move_classifications/inaccuracy.png")`;
             break;
-          case "#e07c16":
+          case "#ef9e4c":
             moveClassificationDiv.style.backgroundImage = `url("/move_classifications/mistake.png")`;
             break;
-          case "#d63624":
+          case "#ec6354":
             moveClassificationDiv.style.backgroundImage = `url("/move_classifications/blunder.png")`;
             break;
           default:
@@ -1060,10 +1070,10 @@ function paintSquares(playerMove, curentColor) {
           case "#d9af32":
             moveClassificationDiv.style.backgroundImage = `url("/move_classifications/inaccuracy.png")`;
             break;
-          case "#e07c16":
+          case "#ef9e4c":
             moveClassificationDiv.style.backgroundImage = `url("/move_classifications/mistake.png")`;
             break;
-          case "#d63624":
+          case "#ec6354":
             moveClassificationDiv.style.backgroundImage = `url("/move_classifications/blunder.png")`;
             break;
           default:
@@ -1126,8 +1136,8 @@ function paintSquares(playerMove, curentColor) {
     let playerMoveTo = raport.playerMoves[currentMove].substring(2);
 
     if (
-      raport.colors[currentMove] == "#d63624" ||
-      raport.colors[currentMove] == "#e07c16"
+      raport.colors[currentMove] == "#ec6354" ||
+      raport.colors[currentMove] == "#ef9e4c"
     ) {
       let threateningMoveFrom = raport.bestMoves[currentMove].substring(0, 2);
       let threateningMoveTo = raport.bestMoves[currentMove].substring(2);
@@ -1139,8 +1149,8 @@ function paintSquares(playerMove, curentColor) {
         `[data-square=${threateningMoveTo}]`
       );
       if (squareFrom && squareTo) {
-        squareFrom.style.background = "#912dd6";
-        squareTo.style.background = "#912dd6";
+        squareFrom.style.background = "#8976B7";
+        squareTo.style.background = "#8976B7";
 
         let bestMoveClassificationDiv = document.createElement("div");
         bestMoveClassificationDiv.classList.add("icon");
@@ -1150,19 +1160,19 @@ function paintSquares(playerMove, curentColor) {
 
       let moveEvaluationDiv = document.querySelector("#moveEvaluation");
 
-      if (raport.colors[currentMove] == "#e07c16") {
-        moveEvaluationDiv.innerHTML = `<div style="color: #e07c16">Mistake</div><div style="color: #fff">${raport.bestMoves[currentMove]}<span style="color: #912dd6"> threatens!</span></div>`;
+      if (raport.colors[currentMove] == "#ef9e4c") {
+        moveEvaluationDiv.innerHTML = `<div style="color: #ef9e4c">Mistake</div><div style="color: #fff">${raport.bestMoves[currentMove]}<span style="color: #8976B7"> threatens!</span></div>`;
       }
 
-      if (raport.colors[currentMove] == "#d63624") {
-        moveEvaluationDiv.innerHTML = `<div style="color: #d63624">Blunder</div><div style="color: #fff">${raport.bestMoves[currentMove]}<span style="color: #912dd6"> threatens!
+      if (raport.colors[currentMove] == "#ec6354") {
+        moveEvaluationDiv.innerHTML = `<div style="color: #ec6354">Blunder</div><div style="color: #fff">${raport.bestMoves[currentMove]}<span style="color: #8976B7"> threatens!
     </span></div>`;
       }
 
       if (threateningMoveTo == playerMoveTo) {
-        if (raport.colors[currentMove] == "#e07c16") {
+        if (raport.colors[currentMove] == "#ef9e4c") {
           squareTo.style.background =
-            "linear-gradient(135deg, rgba(106,22,164,1) 20%, rgba(255,115,0,1) 90%)";
+            "linear-gradient(135deg, #8976b7 20%, #ef9e4c 90%)";
 
           let bestMoveClassificationDiv = document.createElement("div");
           bestMoveClassificationDiv.classList.add("icon");
@@ -1170,9 +1180,9 @@ function paintSquares(playerMove, curentColor) {
           squareTo.appendChild(bestMoveClassificationDiv);
         }
 
-        if (raport.colors[currentMove] == "#d63624") {
+        if (raport.colors[currentMove] == "#ec6354") {
           squareTo.style.background =
-            "linear-gradient(135deg, rgba(106,22,164,1) 20%, rgba(214,54,36,1) 90%)";
+            "linear-gradient(135deg, #8976b7 20%, #ec6354 90%)";
 
           let bestMoveClassificationDiv = document.createElement("div");
           bestMoveClassificationDiv.classList.add("icon");
@@ -1180,6 +1190,101 @@ function paintSquares(playerMove, curentColor) {
           squareTo.appendChild(bestMoveClassificationDiv);
         }
       }
+    }
+  }
+
+  // If blunder -> great move
+  if (
+    raport.colors[currentMove - 1] == "#ec6354" &&
+    raport.colors[currentMove] == "#71a341"
+  ) {
+    let greatMoveFrom = raport.playerMoves[currentMove].substring(0, 2);
+    let greatMoveTo = raport.playerMoves[currentMove].substring(2);
+
+    const squareFrom = document.querySelector(`[data-square=${greatMoveFrom}]`);
+    const squareTo = document.querySelector(`[data-square=${greatMoveTo}]`);
+
+    if (squareFrom && squareTo) {
+      squareFrom.style.background = "#5183b0";
+      squareTo.style.background = "#5183b0";
+
+      let moveClassificationDiv = document.createElement("div");
+      moveClassificationDiv.classList.add("icon");
+
+      // Validation
+      moveClassificationDiv.style.backgroundImage = `url("/move_classifications/great.png")`;
+
+      squareTo.appendChild(moveClassificationDiv);
+
+      const moveEvaluationDiv = document.getElementById("moveEvaluation");
+      moveEvaluationDiv.innerHTML = `<span style="color: #5183b0;"><b>Great Answer!</b></span>`;
+    }
+  }
+
+  // Great Sequence
+  if (
+    raport.colors[currentMove] == "#71a341" &&
+    raport.colors[currentMove - 2] == "#71a341" &&
+    raport.colors[currentMove - 4] == "#71a341" &&
+    raport.colors[currentMove - 6] == "#71a341" &&
+    raport.colors[currentMove - 8] == "#71a341"
+  ) {
+    let sGreatMoveFrom = raport.playerMoves[currentMove].substring(0, 2);
+    let sGreatMoveTo = raport.playerMoves[currentMove].substring(2);
+
+    const squareFrom = document.querySelector(
+      `[data-square=${sGreatMoveFrom}]`
+    );
+    const squareTo = document.querySelector(`[data-square=${sGreatMoveTo}]`);
+
+    if (squareFrom && squareTo) {
+      squareFrom.style.background = "#5183b0";
+      squareTo.style.background = "#5183b0";
+
+      let moveClassificationDiv = document.createElement("div");
+      moveClassificationDiv.classList.add("icon");
+
+      // Validation
+      moveClassificationDiv.style.backgroundImage = `url("/move_classifications/great.png")`;
+
+      squareTo.appendChild(moveClassificationDiv);
+
+      const moveEvaluationDiv = document.getElementById("moveEvaluation");
+      moveEvaluationDiv.innerHTML = `<span style="color: #5183b0;"><b>Great Sequence!</b></span>`;
+    }
+  }
+
+  // Brilliant Sequence
+  if (
+    raport.colors[currentMove] == "#71a341" &&
+    raport.colors[currentMove - 2] == "#71a341" &&
+    raport.colors[currentMove - 4] == "#71a341" &&
+    raport.colors[currentMove - 6] == "#71a341" &&
+    raport.colors[currentMove - 8] == "#71a341" &&
+    raport.colors[currentMove - 10] == "#71a341"
+  ) {
+    let brilliantMoveFrom = raport.playerMoves[currentMove].substring(0, 2);
+    let brilliantMoveTo = raport.playerMoves[currentMove].substring(2);
+
+    const squareFrom = document.querySelector(
+      `[data-square=${brilliantMoveFrom}]`
+    );
+    const squareTo = document.querySelector(`[data-square=${brilliantMoveTo}]`);
+
+    if (squareFrom && squareTo) {
+      squareFrom.style.background = "#1f947d";
+      squareTo.style.background = "#1f947d";
+
+      let moveClassificationDiv = document.createElement("div");
+      moveClassificationDiv.classList.add("icon");
+
+      // Validation
+      moveClassificationDiv.style.backgroundImage = `url("/move_classifications/brilliant.png")`;
+
+      squareTo.appendChild(moveClassificationDiv);
+
+      const moveEvaluationDiv = document.getElementById("moveEvaluation");
+      moveEvaluationDiv.innerHTML = `<span style="color: #1f947d;"><b>Brilliant Sequence!</b></span>`;
     }
   }
 }
@@ -1259,11 +1364,11 @@ function countTallies() {
         inaccuracyCounterBlack++;
         inaccuracyCounterBlackDiv.textContent = inaccuracyCounterBlack;
       }
-      if (raport.colors[i] == "#e07c16") {
+      if (raport.colors[i] == "#ef9e4c") {
         mistakeCounterBlack++;
         mistakeCounterBlackDiv.textContent = mistakeCounterBlack;
       }
-      if (raport.colors[i] == "#d63624") {
+      if (raport.colors[i] == "#ec6354") {
         blunderCounterBlack++;
         blunderCounterBlackDiv.textContent = blunderCounterBlack;
       }
@@ -1296,11 +1401,11 @@ function countTallies() {
         inaccuracyCounterWhite++;
         inaccuracyCounterWhiteDiv.textContent = inaccuracyCounterWhite;
       }
-      if (raport.colors[i] == "#e07c16") {
+      if (raport.colors[i] == "#ef9e4c") {
         mistakeCounterWhite++;
         mistakeCounterWhiteDiv.textContent = mistakeCounterWhite;
       }
-      if (raport.colors[i] == "#d63624") {
+      if (raport.colors[i] == "#ec6354") {
         blunderCounterWhite++;
         blunderCounterWhiteDiv.textContent = blunderCounterWhite;
       }
@@ -1971,8 +2076,8 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
     let veryGood = "#71a340";
     let good = "#95b776";
     let inacuraccy = "#d9af32";
-    let mistake = "#e07c16";
-    let blunder = "#d63624";
+    let mistake = "#ef9e4c";
+    let blunder = "#ec6354";
 
     let currMoveValue = analyses[0].evaluation.value;
     let currMoveType = analyses[0].evaluation.type;
