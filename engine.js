@@ -2047,10 +2047,10 @@ async function removeAllPaintedSquares() {
   // Tournament
   else if (theme == "tournament") {
     lightSquares.forEach((ls) => {
-      ls.style.background = "#65b27a";
+      ls.style.background = "#cee9cc";
     });
     darkSquares.forEach((ds) => {
-      ds.style.background = "#257a3c";
+      ds.style.background = "#7db37e";
     });
   }
   // Classic
