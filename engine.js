@@ -190,8 +190,6 @@ async function fetchData(username, date) {
     let data = await response.json();
     data = data.games;
 
-    console.log(data);
-
     for (let i = 0; i < data.length; i++) {
       let li = document.createElement("li");
 
@@ -250,7 +248,7 @@ async function fetchData(username, date) {
         timeControl = "🤖";
       }
 
-      li.innerHTML = `${whiteUsername}: ${whiteRating} vs ${blackUsername}: ${blackRating} ${timeControl} ${gameResult}`;
+      li.innerHTML = `<div class="flex"><div style="color: #d2b48c"> ${whiteUsername}: </div>  <div>${whiteRating}</div> vs <div style="color: #d2b48c"> ${blackUsername}: </div> <div>${blackRating}</div> <div>${timeControl}</div> <div>${gameResult}</div></div>`;
 
       let pgnInput = document.getElementById("pgnInput");
 

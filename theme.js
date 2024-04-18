@@ -136,17 +136,10 @@ themeDefault.addEventListener("click", () => {
   theme = "default";
   localStorage.setItem("theme", "default");
   // declarations
-  let body = document.querySelector("body");
-  let button = document.querySelectorAll("button");
   let lightSquares = document.querySelectorAll(".white-1e1d7");
   let darkSquares = document.querySelectorAll(".black-3c85d");
 
   // styles
-  body.style.color = "#d2b48c";
-  body.style.background = "#1e1f22";
-  button.forEach((btn) => {
-    btn.style.background = "#0a5898";
-  });
 
   lightSquares.forEach((ls) => {
     ls.style.background = "";
@@ -162,18 +155,10 @@ themeRed.addEventListener("click", () => {
   theme = "red";
   localStorage.setItem("theme", "red");
   // declarations
-  let body = document.querySelector("body");
-  let button = document.querySelectorAll("button");
   let lightSquares = document.querySelectorAll(".white-1e1d7");
   let darkSquares = document.querySelectorAll(".black-3c85d");
 
   // styles
-  body.style.color = "#f75c80";
-  body.style.background = "#1e1f22";
-  button.forEach((btn) => {
-    btn.style.background = "#b63e5a";
-  });
-
   lightSquares.forEach((ls) => {
     ls.style.background = "#e6c8cf";
   });
@@ -189,18 +174,10 @@ themeTournament.addEventListener("click", () => {
   localStorage.setItem("theme", "tournament");
 
   // declarations
-  let body = document.querySelector("body");
-  let button = document.querySelectorAll("button");
   let lightSquares = document.querySelectorAll(".white-1e1d7");
   let darkSquares = document.querySelectorAll(".black-3c85d");
 
   // styles
-  body.style.color = "#d2b48c";
-  body.style.background = "#1e1f22";
-  button.forEach((btn) => {
-    btn.style.background = "#168c4c";
-  });
-
   lightSquares.forEach((ls) => {
     ls.style.background = "#65b27a";
   });
@@ -216,18 +193,10 @@ themeClassic.addEventListener("click", () => {
   localStorage.setItem("theme", "classic");
 
   // declarations
-  let body = document.querySelector("body");
-  let button = document.querySelectorAll("button");
   let lightSquares = document.querySelectorAll(".white-1e1d7");
   let darkSquares = document.querySelectorAll(".black-3c85d");
 
   // styles
-  body.style.color = "#d2b48c";
-  body.style.background = "#1e1f22";
-  button.forEach((btn) => {
-    btn.style.background = "#7e5634";
-  });
-
   lightSquares.forEach((ls) => {
     ls.style.background = "#FCE4BE";
   });
