@@ -17,7 +17,7 @@
   <body>
     <header class="header">
       <h1>🐪 Chess Game Raport</h1>
-      <p>v.1.0.6 (alpha)</p>
+      <p>v.1.1.0 (alpha)</p>
     </header>
     <div class="flexbox">
       <button id="settingsBtn" class="clean-btn">🔧</button>
@@ -30,11 +30,22 @@
         Enable Analise: no
       </button>
       <button id="showThreatsBtn" class="clean-btn">Show Threats: yes</button>
+
+      <button id="openModalBtn" class="clean-btn">Search for games</button>
+
+      <!-- The Modal -->
+      <div id="myModal" class="modal">
+        <!-- Modal Content -->
+        <div class="modal-content">
+          <h2>Enter username:</h2>
+          <input id="searchInput" type="text" placeholder="enter username.." />
+          <h2>Select data:</h2>
+          <input class="input-date" type="month" />
+          <button id="searchBtn" class="clean-btn">Search</button>
+          <ul class="games-list"></ul>
+        </div>
+      </div>
     </div>
-    <p>
-      keyboard shortcuts: f - flip board, e - engine moves, q - analisys, t -
-      threats
-    </p>
 
     <div class="container">
       <div class="leftContainer">

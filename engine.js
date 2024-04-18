@@ -17,6 +17,9 @@ function stringToMoveArray(pgnStr) {
     let outputString = moves
       .replace(/\$\d+/g, "")
       .replace(/\d+\.\s/g, "")
+      .replace(/\{[^}]*\}/g, "")
+      .replace(/\d+\./g, "")
+      .replace(/\./g, "")
       .split(/\s/);
 
     outputString = outputString.filter((item) => item !== "");
@@ -157,6 +160,140 @@ showThreatsBtn.addEventListener("click", () => {
     showThreatsBtn.textContent = `Show Threats: yes`;
   }
 });
+
+// SearchForGames
+
+let searchInput = document.getElementById("searchInput");
+let modal = document.getElementById("myModal");
+let openModalBtn = document.getElementById("openModalBtn");
+let inputDate = document.querySelector(".input-date");
+
+openModalBtn.addEventListener("click", () => {
+  let searchInput = document.getElementById("searchInput");
+
+  modal.style.display = "block";
+  let username;
+  let date;
+
+  openModal();
+
+  let currentDate = getCurrentDateYYYYMM();
+  inputDate.value = currentDate;
+});
+
+async function fetchData(username, date) {
+  let gamesList = document.querySelector(".games-list");
+  try {
+    let response = await fetch(
+      `https://api.chess.com/pub/player/${username}/games/${date}`
+    );
+    let data = await response.json();
+    data = data.games;
+
+    console.log(data);
+
+    for (let i = 0; i < data.length; i++) {
+      let li = document.createElement("li");
+
+      let whiteUsername = data[i].white.username;
+      let whiteRating = data[i].white.rating;
+      let blackUsername = data[i].black.username;
+      let blackRating = data[i].black.rating;
+      let timeControl = data[i].time_control;
+      let gameResult;
+      // let chessComAccWhite;
+      // let chessComAccBlack;
+
+      // Game result
+      if (data[i].white.result == "win") {
+        gameResult = "1 - 0";
+      } else if (data[i].black.result == "win") {
+        gameResult = "0 - 1";
+      } else {
+        gameResult = "1/2 - 1/2";
+      }
+
+      // Accuracy of games
+      // if (data[i].accuracies) {
+      //   chessComAccWhite = data[i].accuracies.white.toFixed(1);
+      //   chessComAccBlack = data[i].accuracies.black.toFixed(1);
+      // }
+
+      // Type of a game
+      if (
+        timeControl == "600" ||
+        timeControl == "900+10" ||
+        timeControl == "1800" ||
+        timeControl == "600+5" ||
+        timeControl == "1200" ||
+        timeControl == "3200"
+      ) {
+        timeControl = "⏱";
+      } else if (
+        timeControl == "180" ||
+        timeControl == "180+1" ||
+        timeControl == "180+2" ||
+        timeControl == "300" ||
+        timeControl == "300+5" ||
+        timeControl == "300+2"
+      ) {
+        timeControl = "⚡";
+      } else if (
+        timeControl == "60" ||
+        timeControl == "60+1" ||
+        timeControl == "120+1" ||
+        timeControl == "30" ||
+        timeControl == "20+1"
+      ) {
+        timeControl = "🔫";
+      } else if (timeControl == "1/0" || timeControl == "0/1") {
+        timeControl = "🤖";
+      }
+
+      li.innerHTML = `${whiteUsername}: ${whiteRating} vs ${blackUsername}: ${blackRating} ${timeControl} ${gameResult}`;
+
+      let pgnInput = document.getElementById("pgnInput");
+
+      li.addEventListener("click", () => {
+        pgnInput.value = data[i].pgn;
+        modal.style.display = "none";
+      });
+
+      gamesList.appendChild(li);
+    }
+  } catch (error) {
+    console.error("Wystąpił błąd podczas pobierania danych:", error);
+  }
+}
+
+// Get the modal element
+function openModal() {
+  window.onclick = function (event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  };
+}
+
+function getCurrentDateYYYYMM() {
+  let today = new Date();
+  let year = today.getFullYear();
+  let month = (today.getMonth() + 1).toString().padStart(2, "0"); // Months are zero-indexed
+  return `${year}-${month}`;
+}
+
+let searchBtn = document.getElementById("searchBtn");
+searchBtn.addEventListener("click", () => {
+  let gamesList = document.querySelector(".games-list");
+  gamesList.innerHTML = "";
+
+  username = searchInput.value;
+  date = inputDate.value;
+  date = date.replace(/-/g, "/");
+  fetchData(username, date);
+});
+
+//////////////////////////
 
 let analiseCurrentPossitionBtn = document.getElementById(
   "analiseCurrentPossitionBtn"
@@ -694,33 +831,34 @@ document.addEventListener("keydown", function (event) {
       $("#analiseCurrentPossitionBtn").trigger("click");
       localStorage.setItem("analysis", "false");
     }
-  } else if (event.key === "e") {
-    let bestMoveAsistantBtn = document.getElementById("bestMoveAsistantBtn");
-    showEngineBestMoves = !showEngineBestMoves;
-    $("#reviewBtnBackward").trigger("click");
-    $("#reviewBtnForward").trigger("click");
-    if (showEngineBestMoves) {
-      bestMoveAsistantBtn.textContent = `Engine Moves: yes`;
-    } else {
-      bestMoveAsistantBtn.textContent = `Engine Moves: no`;
-    }
-  } else if (event.key === "q") {
-    $("#analiseCurrentPossitionBtn").trigger("click");
-  } else if (event.key === "f") {
-    $("#flipOrientationBtn").trigger("click");
-  } else if (event.key === "t") {
-    $("#showThreatsBtn").trigger("click");
-  } else if (event.key === "ArrowDown") {
-    currentMove = 0;
-    board.position("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-    removeAllPaintedSquares();
-    $("#reviewBtnBackward").trigger("click");
-  } else if (event.key === "ArrowUp") {
-    currentMove = raport.pgnMoves.length;
-    board.position(raport.fen[currentMove]);
-    removeAllPaintedSquares();
-    $("#reviewBtnForward").trigger("click");
   }
+  // else if (event.key === "e") {
+  //   let bestMoveAsistantBtn = document.getElementById("bestMoveAsistantBtn");
+  //   showEngineBestMoves = !showEngineBestMoves;
+  //   $("#reviewBtnBackward").trigger("click");
+  //   $("#reviewBtnForward").trigger("click");
+  //   if (showEngineBestMoves) {
+  //     bestMoveAsistantBtn.textContent = `Engine Moves: yes`;
+  //   } else {
+  //     bestMoveAsistantBtn.textContent = `Engine Moves: no`;
+  //   }
+  // } else if (event.key === "q") {
+  //   $("#analiseCurrentPossitionBtn").trigger("click");
+  // } else if (event.key === "f") {
+  //   $("#flipOrientationBtn").trigger("click");
+  // } else if (event.key === "t") {
+  //   $("#showThreatsBtn").trigger("click");
+  // } else if (event.key === "ArrowDown") {
+  //   currentMove = 0;
+  //   board.position("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+  //   removeAllPaintedSquares();
+  //   $("#reviewBtnBackward").trigger("click");
+  // } else if (event.key === "ArrowUp") {
+  //   currentMove = raport.pgnMoves.length;
+  //   board.position(raport.fen[currentMove]);
+  //   removeAllPaintedSquares();
+  //   $("#reviewBtnForward").trigger("click");
+  // }
 });
 
 function isEven(value) {
