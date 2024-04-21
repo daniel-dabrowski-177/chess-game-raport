@@ -949,6 +949,7 @@ async function generateRaport(result) {
         displayMovesDiv.innerHTML = "";
         moveEvaluationDiv.innerHTML = "";
         analiseProgressDiv.innerHTML = `<div id="analizeProgress" style="color: #fff;">Analysis completed!</div>`;
+
         board.position(raport.fen[0]);
         displayAccuracy();
         countTallies();
@@ -1012,8 +1013,6 @@ async function generateRaport(result) {
             accuracyValue++;
 
             if (isEven(i)) {
-              blackAccVal++;
-
               if (currentMove <= 17) {
                 openingBlackValue++;
               }
@@ -1024,8 +1023,6 @@ async function generateRaport(result) {
                 endgameBlackValue++;
               }
             } else {
-              whiteAccVal++;
-
               if (currentMove <= 17) {
                 openingWhiteValue++;
               }
@@ -1053,6 +1050,7 @@ async function generateRaport(result) {
         moveEvaluationDiv.innerHTML = "";
         analiseProgressDiv.innerHTML = `<div id="analizeProgress" style="color: #fff;">Analysis completed!</div>`;
         board.position(raport.fen[0]);
+
         displayAccuracy();
         countTallies();
         displayTallies();
@@ -1819,17 +1817,62 @@ function fillEvalbar() {
   }
 }
 
+function sortAndCalculate(array) {
+  let evenIndexes = [];
+  let oddIndexes = [];
+
+  let whiteAccVal = 0;
+  let blackAccVal = 0;
+
+  for (let i = 0; i < array.length; i++) {
+    if (i % 2 === 0) {
+      evenIndexes.push(array[i]);
+    } else {
+      oddIndexes.push(array[i]);
+    }
+  }
+
+  for (let i = 0; i < evenIndexes.length; i++) {
+    if (
+      evenIndexes[i] !== "#d9af32" &&
+      evenIndexes[i] !== "#ef9e4c" &&
+      evenIndexes[i] !== "#ec6354"
+    ) {
+      blackAccVal++;
+    }
+  }
+
+  for (let i = 0; i < oddIndexes.length; i++) {
+    if (
+      oddIndexes[i] !== "#d9af32" &&
+      oddIndexes[i] !== "#ef9e4c" &&
+      oddIndexes[i] !== "#ec6354"
+    ) {
+      whiteAccVal++;
+    }
+  }
+
+  return {
+    evenIndexes: evenIndexes,
+    oddIndexes: oddIndexes,
+    whiteAccVal: whiteAccVal,
+    blackAccVal: blackAccVal,
+  };
+}
+
 function displayAccuracy() {
+  const result = sortAndCalculate(raport.colors);
+
   whiteAccuracyDiv = document.getElementById("whiteAccuracy");
   whiteAccuracyDiv.innerHTML =
     "White accuracy: " +
-    ((whiteAccVal / (raport.playerMoves.length / 2)) * 100).toFixed(1) +
+    ((result.whiteAccVal / result.evenIndexes.length) * 100).toFixed(1) +
     " %";
 
   blackAccuracyDiv = document.getElementById("blackAccuracy");
   blackAccuracyDiv.innerHTML =
     "Black accuracy: " +
-    ((blackAccVal / (raport.playerMoves.length / 2)) * 100).toFixed(1) +
+    ((result.blackAccVal / result.oddIndexes.length) * 100).toFixed(1) +
     " %";
 
   // Opening
@@ -1925,37 +1968,32 @@ class Stockfish {
     );
     this.depth = 0;
     this.worker.postMessage("uci");
-    this.worker.postMessage("setoption name MultiPV value 8");
+    this.worker.postMessage("setoption name MultiPV value 0");
     return;
   }
 
   async evaluate(fen, targetDepth, verbose = false) {
-    this.worker.postMessage("position fen " + fen);
-    this.worker.postMessage("go depth " + targetDepth);
-    const messages = [];
-    const lines = [];
-    let timeoutReached = false;
-    return new Promise((res) => {
+    return new Promise((resolve, reject) => {
+      const messages = [];
+      const lines = [];
+      let timeoutReached = false;
+      let latestDepth = 0;
+
       const timeout = setTimeout(() => {
         timeoutReached = true;
-        res(lines);
+        reject("Evaluation timeout reached");
         this.worker.terminate();
       }, 60000);
 
       this.worker.addEventListener("message", (event) => {
         if (timeoutReached) return;
+
         let message = event.data;
         messages.unshift(message);
-        let latestDepth = parseInt(
-          message.match(/(?:depth )(\d+)/)?.[1] || "0"
-        );
-        this.depth = Math.max(latestDepth, this.depth);
+
         if (message.startsWith("bestmove") || message.includes("depth 0")) {
-          let searchMessages = messages.filter((msg) =>
-            msg.startsWith("info depth")
-          );
-          const uniqueMovesMap = new Map();
-          for (let searchMessage of searchMessages) {
+          for (let i = 0; i < messages.length; i++) {
+            let searchMessage = messages[i];
             let idString = searchMessage.match(/(?:multipv )(\d+)/)?.[1];
             let depthString = searchMessage.match(/(?:depth )(\d+)/)?.[1];
             let moveUCI = searchMessage.match(/(?: pv )(.+?)(?= |$)/)?.[1];
@@ -1965,14 +2003,15 @@ class Stockfish {
                 searchMessage.match(/(?:(?:cp )|(?:mate ))([\d-]+)/)?.[1] || "0"
               ),
             };
+
             if (fen.includes(" b ")) {
               evaluation.value *= -1;
             }
             if (!idString || !depthString || !moveUCI) continue;
             let id = parseInt(idString);
             let depth = parseInt(depthString);
-            if (!uniqueMovesMap.has(moveUCI)) {
-              uniqueMovesMap.set(moveUCI, {
+            if (!lines.some((line) => line.moveUCI === moveUCI)) {
+              lines.push({
                 id,
                 depth,
                 evaluation,
@@ -1980,24 +2019,26 @@ class Stockfish {
               });
             }
           }
-          lines.push(...uniqueMovesMap.values());
           if (lines.length >= 1 || timeoutReached) {
             clearTimeout(timeout);
             this.worker.terminate();
-            res(lines);
+            resolve(lines);
           }
         }
       });
+
       this.worker.addEventListener("error", () => {
         clearTimeout(timeout);
         this.worker.terminate();
         this.worker = new Worker("stockfish/stockfish.js");
         this.worker.postMessage("uci");
-        this.worker.postMessage("setoption name MultiPV value 8");
-        this.evaluate(fen, targetDepth, verbose).then(res);
+        this.worker.postMessage("setoption name MultiPV value 0");
+        this.evaluate(fen, targetDepth, verbose).then(resolve).catch(reject);
       });
+
+      this.worker.postMessage("position fen " + fen);
+      this.worker.postMessage("go depth " + targetDepth);
     });
-    return;
   }
 
   async generateBestPositions(fen, numLines, depth) {
@@ -2251,8 +2292,6 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
     evalArr.push(currMoveValue);
     typeArr.push(currMoveType);
 
-    let currMove2;
-
     if (analyses.length > 1) {
       let currMoveValue2 = analyses[1].evaluation.value;
       evalArr2.push(currMoveValue2);
@@ -2299,6 +2338,14 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
       } else if (
         currMove <= prevMove &&
         prevMove - currMove >= 0 &&
+        prevMove - currMove < 25
+      ) {
+        moveEvaluationText = "Good move";
+        textColor = good;
+        colorSquare = good;
+      } else if (
+        currMove <= prevMove &&
+        prevMove - currMove >= 25 &&
         prevMove - currMove < 150
       ) {
         moveEvaluationText = "Inacuraccy";
@@ -2307,12 +2354,12 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
       } else if (
         currMove <= prevMove &&
         prevMove - currMove >= 150 &&
-        prevMove - currMove < 325
+        prevMove - currMove < 275
       ) {
         moveEvaluationText = "Mistake";
         textColor = mistake;
         colorSquare = mistake;
-      } else if (currMove <= prevMove && prevMove - currMove > 325) {
+      } else if (currMove <= prevMove && prevMove - currMove > 275) {
         moveEvaluationText = "Blunder";
         textColor = blunder;
         colorSquare = blunder;
@@ -2375,6 +2422,14 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
       } else if (
         currMove >= prevMove &&
         currMove - prevMove >= 0 &&
+        currMove - prevMove < 25
+      ) {
+        moveEvaluationText = "Good move";
+        textColor = good;
+        colorSquare = good;
+      } else if (
+        currMove >= prevMove &&
+        currMove - prevMove >= 25 &&
         currMove - prevMove < 150
       ) {
         moveEvaluationText = "Inacuraccy";
@@ -2383,12 +2438,12 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
       } else if (
         currMove >= prevMove &&
         currMove - prevMove >= 150 &&
-        currMove - prevMove < 325
+        currMove - prevMove < 275
       ) {
         moveEvaluationText = "Mistake";
         textColor = mistake;
         colorSquare = mistake;
-      } else if (currMove >= prevMove && currMove - prevMove > 325) {
+      } else if (currMove >= prevMove && currMove - prevMove > 275) {
         moveEvaluationText = "Blunder";
         textColor = blunder;
         colorSquare = blunder;
