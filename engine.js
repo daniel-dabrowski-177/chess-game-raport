@@ -257,7 +257,7 @@ async function fetchData(username, date) {
         modal.style.display = "none";
       });
 
-      gamesList.appendChild(li);
+      gamesList.prepend(li);
     }
   } catch (error) {
     console.error("Wystąpił błąd podczas pobierania danych:", error);
