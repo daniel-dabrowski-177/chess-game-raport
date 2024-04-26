@@ -849,15 +849,15 @@ document.addEventListener("keydown", function (event) {
       localStorage.setItem("analysis", "false");
     }
   } else if (event.key === "ArrowDown") {
-    currentMove = 0;
-    board.position("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-    removeAllPaintedSquares();
-    $("#reviewBtnBackward").trigger("click");
-  } else if (event.key === "ArrowUp") {
     currentMove = raport.pgnMoves.length;
     board.position(raport.fen[currentMove]);
     removeAllPaintedSquares();
     $("#reviewBtnForward").trigger("click");
+  } else if (event.key === "ArrowUp") {
+    currentMove = 0;
+    board.position("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    removeAllPaintedSquares();
+    $("#reviewBtnBackward").trigger("click");
   }
 
   // else if (event.key === "e") {
@@ -1667,11 +1667,11 @@ function displayNotatons() {
   const movesContainer = document.querySelector(".moves");
 
   let pgnData = raport.pgn;
-  pgnData.pop();
+  // pgnData.pop();
   let fenData = raport.fen;
   let colorsData = raport.colors;
 
-  for (let i = 0; i < pgnData.length; i += 2) {
+  for (let i = 0; i < pgnData.length - 2; i += 2) {
     const rowDiv = document.createElement("div");
     rowDiv.classList.add("moves-row");
 
@@ -1687,41 +1687,41 @@ function displayNotatons() {
     if (colorsData[i + 1] == "#a17a5c") {
       el1Div.innerHTML =
         `<img class="notation-img" src="/move_classifications/book.png" /> ` +
-        pgnData[i + 1];
+        pgnData[i];
     } else if (colorsData[i + 1] == "#1f947d") {
       el1Div.innerHTML =
         `<img class="notation-img" src="/move_classifications/brilliant.png" /> ` +
-        pgnData[i + 1];
+        pgnData[i];
     } else if (colorsData[i + 1] == "#5183b0") {
       el1Div.innerHTML =
         `<img class="notation-img" src="/move_classifications/great.png" /> ` +
-        pgnData[i + 1];
+        pgnData[i];
     } else if (colorsData[i + 1] == "#71a341") {
       el1Div.innerHTML =
         `<img class="notation-img" src="/move_classifications/best.png" /> ` +
-        pgnData[i + 1];
+        pgnData[i];
     } else if (colorsData[i + 1] == "#71a340") {
       el1Div.innerHTML =
         `<img class="notation-img" src="/move_classifications/very-good.png" /> ` +
-        pgnData[i + 1];
+        pgnData[i];
     } else if (colorsData[i + 1] == "#95b776") {
       el1Div.innerHTML =
         `<img class="notation-img" src="/move_classifications/good.png" /> ` +
-        pgnData[i + 1];
+        pgnData[i];
     } else if (colorsData[i + 1] == "#d9af32") {
       el1Div.innerHTML =
         `<img class="notation-img" src="/move_classifications/inaccuracy.png" /> ` +
-        pgnData[i + 1];
+        pgnData[i];
     } else if (colorsData[i + 1] == "#ef9e4c") {
       el1Div.innerHTML =
         `<img class="notation-img" src="/move_classifications/mistake.png" /> ` +
-        pgnData[i + 1];
+        pgnData[i];
     } else if (colorsData[i + 1] == "#ec6354") {
       el1Div.innerHTML =
         `<img class="notation-img" src="/move_classifications/blunder.png" /> ` +
-        pgnData[i + 1];
+        pgnData[i];
     } else {
-      el1Div.innerHTML = pgnData[i + 1];
+      el1Div.innerHTML = pgnData[i];
     }
 
     el1Div.setAttribute("data-fen", fenData[i + 1]);
@@ -1823,7 +1823,7 @@ function displayNotatons() {
         `<img class="notation-img" src="/move_classifications/blunder.png" /> ` +
         pgnData[i + 1];
     } else {
-      el2Div.innerHTML = pgnData[i + 2];
+      el2Div.innerHTML = pgnData[i + 1];
     }
 
     el2Div.setAttribute("data-fen", fenData[i + 2]);
