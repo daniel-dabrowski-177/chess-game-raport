@@ -30,6 +30,9 @@
         Enable Analise: no
       </button>
       <button id="showThreatsBtn" class="clean-btn">Show Threats: yes</button>
+      <button id="toggleNotificationsBtn" class="clean-btn">
+        Toggle Notifications: no
+      </button>
 
       <button id="openModalBtn" class="clean-btn">Search for games</button>
 
@@ -141,154 +144,166 @@
           <div id="whiteAccuracy"></div>
           <div id="blackAccuracy"></div>
         </div>
-        <div class="player-color">
-          <h3>White</h3>
-          <h3>Black</h3>
-        </div>
-        <div class="tallies-component">
-          <ul>
-            <li class="color-excellent tallies-element">
-              <p class="tallies-element-counter excellentCounterWhite">0</p>
-              <div>
-                <img
-                  src="/move_classifications/brilliant.png"
-                  alt=""
-                  width="12px"
-                  height="12px"
-                />
-                Excellent Move
-              </div>
-              <p class="tallies-element-counter excellentCounterBlack">0</p>
-            </li>
-            <li class="color-great-move tallies-element">
-              <p class="tallies-element-counter greatCounterWhite">0</p>
-              <div>
-                <img
-                  src="/move_classifications/great.png"
-                  alt=""
-                  width="12px"
-                  height="12px"
-                />
-                Great Move
-              </div>
-              <p class="tallies-element-counter greatCounterBlack">0</p>
-            </li>
-            <li class="color-very-good-move tallies-element">
-              <p class="tallies-element-counter bestCounterWhite">0</p>
-              <div>
-                <img
-                  src="/move_classifications/best.png"
-                  alt=""
-                  width="12px"
-                  height="12px"
-                />
-                Best Move
-              </div>
-              <p class="tallies-element-counter bestCounterBlack">0</p>
-            </li>
-            <li class="color-very-good-move tallies-element">
-              <p class="tallies-element-counter veryGoodCounterWhite">0</p>
-              <div>
-                <img
-                  src="/move_classifications/very-good.png"
-                  alt=""
-                  width="12px"
-                  height="12px"
-                />
-                Very Good
-              </div>
-              <p class="tallies-element-counter veryGoodCounterBlack">0</p>
-            </li>
-            <li class="color-good-move tallies-element">
-              <p class="tallies-element-counter goodCounterWhite">0</p>
-              <div>
-                <img
-                  src="/move_classifications/good.png"
-                  alt=""
-                  width="12px"
-                  height="12px"
-                />
-                Good Move
-              </div>
-              <p class="tallies-element-counter goodCounterBlack">0</p>
-            </li>
-            <li class="color-book-move tallies-element">
-              <p class="tallies-element-counter bookCounterWhite">0</p>
-              <div>
-                <img
-                  src="/move_classifications/book.png"
-                  alt=""
-                  width="12px"
-                  height="12px"
-                />
-                Book Move
-              </div>
-              <p class="tallies-element-counter bookCounterBlack">0</p>
-            </li>
-            <li class="color-inaccuracy tallies-element">
-              <p class="tallies-element-counter inaccuracyCounterWhite">0</p>
-              <div>
-                <img
-                  src="/move_classifications/inaccuracy.png"
-                  alt=""
-                  width="12px"
-                  height="12px"
-                />
-                Inacurracy
-              </div>
-              <p class="tallies-element-counter inaccuracyCounterBlack">0</p>
-            </li>
-            <li class="color-mistake tallies-element">
-              <p class="tallies-element-counter mistakeCounterWhite">0</p>
-              <div>
-                <img
-                  src="/move_classifications/mistake.png"
-                  alt=""
-                  width="12px"
-                  height="12px"
-                />
-                Mistake
-              </div>
-              <p class="tallies-element-counter mistakeCounterBlack">0</p>
-            </li>
-            <li class="color-blunder tallies-element">
-              <p class="tallies-element-counter blunderCounterWhite">0</p>
-              <div>
-                <img
-                  src="/move_classifications/blunder.png"
-                  alt=""
-                  width="12px"
-                  height="12px"
-                />
-                Blunder
-              </div>
-              <p class="tallies-element-counter blunderCounterBlack">0</p>
-            </li>
-          </ul>
-        </div>
-        <div class="ranking-container">
-          <ul>
-            <li class="tallies-element ranking-element">
-              <h3 class="tallies-element-counter avgWhiteRanking">?</h3>
-              <p>Ranking</p>
-              <h3 class="tallies-element-counter avgBlackRanking">?</h3>
-            </li>
-            <li class="tallies-element">
-              <p class="tallies-element-counter openingWhite">?</p>
-              <p>Opening</p>
-              <p class="tallies-element-counter openingBlack">?</p>
-            </li>
-            <li class="tallies-element">
-              <p class="tallies-element-counter middlegameWhite">?</p>
-              <p>Middlegame</p>
-              <p class="tallies-element-counter middlegameBlack">?</p>
-            </li>
-            <li class="tallies-element">
-              <p class="tallies-element-counter endgameWhite">?</p>
-              <p>Endgame</p>
-              <p class="tallies-element-counter endgameBlack">?</p>
-            </li>
-          </ul>
+        <div class="infos">
+          <div class="type-one">
+            <div class="player-color">
+              <h3>White</h3>
+              <h3>Black</h3>
+            </div>
+            <div class="tallies-component">
+              <ul>
+                <li class="color-excellent tallies-element">
+                  <p class="tallies-element-counter excellentCounterWhite">0</p>
+                  <div>
+                    <img
+                      src="/move_classifications/brilliant.png"
+                      alt=""
+                      width="12px"
+                      height="12px"
+                    />
+                    Excellent Move
+                  </div>
+                  <p class="tallies-element-counter excellentCounterBlack">0</p>
+                </li>
+                <li class="color-great-move tallies-element">
+                  <p class="tallies-element-counter greatCounterWhite">0</p>
+                  <div>
+                    <img
+                      src="/move_classifications/great.png"
+                      alt=""
+                      width="12px"
+                      height="12px"
+                    />
+                    Great Move
+                  </div>
+                  <p class="tallies-element-counter greatCounterBlack">0</p>
+                </li>
+                <li class="color-very-good-move tallies-element">
+                  <p class="tallies-element-counter bestCounterWhite">0</p>
+                  <div>
+                    <img
+                      src="/move_classifications/best.png"
+                      alt=""
+                      width="12px"
+                      height="12px"
+                    />
+                    Best Move
+                  </div>
+                  <p class="tallies-element-counter bestCounterBlack">0</p>
+                </li>
+                <li class="color-very-good-move tallies-element">
+                  <p class="tallies-element-counter veryGoodCounterWhite">0</p>
+                  <div>
+                    <img
+                      src="/move_classifications/very-good.png"
+                      alt=""
+                      width="12px"
+                      height="12px"
+                    />
+                    Very Good
+                  </div>
+                  <p class="tallies-element-counter veryGoodCounterBlack">0</p>
+                </li>
+                <li class="color-good-move tallies-element">
+                  <p class="tallies-element-counter goodCounterWhite">0</p>
+                  <div>
+                    <img
+                      src="/move_classifications/good.png"
+                      alt=""
+                      width="12px"
+                      height="12px"
+                    />
+                    Good Move
+                  </div>
+                  <p class="tallies-element-counter goodCounterBlack">0</p>
+                </li>
+                <li class="color-book-move tallies-element">
+                  <p class="tallies-element-counter bookCounterWhite">0</p>
+                  <div>
+                    <img
+                      src="/move_classifications/book.png"
+                      alt=""
+                      width="12px"
+                      height="12px"
+                    />
+                    Book Move
+                  </div>
+                  <p class="tallies-element-counter bookCounterBlack">0</p>
+                </li>
+                <li class="color-inaccuracy tallies-element">
+                  <p class="tallies-element-counter inaccuracyCounterWhite">
+                    0
+                  </p>
+                  <div>
+                    <img
+                      src="/move_classifications/inaccuracy.png"
+                      alt=""
+                      width="12px"
+                      height="12px"
+                    />
+                    Inacurracy
+                  </div>
+                  <p class="tallies-element-counter inaccuracyCounterBlack">
+                    0
+                  </p>
+                </li>
+                <li class="color-mistake tallies-element">
+                  <p class="tallies-element-counter mistakeCounterWhite">0</p>
+                  <div>
+                    <img
+                      src="/move_classifications/mistake.png"
+                      alt=""
+                      width="12px"
+                      height="12px"
+                    />
+                    Mistake
+                  </div>
+                  <p class="tallies-element-counter mistakeCounterBlack">0</p>
+                </li>
+                <li class="color-blunder tallies-element">
+                  <p class="tallies-element-counter blunderCounterWhite">0</p>
+                  <div>
+                    <img
+                      src="/move_classifications/blunder.png"
+                      alt=""
+                      width="12px"
+                      height="12px"
+                    />
+                    Blunder
+                  </div>
+                  <p class="tallies-element-counter blunderCounterBlack">0</p>
+                </li>
+              </ul>
+            </div>
+            <div class="ranking-container">
+              <ul>
+                <li class="tallies-element ranking-element">
+                  <h3 class="tallies-element-counter avgWhiteRanking">?</h3>
+                  <p>Ranking</p>
+                  <h3 class="tallies-element-counter avgBlackRanking">?</h3>
+                </li>
+                <li class="tallies-element">
+                  <p class="tallies-element-counter openingWhite">?</p>
+                  <p>Opening</p>
+                  <p class="tallies-element-counter openingBlack">?</p>
+                </li>
+                <li class="tallies-element">
+                  <p class="tallies-element-counter middlegameWhite">?</p>
+                  <p>Middlegame</p>
+                  <p class="tallies-element-counter middlegameBlack">?</p>
+                </li>
+                <li class="tallies-element">
+                  <p class="tallies-element-counter endgameWhite">?</p>
+                  <p>Endgame</p>
+                  <p class="tallies-element-counter endgameBlack">?</p>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="type-two">
+            <h4 class="notation">Move notation:</h4>
+            <div class="moves"></div>
+          </div>
         </div>
       </div>
     </div>

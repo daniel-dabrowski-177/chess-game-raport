@@ -423,3 +423,69 @@ textarea {
   gap: 10px;
   font-weight: bold;
 }
+
+.type-one {
+  visibility: hidden;
+  height: 0px;
+}
+
+.type-two {
+  text-align: center;
+}
+
+.moves-container {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  gap: 20px;
+  margin: 0 0 0 20px;
+}
+
+.moves {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin: -10px -15px;
+  padding: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+  background-color: #1e1f22;
+  border-radius: 6px;
+}
+
+.moves-row {
+  display: flex;
+  gap: 15px;
+  margin: 2px 0;
+}
+
+.moves-num {
+  width: 20px;
+  padding: 2px;
+}
+
+.moves-el {
+  width: 60px;
+  padding: 2px;
+  margin: 0 0 0 5px;
+  font-weight: bold;
+  display: flex;
+  gap: 6px;
+}
+
+.moves-el-1 {
+  padding: 2px;
+  margin: 0 0 0 5px;
+}
+
+.moves-el:hover {
+  cursor: pointer;
+  background-color: #45474b;
+  border-radius: 4px;
+}
+
+.notation-img {
+  width: 12px;
+  height: 12px;
+  margin: 2px 0 0 0;
+}

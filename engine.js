@@ -133,6 +133,7 @@ settingsBtn.addEventListener("click", () => {
 
 let showEngineBestMoves = false;
 let showThreats = true;
+let toggleNotifications = false;
 let showAnalise = false;
 let bookMove = false;
 let openingName;
@@ -161,8 +162,26 @@ showThreatsBtn.addEventListener("click", () => {
   }
 });
 
-// SearchForGames
+// Toggle Notifications
+let toggleNotificationsBtn = document.getElementById("toggleNotificationsBtn");
+toggleNotificationsBtn.addEventListener("click", () => {
+  toggleNotifications = !toggleNotifications;
+  removeAllPaintedSquares();
 
+  let typeOneDiv = document.querySelector(".type-one");
+  let typeTwoDiv = document.querySelector(".type-two");
+  if (!toggleNotifications) {
+    toggleNotificationsBtn.textContent = `Toggle Notifications: yes`;
+    typeOneDiv.style.visibility = "hidden";
+    typeTwoDiv.style.visibility = "visible";
+  } else {
+    toggleNotificationsBtn.textContent = `Toggle Notifications: no`;
+    typeOneDiv.style.visibility = "visible";
+    typeTwoDiv.style.visibility = "hidden";
+  }
+});
+
+// SearchForGames
 let searchInput = document.getElementById("searchInput");
 let modal = document.getElementById("myModal");
 let openModalBtn = document.getElementById("openModalBtn");
@@ -829,7 +848,18 @@ document.addEventListener("keydown", function (event) {
       $("#analiseCurrentPossitionBtn").trigger("click");
       localStorage.setItem("analysis", "false");
     }
+  } else if (event.key === "ArrowDown") {
+    currentMove = 0;
+    board.position("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    removeAllPaintedSquares();
+    $("#reviewBtnBackward").trigger("click");
+  } else if (event.key === "ArrowUp") {
+    currentMove = raport.pgnMoves.length;
+    board.position(raport.fen[currentMove]);
+    removeAllPaintedSquares();
+    $("#reviewBtnForward").trigger("click");
   }
+
   // else if (event.key === "e") {
   //   let bestMoveAsistantBtn = document.getElementById("bestMoveAsistantBtn");
   //   showEngineBestMoves = !showEngineBestMoves;
@@ -846,16 +876,6 @@ document.addEventListener("keydown", function (event) {
   //   $("#flipOrientationBtn").trigger("click");
   // } else if (event.key === "t") {
   //   $("#showThreatsBtn").trigger("click");
-  // } else if (event.key === "ArrowDown") {
-  //   currentMove = 0;
-  //   board.position("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-  //   removeAllPaintedSquares();
-  //   $("#reviewBtnBackward").trigger("click");
-  // } else if (event.key === "ArrowUp") {
-  //   currentMove = raport.pgnMoves.length;
-  //   board.position(raport.fen[currentMove]);
-  //   removeAllPaintedSquares();
-  //   $("#reviewBtnForward").trigger("click");
   // }
 });
 
@@ -956,6 +976,8 @@ async function generateRaport(result) {
         displayTallies();
         displayRanking();
 
+        displayNotatons();
+
         moveEvaluationDiv.innerHTML = `<span style="color: #FFD700;"><b>Checkmate!</b></span>`;
         raport.message.push(moveEvaluationDiv.innerHTML);
 
@@ -988,6 +1010,8 @@ async function generateRaport(result) {
         countTallies();
         displayTallies();
         displayRanking();
+
+        displayNotatons();
 
         return (currentMove = 0);
       } else {
@@ -1055,6 +1079,8 @@ async function generateRaport(result) {
         countTallies();
         displayTallies();
         displayRanking();
+        displayNotatons();
+
         return (currentMove = 0);
       }
 
@@ -1635,6 +1661,236 @@ function isEndgame(fen) {
   }
 
   return endgameTrigger;
+}
+
+function displayNotatons() {
+  const movesContainer = document.querySelector(".moves");
+
+  let pgnData = raport.pgn;
+  pgnData.pop();
+  let fenData = raport.fen;
+  let colorsData = raport.colors;
+
+  for (let i = 0; i < pgnData.length; i += 2) {
+    const rowDiv = document.createElement("div");
+    rowDiv.classList.add("moves-row");
+
+    const numDiv = document.createElement("div");
+    numDiv.classList.add("moves-num");
+    numDiv.textContent = `${i / 2 + 1}.`;
+    rowDiv.appendChild(numDiv);
+
+    const el1Div = document.createElement("div");
+    el1Div.classList.add("moves-el");
+    el1Div.style.color = colorsData[i + 1];
+
+    if (colorsData[i + 1] == "#a17a5c") {
+      el1Div.innerHTML =
+        `<img class="notation-img" src="/move_classifications/book.png" /> ` +
+        pgnData[i + 1];
+    } else if (colorsData[i + 1] == "#1f947d") {
+      el1Div.innerHTML =
+        `<img class="notation-img" src="/move_classifications/brilliant.png" /> ` +
+        pgnData[i + 1];
+    } else if (colorsData[i + 1] == "#5183b0") {
+      el1Div.innerHTML =
+        `<img class="notation-img" src="/move_classifications/great.png" /> ` +
+        pgnData[i + 1];
+    } else if (colorsData[i + 1] == "#71a341") {
+      el1Div.innerHTML =
+        `<img class="notation-img" src="/move_classifications/best.png" /> ` +
+        pgnData[i + 1];
+    } else if (colorsData[i + 1] == "#71a340") {
+      el1Div.innerHTML =
+        `<img class="notation-img" src="/move_classifications/very-good.png" /> ` +
+        pgnData[i + 1];
+    } else if (colorsData[i + 1] == "#95b776") {
+      el1Div.innerHTML =
+        `<img class="notation-img" src="/move_classifications/good.png" /> ` +
+        pgnData[i + 1];
+    } else if (colorsData[i + 1] == "#d9af32") {
+      el1Div.innerHTML =
+        `<img class="notation-img" src="/move_classifications/inaccuracy.png" /> ` +
+        pgnData[i + 1];
+    } else if (colorsData[i + 1] == "#ef9e4c") {
+      el1Div.innerHTML =
+        `<img class="notation-img" src="/move_classifications/mistake.png" /> ` +
+        pgnData[i + 1];
+    } else if (colorsData[i + 1] == "#ec6354") {
+      el1Div.innerHTML =
+        `<img class="notation-img" src="/move_classifications/blunder.png" /> ` +
+        pgnData[i + 1];
+    } else {
+      el1Div.innerHTML = pgnData[i + 1];
+    }
+
+    el1Div.setAttribute("data-fen", fenData[i + 1]);
+    el1Div.addEventListener("click", () => {
+      board.position(fenData[i + 1]);
+      currentMove = i + 1;
+
+      // Paint Squares
+      let playerMove1 = raport.playerMoves[currentMove];
+      let curentColor1 = raport.colors[currentMove];
+      removeAllPaintedSquares();
+      fillEvalbar();
+
+      // Paint Squares
+      let moveFrom = playerMove1.substring(0, 2);
+      let moveTo = playerMove1.substring(2);
+      const squareFrom = document.querySelector(`[data-square=${moveFrom}]`);
+      const squareTo = document.querySelector(`[data-square=${moveTo}]`);
+      squareFrom.style.background = curentColor1;
+      squareTo.style.background = curentColor1;
+
+      let moveClassificationDiv = document.createElement("div");
+      moveClassificationDiv.classList.add("icon");
+
+      // Validation
+      switch (curentColor1) {
+        case "#a17a5c":
+          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/book.png")`;
+          break;
+        case "#1f947d":
+          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/brilliant.png")`;
+          break;
+        case "#5183b0":
+          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/great.png")`;
+          break;
+        case "#71a341":
+          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/best.png")`;
+          break;
+        case "#71a340":
+          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/very-good.png")`;
+          break;
+        case "#95b776":
+          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/good.png")`;
+          break;
+        case "#d9af32":
+          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/inaccuracy.png")`;
+          break;
+        case "#ef9e4c":
+          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/mistake.png")`;
+          break;
+        case "#ec6354":
+          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/blunder.png")`;
+          break;
+        default:
+          // No image set for the backgroundImage property
+          break;
+      }
+      squareTo.appendChild(moveClassificationDiv);
+    });
+
+    const el2Div = document.createElement("div");
+    el2Div.classList.add("moves-el");
+    el2Div.style.color = colorsData[i + 2];
+
+    if (colorsData[i + 2] == "#a17a5c") {
+      el2Div.innerHTML =
+        `<img class="notation-img" src="/move_classifications/book.png" /> ` +
+        pgnData[i + 1];
+    } else if (colorsData[i + 2] == "#1f947d") {
+      el2Div.innerHTML =
+        `<img class="notation-img" src="/move_classifications/brilliant.png" /> ` +
+        pgnData[i + 1];
+    } else if (colorsData[i + 2] == "#5183b0") {
+      el2Div.innerHTML =
+        `<img class="notation-img" src="/move_classifications/great.png" /> ` +
+        pgnData[i + 1];
+    } else if (colorsData[i + 2] == "#71a341") {
+      el2Div.innerHTML =
+        `<img class="notation-img" src="/move_classifications/best.png" /> ` +
+        pgnData[i + 1];
+    } else if (colorsData[i + 2] == "#71a340") {
+      el2Div.innerHTML =
+        `<img class="notation-img" src="/move_classifications/very-good.png" /> ` +
+        pgnData[i + 1];
+    } else if (colorsData[i + 2] == "#95b776") {
+      el2Div.innerHTML =
+        `<img class="notation-img" src="/move_classifications/good.png" /> ` +
+        pgnData[i + 1];
+    } else if (colorsData[i + 2] == "#d9af32") {
+      el2Div.innerHTML =
+        `<img class="notation-img" src="/move_classifications/inaccuracy.png" /> ` +
+        pgnData[i + 1];
+    } else if (colorsData[i + 2] == "#ef9e4c") {
+      el2Div.innerHTML =
+        `<img class="notation-img" src="/move_classifications/mistake.png" /> ` +
+        pgnData[i + 1];
+    } else if (colorsData[i + 2] == "#ec6354") {
+      el2Div.innerHTML =
+        `<img class="notation-img" src="/move_classifications/blunder.png" /> ` +
+        pgnData[i + 1];
+    } else {
+      el2Div.innerHTML = pgnData[i + 2];
+    }
+
+    el2Div.setAttribute("data-fen", fenData[i + 2]);
+    el2Div.addEventListener("click", () => {
+      board.position(fenData[i + 2]);
+      currentMove = i + 2;
+
+      // Paint Squares
+      let playerMove2 = raport.playerMoves[currentMove];
+      let curentColor2 = raport.colors[currentMove];
+      removeAllPaintedSquares();
+      fillEvalbar();
+
+      // Paint Squares
+      let moveFrom = playerMove2.substring(0, 2);
+      let moveTo = playerMove2.substring(2);
+      const squareFrom = document.querySelector(`[data-square=${moveFrom}]`);
+      const squareTo = document.querySelector(`[data-square=${moveTo}]`);
+      squareFrom.style.background = curentColor2;
+      squareTo.style.background = curentColor2;
+
+      let moveClassificationDiv = document.createElement("div");
+      moveClassificationDiv.classList.add("icon");
+
+      // Validation
+      switch (curentColor2) {
+        case "#a17a5c":
+          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/book.png")`;
+          break;
+        case "#1f947d":
+          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/brilliant.png")`;
+          break;
+        case "#5183b0":
+          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/great.png")`;
+          break;
+        case "#71a341":
+          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/best.png")`;
+          break;
+        case "#71a340":
+          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/very-good.png")`;
+          break;
+        case "#95b776":
+          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/good.png")`;
+          break;
+        case "#d9af32":
+          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/inaccuracy.png")`;
+          break;
+        case "#ef9e4c":
+          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/mistake.png")`;
+          break;
+        case "#ec6354":
+          moveClassificationDiv.style.backgroundImage = `url("/move_classifications/blunder.png")`;
+          break;
+        default:
+          // No image set for the backgroundImage property
+          break;
+      }
+      squareTo.appendChild(moveClassificationDiv);
+    });
+
+    rowDiv.appendChild(el1Div);
+    rowDiv.appendChild(el2Div);
+
+    movesContainer.appendChild(rowDiv);
+  }
+
+  return movesContainer;
 }
 
 function displayRanking() {
