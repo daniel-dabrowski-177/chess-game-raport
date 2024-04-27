@@ -2364,8 +2364,15 @@ async function removeAllPaintedSquares() {
 let evalArr = [0];
 let evalArr2 = [0];
 let typeArr = ["cp"];
+
 let bestMovesArr = ["e2e4"];
+let secondBestMovesArr = ["d2d4"];
+let thirdBestMovesArr = ["c2c4"];
+
 let bestMovesArrEval = ["0.2"];
+let secondBestMovesArrEval = ["0.1"];
+let thirdBestMovesArrEval = ["0.0"];
+
 let veryGoodMovesArr = [""];
 let goodMovesArr = [""];
 
@@ -2416,6 +2423,8 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
 
   function checkBestMove(moveEvaluationText, textColor, analyses, lastMove) {
     let currentPlayerMove = lastMove.from + lastMove.to;
+
+    // First
     let engineBestMove = bestMovesArr[bestMovesArr.length - 1];
     let engineBestMoveEval = (
       bestMovesArrEval[bestMovesArrEval.length - 1] / 100
@@ -2426,7 +2435,6 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
 
     bestMovesArr.push(analyses[0].moveUCI);
     bestMovesArr.push(analyses[0].moveUCI);
-
     bestMovesArrEval.push(analyses[0].evaluation.value);
     bestMovesArrEval.push(analyses[0].evaluation.value);
 
@@ -2514,6 +2522,88 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
       displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: ${textColor};">Move played: ${currentPlayerMove}</div>
       <div id="displayMoves" style="color: #71a341;">The best was: <span style="color:#fff">${engineBestMove} | ${engineBestMoveEval}</span></div>`;
       raport.comment.push(displayMovesDiv.innerHTML);
+    }
+
+    // Second
+    if (analyses.length >= 2) {
+      let secondEngineBestMove =
+        secondBestMovesArr[secondBestMovesArr.length - 1];
+      let secondEngineBestMoveEval = (
+        secondBestMovesArrEval[secondBestMovesArrEval.length - 1] / 100
+      ).toFixed(1);
+
+      secondBestMovesArr.push(analyses[1].moveUCI);
+      secondBestMovesArr.push(analyses[1].moveUCI);
+      secondBestMovesArrEval.push(analyses[1].evaluation.value);
+      secondBestMovesArrEval.push(analyses[1].evaluation.value);
+
+      if (currentPlayerMove == engineBestMove) {
+        displayMovesDiv.textContent = engineBestMove;
+        displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #71a341;"><div style="color:#fff">${engineBestMove} | ${engineBestMoveEval}</div>
+         is the best move!</div><p style="font-size: 14px;">other posibilities:</p><div style="color:#fff">${secondEngineBestMove} | ${secondEngineBestMoveEval}</div>`;
+        raport.comment.push(displayMovesDiv.innerHTML);
+      } else if (engineVeryGoodMove.includes(currentPlayerMove)) {
+        displayMovesDiv.textContent = engineVeryGoodMove;
+        displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #71a340;">${currentPlayerMove} is very good move!</div>
+        <div id="displayMoves" style="color: #71a341;">The best was: <span style="color:#fff">${engineBestMove} | ${engineBestMoveEval}</span></div><p style="font-size: 14px;">other posibilities:</p><div style="color:#fff">${secondEngineBestMove} | ${secondEngineBestMoveEval}</div>`;
+        raport.comment.push(displayMovesDiv.innerHTML);
+      } else if (engineGoodMove.includes(currentPlayerMove)) {
+        displayMovesDiv.textContent = engineGoodMove;
+        displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #95b776;">${currentPlayerMove} is a good move!</div>
+        <div id="displayMoves" style="color: #71a341;">The best was: <span style="color:#fff"> ${engineBestMove} | ${engineBestMoveEval}</span></div><p style="font-size: 14px;">other posibilities:</p><div style="color:#fff">${secondEngineBestMove} | ${secondEngineBestMoveEval}</div>`;
+        raport.comment.push(displayMovesDiv.innerHTML);
+      } else {
+        displayMovesDiv.textContent = engineBestMove;
+        displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: ${textColor};">Move played: ${currentPlayerMove}</div>
+        <div id="displayMoves" style="color: #71a341;">The best was: <span style="color:#fff">${engineBestMove} | ${engineBestMoveEval}</span></div><p style="font-size: 14px;">other posibilities:</p><div style="color:#fff">${secondEngineBestMove} | ${secondEngineBestMoveEval}</div>`;
+        raport.comment.push(displayMovesDiv.innerHTML);
+      }
+    }
+
+    // Third
+    if (analyses.length >= 3) {
+      let secondEngineBestMove =
+        secondBestMovesArr[secondBestMovesArr.length - 1];
+      let secondEngineBestMoveEval = (
+        secondBestMovesArrEval[secondBestMovesArrEval.length - 1] / 100
+      ).toFixed(1);
+
+      secondBestMovesArr.push(analyses[1].moveUCI);
+      secondBestMovesArr.push(analyses[1].moveUCI);
+      secondBestMovesArrEval.push(analyses[1].evaluation.value);
+      secondBestMovesArrEval.push(analyses[1].evaluation.value);
+
+      let thirdEngineBestMove = thirdBestMovesArr[thirdBestMovesArr.length - 1];
+      let thirdEngineBestMoveEval = (
+        thirdBestMovesArrEval[thirdBestMovesArrEval.length - 1] / 100
+      ).toFixed(1);
+
+      thirdBestMovesArr.push(analyses[2].moveUCI);
+      thirdBestMovesArr.push(analyses[2].moveUCI);
+      thirdBestMovesArrEval.push(analyses[2].evaluation.value);
+      thirdBestMovesArrEval.push(analyses[2].evaluation.value);
+
+      if (currentPlayerMove == engineBestMove) {
+        displayMovesDiv.textContent = engineBestMove;
+        displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #71a341;"><div style="color:#fff">${engineBestMove} | ${engineBestMoveEval}</div>
+         is the best move!</div><p style="font-size: 14px;">other posibilities:</p><div style="color:#fff">${secondEngineBestMove} | ${secondEngineBestMoveEval}</div><div style="color:#fff">${thirdEngineBestMove} | ${thirdEngineBestMoveEval}</div>`;
+        raport.comment.push(displayMovesDiv.innerHTML);
+      } else if (engineVeryGoodMove.includes(currentPlayerMove)) {
+        displayMovesDiv.textContent = engineVeryGoodMove;
+        displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #71a340;">${currentPlayerMove} is very good move!</div>
+        <div id="displayMoves" style="color: #71a341;">The best was: <span style="color:#fff">${engineBestMove} | ${engineBestMoveEval}</span></div><p style="font-size: 14px;">other posibilities:</p><div style="color:#fff">${secondEngineBestMove} | ${secondEngineBestMoveEval}</div><div style="color:#fff">${thirdEngineBestMove} | ${thirdEngineBestMoveEval}</div>`;
+        raport.comment.push(displayMovesDiv.innerHTML);
+      } else if (engineGoodMove.includes(currentPlayerMove)) {
+        displayMovesDiv.textContent = engineGoodMove;
+        displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #95b776;">${currentPlayerMove} is a good move!</div>
+        <div id="displayMoves" style="color: #71a341;">The best was: <span style="color:#fff"> ${engineBestMove} | ${engineBestMoveEval}</span></div><p style="font-size: 14px;">other posibilities:</p><div style="color:#fff">${secondEngineBestMove} | ${secondEngineBestMoveEval}</div><div style="color:#fff">${thirdEngineBestMove} | ${thirdEngineBestMoveEval}</div>`;
+        raport.comment.push(displayMovesDiv.innerHTML);
+      } else {
+        displayMovesDiv.textContent = engineBestMove;
+        displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: ${textColor};">Move played: ${currentPlayerMove}</div>
+        <div id="displayMoves" style="color: #71a341;">The best was: <span style="color:#fff">${engineBestMove} | ${engineBestMoveEval}</span></div><p style="font-size: 14px;">other posibilities:</p><div style="color:#fff">${secondEngineBestMove} | ${secondEngineBestMoveEval}</div><div style="color:#fff">${thirdEngineBestMove} | ${thirdEngineBestMoveEval}</div>`;
+        raport.comment.push(displayMovesDiv.innerHTML);
+      }
     }
 
     return { moveEvaluationText, textColor };
