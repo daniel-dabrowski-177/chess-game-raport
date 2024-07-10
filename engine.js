@@ -768,6 +768,9 @@ analiseCurrentPossitionBtn.addEventListener("click", () => {
       case "classic":
         themeClassic.click();
         break;
+        case "glass":
+        themeGlass.click();
+        break;
       default:
         "default";
         themeDefault.click();
@@ -2357,6 +2360,15 @@ async function removeAllPaintedSquares() {
     });
     darkSquares.forEach((ds) => {
       ds.style.background = "#BE8F68";
+    });
+  }
+  // Glass
+  else if (theme == "glass") {
+    lightSquares.forEach((ls) => {
+      ls.style.background = "#F0F1F0";
+    });
+    darkSquares.forEach((ds) => {
+      ds.style.background = "#C4D8E4";
     });
   }
 }

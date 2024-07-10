@@ -10,6 +10,9 @@ window.addEventListener("load", (event) => {
   }
 
   switch (theme) {
+    case "glass":
+      themeGlass.click();
+      break;
     case "red":
       themeRed.click();
       break;
@@ -129,6 +132,12 @@ pieceTournament.addEventListener("click", () => {
   location.reload();
 });
 
+let pieceGlass = document.getElementById("pieceGlass");
+pieceGlass.addEventListener("click", () => {
+  localStorage.setItem("piecesSet", "glass");
+  location.reload();
+});
+
 // Themes
 // Default
 let themeDefault = document.getElementById("themeDefault");
@@ -201,5 +210,24 @@ themeClassic.addEventListener("click", () => {
   });
   darkSquares.forEach((ds) => {
     ds.style.background = "#BE8F68";
+  });
+});
+
+// Glass
+let themeGlass = document.getElementById("themeGlass");
+themeGlass.addEventListener("click", () => {
+  theme = "glass";
+  localStorage.setItem("theme", "glass");
+
+  // declarations
+  let lightSquares = document.querySelectorAll(".white-1e1d7");
+  let darkSquares = document.querySelectorAll(".black-3c85d");
+
+  // styles
+  lightSquares.forEach((ls) => {
+    ls.style.background = "#F0F1F0";
+  });
+  darkSquares.forEach((ds) => {
+    ds.style.background = "#C4D8E4";
   });
 });
