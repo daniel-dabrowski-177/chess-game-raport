@@ -1108,7 +1108,7 @@ function checkIfBookMove() {
       bookMove = true;
       openingName = eco[i].name;
       pgnStatusDiv.innerHTML = openingName;
-      pgnStatusDiv.style.color = "#a17a5c";
+      pgnStatusDiv.style.color = "#deb18e";
       pgnStatusDiv.style.fontWeight = "bold";
       return;
     }
@@ -1133,8 +1133,8 @@ function paintSquares(playerMove, curentColor) {
       const squareTo = document.querySelector(`[data-square=${playerMoveTo}]`);
 
       if (squareFrom && squareTo) {
-        squareFrom.style.background = "#a17a5c";
-        squareTo.style.background = "#a17a5c";
+        squareFrom.style.background = "#deb18e";
+        squareTo.style.background = "#deb18e";
 
         let moveClassificationDiv = document.createElement("div");
         moveClassificationDiv.classList.add("icon");
@@ -1146,8 +1146,8 @@ function paintSquares(playerMove, curentColor) {
 
         let displayMovesDiv = document.getElementById("displayMoves");
         const moveEvaluationDiv = document.getElementById("moveEvaluation");
-        displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #a17a5c;">${openingName}</div>`;
-        moveEvaluationDiv.innerHTML = `<span style="color: #a17a5c;"><b>Book Move</b></span>`;
+        displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #deb18e;">${openingName}</div>`;
+        moveEvaluationDiv.innerHTML = `<span style="color: #deb18e;"><b>Book Move</b></span>`;
       }
     }
   } else if (bookMove == false) {
@@ -1173,28 +1173,28 @@ function paintSquares(playerMove, curentColor) {
 
         // Validation
         switch (curentColor) {
-          case "#1f947d":
+          case "#8ff7e3":
             moveClassificationDiv.style.backgroundImage = `url("/move_classifications/brilliant.png")`;
             break;
-          case "#5183b0":
+          case "#76acde":
             moveClassificationDiv.style.backgroundImage = `url("/move_classifications/great.png")`;
             break;
-          case "#71a341":
+          case "#97cc64":
             moveClassificationDiv.style.backgroundImage = `url("/move_classifications/best.png")`;
             break;
-          case "#71a340":
+          case "#90c959":
             moveClassificationDiv.style.backgroundImage = `url("/move_classifications/very-good.png")`;
             break;
-          case "#95b776":
+          case "#a5c983":
             moveClassificationDiv.style.backgroundImage = `url("/move_classifications/good.png")`;
             break;
-          case "#d9af32":
+          case "#f7e36d":
             moveClassificationDiv.style.backgroundImage = `url("/move_classifications/inaccuracy.png")`;
             break;
-          case "#ef9e4c":
+          case "#f2c28a":
             moveClassificationDiv.style.backgroundImage = `url("/move_classifications/mistake.png")`;
             break;
-          case "#ec6354":
+          case "#f58073":
             moveClassificationDiv.style.backgroundImage = `url("/move_classifications/blunder.png")`;
             break;
           default:
@@ -1221,22 +1221,22 @@ function paintSquares(playerMove, curentColor) {
 
         // Validation
         switch (curentColor) {
-          case "#71a341":
+          case "#97cc64":
             moveClassificationDiv.style.backgroundImage = `url("/move_classifications/best.png")`;
             break;
-          case "#71a340":
+          case "#90c959":
             moveClassificationDiv.style.backgroundImage = `url("/move_classifications/very-good.png")`;
             break;
-          case "#95b776":
+          case "#a5c983":
             moveClassificationDiv.style.backgroundImage = `url("/move_classifications/good.png")`;
             break;
-          case "#d9af32":
+          case "#f7e36d":
             moveClassificationDiv.style.backgroundImage = `url("/move_classifications/inaccuracy.png")`;
             break;
-          case "#ef9e4c":
+          case "#f2c28a":
             moveClassificationDiv.style.backgroundImage = `url("/move_classifications/mistake.png")`;
             break;
-          case "#ec6354":
+          case "#f58073":
             moveClassificationDiv.style.backgroundImage = `url("/move_classifications/blunder.png")`;
             break;
           default:
@@ -1299,8 +1299,8 @@ function paintSquares(playerMove, curentColor) {
     let playerMoveTo = raport.playerMoves[currentMove].substring(2);
 
     if (
-      raport.colors[currentMove] == "#ec6354" ||
-      raport.colors[currentMove] == "#ef9e4c"
+      raport.colors[currentMove] == "#f58073" ||
+      raport.colors[currentMove] == "#f2c28a"
     ) {
       let threateningMoveFrom = raport.bestMoves[currentMove].substring(0, 2);
       let threateningMoveTo = raport.bestMoves[currentMove].substring(2);
@@ -1323,19 +1323,19 @@ function paintSquares(playerMove, curentColor) {
 
       let moveEvaluationDiv = document.querySelector("#moveEvaluation");
 
-      if (raport.colors[currentMove] == "#ef9e4c") {
-        moveEvaluationDiv.innerHTML = `<div style="color: #ef9e4c">Mistake</div><div style="color: #fff">${raport.bestMoves[currentMove]}<span style="color: #8976B7"> threatens!</span></div>`;
+      if (raport.colors[currentMove] == "#f2c28a") {
+        moveEvaluationDiv.innerHTML = `<div style="color: #f2c28a">Mistake</div><div style="color: #fff">${raport.bestMoves[currentMove]}<span style="color: #8976B7"> threatens!</span></div>`;
       }
 
-      if (raport.colors[currentMove] == "#ec6354") {
-        moveEvaluationDiv.innerHTML = `<div style="color: #ec6354">Blunder</div><div style="color: #fff">${raport.bestMoves[currentMove]}<span style="color: #8976B7"> threatens!
+      if (raport.colors[currentMove] == "#f58073") {
+        moveEvaluationDiv.innerHTML = `<div style="color: #f58073">Blunder</div><div style="color: #fff">${raport.bestMoves[currentMove]}<span style="color: #8976B7"> threatens!
     </span></div>`;
       }
 
       if (threateningMoveTo == playerMoveTo) {
-        if (raport.colors[currentMove] == "#ef9e4c") {
+        if (raport.colors[currentMove] == "#f2c28a") {
           squareTo.style.background =
-            "linear-gradient(135deg, #8976b7 20%, #ef9e4c 90%)";
+            "linear-gradient(135deg, #8976b7 20%, #f2c28a 90%)";
 
           let bestMoveClassificationDiv = document.createElement("div");
           bestMoveClassificationDiv.classList.add("icon");
@@ -1343,9 +1343,9 @@ function paintSquares(playerMove, curentColor) {
           squareTo.appendChild(bestMoveClassificationDiv);
         }
 
-        if (raport.colors[currentMove] == "#ec6354") {
+        if (raport.colors[currentMove] == "#f58073") {
           squareTo.style.background =
-            "linear-gradient(135deg, #8976b7 20%, #ec6354 90%)";
+            "linear-gradient(135deg, #8976b7 20%, #f58073 90%)";
 
           let bestMoveClassificationDiv = document.createElement("div");
           bestMoveClassificationDiv.classList.add("icon");
@@ -1358,8 +1358,8 @@ function paintSquares(playerMove, curentColor) {
 
   // If mistake -> great move
   if (
-    raport.colors[currentMove - 1] == "#ef9e4c" &&
-    raport.colors[currentMove] == "#71a341"
+    raport.colors[currentMove - 1] == "#f2c28a" &&
+    raport.colors[currentMove] == "#97cc64"
   ) {
     let greatMoveFrom = raport.playerMoves[currentMove].substring(0, 2);
     let greatMoveTo = raport.playerMoves[currentMove].substring(2);
@@ -1368,8 +1368,8 @@ function paintSquares(playerMove, curentColor) {
     const squareTo = document.querySelector(`[data-square=${greatMoveTo}]`);
 
     if (squareFrom && squareTo) {
-      squareFrom.style.background = "#5183b0";
-      squareTo.style.background = "#5183b0";
+      squareFrom.style.background = "#76acde";
+      squareTo.style.background = "#76acde";
 
       let moveClassificationDiv = document.createElement("div");
       moveClassificationDiv.classList.add("icon");
@@ -1380,14 +1380,14 @@ function paintSquares(playerMove, curentColor) {
       squareTo.appendChild(moveClassificationDiv);
 
       const moveEvaluationDiv = document.getElementById("moveEvaluation");
-      moveEvaluationDiv.innerHTML = `<span style="color: #5183b0;"><b>Great Answer!</b></span>`;
+      moveEvaluationDiv.innerHTML = `<span style="color: #76acde;"><b>Great Answer!</b></span>`;
     }
   }
 
   // If blunder -> brilliant move
   if (
-    raport.colors[currentMove - 1] == "#ec6354" &&
-    raport.colors[currentMove] == "#71a341"
+    raport.colors[currentMove - 1] == "#f58073" &&
+    raport.colors[currentMove] == "#97cc64"
   ) {
     let excellentMoveFrom = raport.playerMoves[currentMove].substring(0, 2);
     let excellentMoveTo = raport.playerMoves[currentMove].substring(2);
@@ -1398,8 +1398,8 @@ function paintSquares(playerMove, curentColor) {
     const squareTo = document.querySelector(`[data-square=${excellentMoveTo}]`);
 
     if (squareFrom && squareTo) {
-      squareFrom.style.background = "#1f947d";
-      squareTo.style.background = "#1f947d";
+      squareFrom.style.background = "#8ff7e3";
+      squareTo.style.background = "#8ff7e3";
 
       let moveClassificationDiv = document.createElement("div");
       moveClassificationDiv.classList.add("icon");
@@ -1410,17 +1410,17 @@ function paintSquares(playerMove, curentColor) {
       squareTo.appendChild(moveClassificationDiv);
 
       const moveEvaluationDiv = document.getElementById("moveEvaluation");
-      moveEvaluationDiv.innerHTML = `<span style="color: #1f947d;"><b>Excellent Answer!</b></span>`;
+      moveEvaluationDiv.innerHTML = `<span style="color: #8ff7e3;"><b>Excellent Answer!</b></span>`;
     }
   }
 
   // Great Sequence
   if (
-    raport.colors[currentMove] == "#71a341" &&
-    raport.colors[currentMove - 2] == "#71a341" &&
-    raport.colors[currentMove - 4] == "#71a341" &&
-    raport.colors[currentMove - 6] == "#71a341" &&
-    raport.colors[currentMove - 8] == "#71a341"
+    raport.colors[currentMove] == "#97cc64" &&
+    raport.colors[currentMove - 2] == "#97cc64" &&
+    raport.colors[currentMove - 4] == "#97cc64" &&
+    raport.colors[currentMove - 6] == "#97cc64" &&
+    raport.colors[currentMove - 8] == "#97cc64"
   ) {
     let sGreatMoveFrom = raport.playerMoves[currentMove].substring(0, 2);
     let sGreatMoveTo = raport.playerMoves[currentMove].substring(2);
@@ -1431,8 +1431,8 @@ function paintSquares(playerMove, curentColor) {
     const squareTo = document.querySelector(`[data-square=${sGreatMoveTo}]`);
 
     if (squareFrom && squareTo) {
-      squareFrom.style.background = "#5183b0";
-      squareTo.style.background = "#5183b0";
+      squareFrom.style.background = "#76acde";
+      squareTo.style.background = "#76acde";
 
       let moveClassificationDiv = document.createElement("div");
       moveClassificationDiv.classList.add("icon");
@@ -1443,19 +1443,19 @@ function paintSquares(playerMove, curentColor) {
       squareTo.appendChild(moveClassificationDiv);
 
       const moveEvaluationDiv = document.getElementById("moveEvaluation");
-      moveEvaluationDiv.innerHTML = `<span style="color: #5183b0;"><b>Great Sequence!</b></span>`;
+      moveEvaluationDiv.innerHTML = `<span style="color: #76acde;"><b>Great Sequence!</b></span>`;
     }
   }
 
   // Brilliant Sequence
   if (
-    raport.colors[currentMove] == "#71a341" &&
-    raport.colors[currentMove - 2] == "#71a341" &&
-    raport.colors[currentMove - 4] == "#71a341" &&
-    raport.colors[currentMove - 6] == "#71a341" &&
-    raport.colors[currentMove - 8] == "#71a341" &&
-    raport.colors[currentMove - 10] == "#71a341" &&
-    raport.colors[currentMove - 12] == "#71a341"
+    raport.colors[currentMove] == "#97cc64" &&
+    raport.colors[currentMove - 2] == "#97cc64" &&
+    raport.colors[currentMove - 4] == "#97cc64" &&
+    raport.colors[currentMove - 6] == "#97cc64" &&
+    raport.colors[currentMove - 8] == "#97cc64" &&
+    raport.colors[currentMove - 10] == "#97cc64" &&
+    raport.colors[currentMove - 12] == "#97cc64"
   ) {
     let brilliantMoveFrom = raport.playerMoves[currentMove].substring(0, 2);
     let brilliantMoveTo = raport.playerMoves[currentMove].substring(2);
@@ -1466,8 +1466,8 @@ function paintSquares(playerMove, curentColor) {
     const squareTo = document.querySelector(`[data-square=${brilliantMoveTo}]`);
 
     if (squareFrom && squareTo) {
-      squareFrom.style.background = "#1f947d";
-      squareTo.style.background = "#1f947d";
+      squareFrom.style.background = "#8ff7e3";
+      squareTo.style.background = "#8ff7e3";
 
       let moveClassificationDiv = document.createElement("div");
       moveClassificationDiv.classList.add("icon");
@@ -1478,7 +1478,7 @@ function paintSquares(playerMove, curentColor) {
       squareTo.appendChild(moveClassificationDiv);
 
       const moveEvaluationDiv = document.getElementById("moveEvaluation");
-      moveEvaluationDiv.innerHTML = `<span style="color: #1f947d;"><b>Brilliant Sequence!</b></span>`;
+      moveEvaluationDiv.innerHTML = `<span style="color: #8ff7e3;"><b>Brilliant Sequence!</b></span>`;
     }
   }
 }
@@ -1530,76 +1530,76 @@ let blunderCounterBlackDiv = document.querySelector(".blunderCounterBlack");
 function countTallies() {
   for (let i = 0; i <= raport.colors.length; i++) {
     if (isEven(i)) {
-      if (raport.colors[i] == "#1f947d") {
+      if (raport.colors[i] == "#8ff7e3") {
         excellentCounterBlack++;
         excellentCounterBlackDiv.textContent = excellentCounterBlack;
       }
-      if (raport.colors[i] == "#5183b0") {
+      if (raport.colors[i] == "#76acde") {
         greatCounterBlack++;
         greatCounterBlackDiv.textContent = greatCounterBlack;
       }
-      if (raport.colors[i] == "#71a341") {
+      if (raport.colors[i] == "#97cc64") {
         bestCounterBlack++;
         bestCounterBlackDiv.textContent = bestCounterBlack;
       }
-      if (raport.colors[i] == "#71a340") {
+      if (raport.colors[i] == "#90c959") {
         veryGoodCounterBlack++;
         veryGoodCounterBlackDiv.textContent = veryGoodCounterBlack;
       }
-      if (raport.colors[i] == "#95b776") {
+      if (raport.colors[i] == "#a5c983") {
         goodCounterBlack++;
         goodCounterBlackDiv.textContent = goodCounterBlack;
       }
-      if (raport.colors[i] == "#a17a5c") {
+      if (raport.colors[i] == "#deb18e") {
         bookCounterBlack++;
         bookCounterBlackDiv.textContent = bookCounterBlack;
       }
-      if (raport.colors[i] == "#d9af32") {
+      if (raport.colors[i] == "#f7e36d") {
         inaccuracyCounterBlack++;
         inaccuracyCounterBlackDiv.textContent = inaccuracyCounterBlack;
       }
-      if (raport.colors[i] == "#ef9e4c") {
+      if (raport.colors[i] == "#f2c28a") {
         mistakeCounterBlack++;
         mistakeCounterBlackDiv.textContent = mistakeCounterBlack;
       }
-      if (raport.colors[i] == "#ec6354") {
+      if (raport.colors[i] == "#f58073") {
         blunderCounterBlack++;
         blunderCounterBlackDiv.textContent = blunderCounterBlack;
       }
     } else {
-      if (raport.colors[i] == "#1f947d") {
+      if (raport.colors[i] == "#8ff7e3") {
         excellentCounterWhite++;
         excellentCounterWhiteDiv.textContent = excellentCounterWhite;
       }
-      if (raport.colors[i] == "#5183b0") {
+      if (raport.colors[i] == "#76acde") {
         greatCounterWhite++;
         greatCounterWhiteDiv.textContent = greatCounterWhite;
       }
-      if (raport.colors[i] == "#71a341") {
+      if (raport.colors[i] == "#97cc64") {
         bestCounterWhite++;
         bestCounterWhiteDiv.textContent = bestCounterWhite;
       }
-      if (raport.colors[i] == "#71a340") {
+      if (raport.colors[i] == "#90c959") {
         veryGoodCounterWhite++;
         veryGoodCounterWhiteDiv.textContent = veryGoodCounterWhite;
       }
-      if (raport.colors[i] == "#95b776") {
+      if (raport.colors[i] == "#a5c983") {
         goodCounterWhite++;
         goodCounterWhiteDiv.textContent = goodCounterWhite;
       }
-      if (raport.colors[i] == "#a17a5c") {
+      if (raport.colors[i] == "#deb18e") {
         bookCounterWhite++;
         bookCounterWhiteDiv.textContent = bookCounterWhite;
       }
-      if (raport.colors[i] == "#d9af32") {
+      if (raport.colors[i] == "#f7e36d") {
         inaccuracyCounterWhite++;
         inaccuracyCounterWhiteDiv.textContent = inaccuracyCounterWhite;
       }
-      if (raport.colors[i] == "#ef9e4c") {
+      if (raport.colors[i] == "#f2c28a") {
         mistakeCounterWhite++;
         mistakeCounterWhiteDiv.textContent = mistakeCounterWhite;
       }
-      if (raport.colors[i] == "#ec6354") {
+      if (raport.colors[i] == "#f58073") {
         blunderCounterWhite++;
         blunderCounterWhiteDiv.textContent = blunderCounterWhite;
       }
@@ -1687,39 +1687,39 @@ function displayNotatons() {
     el1Div.classList.add("moves-el");
     el1Div.style.color = colorsData[i + 1];
 
-    if (colorsData[i + 1] == "#a17a5c") {
+    if (colorsData[i + 1] == "#deb18e") {
       el1Div.innerHTML =
         `<img class="notation-img" src="/move_classifications/book.png" /> ` +
         pgnData[i];
-    } else if (colorsData[i + 1] == "#1f947d") {
+    } else if (colorsData[i + 1] == "#8ff7e3") {
       el1Div.innerHTML =
         `<img class="notation-img" src="/move_classifications/brilliant.png" /> ` +
         pgnData[i];
-    } else if (colorsData[i + 1] == "#5183b0") {
+    } else if (colorsData[i + 1] == "#76acde") {
       el1Div.innerHTML =
         `<img class="notation-img" src="/move_classifications/great.png" /> ` +
         pgnData[i];
-    } else if (colorsData[i + 1] == "#71a341") {
+    } else if (colorsData[i + 1] == "#97cc64") {
       el1Div.innerHTML =
         `<img class="notation-img" src="/move_classifications/best.png" /> ` +
         pgnData[i];
-    } else if (colorsData[i + 1] == "#71a340") {
+    } else if (colorsData[i + 1] == "#90c959") {
       el1Div.innerHTML =
         `<img class="notation-img" src="/move_classifications/very-good.png" /> ` +
         pgnData[i];
-    } else if (colorsData[i + 1] == "#95b776") {
+    } else if (colorsData[i + 1] == "#a5c983") {
       el1Div.innerHTML =
         `<img class="notation-img" src="/move_classifications/good.png" /> ` +
         pgnData[i];
-    } else if (colorsData[i + 1] == "#d9af32") {
+    } else if (colorsData[i + 1] == "#f7e36d") {
       el1Div.innerHTML =
         `<img class="notation-img" src="/move_classifications/inaccuracy.png" /> ` +
         pgnData[i];
-    } else if (colorsData[i + 1] == "#ef9e4c") {
+    } else if (colorsData[i + 1] == "#f2c28a") {
       el1Div.innerHTML =
         `<img class="notation-img" src="/move_classifications/mistake.png" /> ` +
         pgnData[i];
-    } else if (colorsData[i + 1] == "#ec6354") {
+    } else if (colorsData[i + 1] == "#f58073") {
       el1Div.innerHTML =
         `<img class="notation-img" src="/move_classifications/blunder.png" /> ` +
         pgnData[i];
@@ -1751,31 +1751,31 @@ function displayNotatons() {
 
       // Validation
       switch (curentColor1) {
-        case "#a17a5c":
+        case "#deb18e":
           moveClassificationDiv.style.backgroundImage = `url("/move_classifications/book.png")`;
           break;
-        case "#1f947d":
+        case "#8ff7e3":
           moveClassificationDiv.style.backgroundImage = `url("/move_classifications/brilliant.png")`;
           break;
-        case "#5183b0":
+        case "#76acde":
           moveClassificationDiv.style.backgroundImage = `url("/move_classifications/great.png")`;
           break;
-        case "#71a341":
+        case "#97cc64":
           moveClassificationDiv.style.backgroundImage = `url("/move_classifications/best.png")`;
           break;
-        case "#71a340":
+        case "#90c959":
           moveClassificationDiv.style.backgroundImage = `url("/move_classifications/very-good.png")`;
           break;
-        case "#95b776":
+        case "#a5c983":
           moveClassificationDiv.style.backgroundImage = `url("/move_classifications/good.png")`;
           break;
-        case "#d9af32":
+        case "#f7e36d":
           moveClassificationDiv.style.backgroundImage = `url("/move_classifications/inaccuracy.png")`;
           break;
-        case "#ef9e4c":
+        case "#f2c28a":
           moveClassificationDiv.style.backgroundImage = `url("/move_classifications/mistake.png")`;
           break;
-        case "#ec6354":
+        case "#f58073":
           moveClassificationDiv.style.backgroundImage = `url("/move_classifications/blunder.png")`;
           break;
         default:
@@ -1789,39 +1789,39 @@ function displayNotatons() {
     el2Div.classList.add("moves-el");
     el2Div.style.color = colorsData[i + 2];
 
-    if (colorsData[i + 2] == "#a17a5c") {
+    if (colorsData[i + 2] == "#deb18e") {
       el2Div.innerHTML =
         `<img class="notation-img" src="/move_classifications/book.png" /> ` +
         pgnData[i + 1];
-    } else if (colorsData[i + 2] == "#1f947d") {
+    } else if (colorsData[i + 2] == "#8ff7e3") {
       el2Div.innerHTML =
         `<img class="notation-img" src="/move_classifications/brilliant.png" /> ` +
         pgnData[i + 1];
-    } else if (colorsData[i + 2] == "#5183b0") {
+    } else if (colorsData[i + 2] == "#76acde") {
       el2Div.innerHTML =
         `<img class="notation-img" src="/move_classifications/great.png" /> ` +
         pgnData[i + 1];
-    } else if (colorsData[i + 2] == "#71a341") {
+    } else if (colorsData[i + 2] == "#97cc64") {
       el2Div.innerHTML =
         `<img class="notation-img" src="/move_classifications/best.png" /> ` +
         pgnData[i + 1];
-    } else if (colorsData[i + 2] == "#71a340") {
+    } else if (colorsData[i + 2] == "#90c959") {
       el2Div.innerHTML =
         `<img class="notation-img" src="/move_classifications/very-good.png" /> ` +
         pgnData[i + 1];
-    } else if (colorsData[i + 2] == "#95b776") {
+    } else if (colorsData[i + 2] == "#a5c983") {
       el2Div.innerHTML =
         `<img class="notation-img" src="/move_classifications/good.png" /> ` +
         pgnData[i + 1];
-    } else if (colorsData[i + 2] == "#d9af32") {
+    } else if (colorsData[i + 2] == "#f7e36d") {
       el2Div.innerHTML =
         `<img class="notation-img" src="/move_classifications/inaccuracy.png" /> ` +
         pgnData[i + 1];
-    } else if (colorsData[i + 2] == "#ef9e4c") {
+    } else if (colorsData[i + 2] == "#f2c28a") {
       el2Div.innerHTML =
         `<img class="notation-img" src="/move_classifications/mistake.png" /> ` +
         pgnData[i + 1];
-    } else if (colorsData[i + 2] == "#ec6354") {
+    } else if (colorsData[i + 2] == "#f58073") {
       el2Div.innerHTML =
         `<img class="notation-img" src="/move_classifications/blunder.png" /> ` +
         pgnData[i + 1];
@@ -1853,31 +1853,31 @@ function displayNotatons() {
 
       // Validation
       switch (curentColor2) {
-        case "#a17a5c":
+        case "#deb18e":
           moveClassificationDiv.style.backgroundImage = `url("/move_classifications/book.png")`;
           break;
-        case "#1f947d":
+        case "#8ff7e3":
           moveClassificationDiv.style.backgroundImage = `url("/move_classifications/brilliant.png")`;
           break;
-        case "#5183b0":
+        case "#76acde":
           moveClassificationDiv.style.backgroundImage = `url("/move_classifications/great.png")`;
           break;
-        case "#71a341":
+        case "#97cc64":
           moveClassificationDiv.style.backgroundImage = `url("/move_classifications/best.png")`;
           break;
-        case "#71a340":
+        case "#90c959":
           moveClassificationDiv.style.backgroundImage = `url("/move_classifications/very-good.png")`;
           break;
-        case "#95b776":
+        case "#a5c983":
           moveClassificationDiv.style.backgroundImage = `url("/move_classifications/good.png")`;
           break;
-        case "#d9af32":
+        case "#f7e36d":
           moveClassificationDiv.style.backgroundImage = `url("/move_classifications/inaccuracy.png")`;
           break;
-        case "#ef9e4c":
+        case "#f2c28a":
           moveClassificationDiv.style.backgroundImage = `url("/move_classifications/mistake.png")`;
           break;
-        case "#ec6354":
+        case "#f58073":
           moveClassificationDiv.style.backgroundImage = `url("/move_classifications/blunder.png")`;
           break;
         default:
@@ -2093,9 +2093,9 @@ function sortAndCalculate(array) {
 
   for (let i = 0; i < evenIndexes.length; i++) {
     if (
-      evenIndexes[i] !== "#d9af32" &&
-      evenIndexes[i] !== "#ef9e4c" &&
-      evenIndexes[i] !== "#ec6354"
+      evenIndexes[i] !== "#f7e36d" &&
+      evenIndexes[i] !== "#f2c28a" &&
+      evenIndexes[i] !== "#f58073"
     ) {
       blackAccVal++;
     }
@@ -2103,9 +2103,9 @@ function sortAndCalculate(array) {
 
   for (let i = 0; i < oddIndexes.length; i++) {
     if (
-      oddIndexes[i] !== "#d9af32" &&
-      oddIndexes[i] !== "#ef9e4c" &&
-      oddIndexes[i] !== "#ec6354"
+      oddIndexes[i] !== "#f7e36d" &&
+      oddIndexes[i] !== "#f2c28a" &&
+      oddIndexes[i] !== "#f58073"
     ) {
       whiteAccVal++;
     }
@@ -2513,109 +2513,52 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
     blackAccMoves.push(blackMoves);
 
     const displayMovesDiv = document.getElementById("displayMoves");
+    
 
     if (currentPlayerMove == engineBestMove) {
       displayMovesDiv.textContent = engineBestMove;
-      displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #71a341;"><div style="color:#fff">${engineBestMove} | ${engineBestMoveEval}</div>
+      displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #97cc64;"><div style="color:#fff">${engineBestMove} | ${engineBestMoveEval}</div>
        is the best move!</div>`;
       raport.comment.push(displayMovesDiv.innerHTML);
     } else if (engineVeryGoodMove.includes(currentPlayerMove)) {
+      let LastEvalNumber = (evalArr.pop() / 100).toFixed(1)
       displayMovesDiv.textContent = engineVeryGoodMove;
-      displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #71a340;">${currentPlayerMove} is very good move!</div>
-      <div id="displayMoves" style="color: #71a341;">The best was: <span style="color:#fff">${engineBestMove} | ${engineBestMoveEval}</span></div>`;
+      displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #90c959;">${currentPlayerMove} | ${LastEvalNumber} is very good move!</div>
+      <div id="displayMoves" style="color: #97cc64;">The best was: <span style="color:#fff">${engineBestMove} | ${engineBestMoveEval}</span></div>`;
       raport.comment.push(displayMovesDiv.innerHTML);
     } else if (engineGoodMove.includes(currentPlayerMove)) {
+      let LastEvalNumber = (evalArr.pop() / 100).toFixed(1)
       displayMovesDiv.textContent = engineGoodMove;
-      displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #95b776;">${currentPlayerMove} is a good move!</div>
-      <div id="displayMoves" style="color: #71a341;">The best was: <span style="color:#fff"> ${engineBestMove} | ${engineBestMoveEval}</span></div>`;
+      displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #a5c983;">${currentPlayerMove} | ${LastEvalNumber} is a good move!</div>
+      <div id="displayMoves" style="color: #97cc64;">The best was: <span style="color:#fff"> ${engineBestMove} | ${engineBestMoveEval}</span></div>`;
       raport.comment.push(displayMovesDiv.innerHTML);
     } else {
+      let LastEvalNumber = (evalArr.pop() / 100).toFixed(1)
       displayMovesDiv.textContent = engineBestMove;
-      displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: ${textColor};">Move played: ${currentPlayerMove}</div>
-      <div id="displayMoves" style="color: #71a341;">The best was: <span style="color:#fff">${engineBestMove} | ${engineBestMoveEval}</span></div>`;
+      displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: ${textColor};">Move played: ${currentPlayerMove} | ${LastEvalNumber}</div>
+      <div id="displayMoves" style="color: #97cc64;">The best was: <span style="color:#fff">${engineBestMove} | ${engineBestMoveEval}</span></div>`;
       raport.comment.push(displayMovesDiv.innerHTML);
     }
 
     // Second
     if (analyses.length >= 2) {
-      let secondEngineBestMove =
-        secondBestMovesArr[secondBestMovesArr.length - 1];
-      let secondEngineBestMoveEval = (
-        secondBestMovesArrEval[secondBestMovesArrEval.length - 1] / 100
-      ).toFixed(1);
-
       secondBestMovesArr.push(analyses[1].moveUCI);
       secondBestMovesArr.push(analyses[1].moveUCI);
       secondBestMovesArrEval.push(analyses[1].evaluation.value);
       secondBestMovesArrEval.push(analyses[1].evaluation.value);
-
-      if (currentPlayerMove == engineBestMove) {
-        displayMovesDiv.textContent = engineBestMove;
-        displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #71a341;"><div style="color:#fff">${engineBestMove} | ${engineBestMoveEval}</div>
-         is the best move!</div><p style="font-size: 14px;">other posibilities:</p><div style="color:#fff">${secondEngineBestMove} | ${secondEngineBestMoveEval}</div>`;
-        raport.comment.push(displayMovesDiv.innerHTML);
-      } else if (engineVeryGoodMove.includes(currentPlayerMove)) {
-        displayMovesDiv.textContent = engineVeryGoodMove;
-        displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #71a340;">${currentPlayerMove} is very good move!</div>
-        <div id="displayMoves" style="color: #71a341;">The best was: <span style="color:#fff">${engineBestMove} | ${engineBestMoveEval}</span></div><p style="font-size: 14px;">other posibilities:</p><div style="color:#fff">${secondEngineBestMove} | ${secondEngineBestMoveEval}</div>`;
-        raport.comment.push(displayMovesDiv.innerHTML);
-      } else if (engineGoodMove.includes(currentPlayerMove)) {
-        displayMovesDiv.textContent = engineGoodMove;
-        displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #95b776;">${currentPlayerMove} is a good move!</div>
-        <div id="displayMoves" style="color: #71a341;">The best was: <span style="color:#fff"> ${engineBestMove} | ${engineBestMoveEval}</span></div><p style="font-size: 14px;">other posibilities:</p><div style="color:#fff">${secondEngineBestMove} | ${secondEngineBestMoveEval}</div>`;
-        raport.comment.push(displayMovesDiv.innerHTML);
-      } else {
-        displayMovesDiv.textContent = engineBestMove;
-        displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: ${textColor};">Move played: ${currentPlayerMove}</div>
-        <div id="displayMoves" style="color: #71a341;">The best was: <span style="color:#fff">${engineBestMove} | ${engineBestMoveEval}</span></div><p style="font-size: 14px;">other posibilities:</p><div style="color:#fff">${secondEngineBestMove} | ${secondEngineBestMoveEval}</div>`;
-        raport.comment.push(displayMovesDiv.innerHTML);
-      }
     }
 
     // Third
     if (analyses.length >= 3) {
-      let secondEngineBestMove =
-        secondBestMovesArr[secondBestMovesArr.length - 1];
-      let secondEngineBestMoveEval = (
-        secondBestMovesArrEval[secondBestMovesArrEval.length - 1] / 100
-      ).toFixed(1);
-
       secondBestMovesArr.push(analyses[1].moveUCI);
       secondBestMovesArr.push(analyses[1].moveUCI);
       secondBestMovesArrEval.push(analyses[1].evaluation.value);
       secondBestMovesArrEval.push(analyses[1].evaluation.value);
 
-      let thirdEngineBestMove = thirdBestMovesArr[thirdBestMovesArr.length - 1];
-      let thirdEngineBestMoveEval = (
-        thirdBestMovesArrEval[thirdBestMovesArrEval.length - 1] / 100
-      ).toFixed(1);
-
       thirdBestMovesArr.push(analyses[2].moveUCI);
       thirdBestMovesArr.push(analyses[2].moveUCI);
       thirdBestMovesArrEval.push(analyses[2].evaluation.value);
       thirdBestMovesArrEval.push(analyses[2].evaluation.value);
-
-      if (currentPlayerMove == engineBestMove) {
-        displayMovesDiv.textContent = engineBestMove;
-        displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #71a341;"><div style="color:#fff">${engineBestMove} | ${engineBestMoveEval}</div>
-         is the best move!</div><p style="font-size: 14px;">other posibilities:</p><div style="color:#fff">${secondEngineBestMove} | ${secondEngineBestMoveEval}</div><div style="color:#fff">${thirdEngineBestMove} | ${thirdEngineBestMoveEval}</div>`;
-        raport.comment.push(displayMovesDiv.innerHTML);
-      } else if (engineVeryGoodMove.includes(currentPlayerMove)) {
-        displayMovesDiv.textContent = engineVeryGoodMove;
-        displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #71a340;">${currentPlayerMove} is very good move!</div>
-        <div id="displayMoves" style="color: #71a341;">The best was: <span style="color:#fff">${engineBestMove} | ${engineBestMoveEval}</span></div><p style="font-size: 14px;">other posibilities:</p><div style="color:#fff">${secondEngineBestMove} | ${secondEngineBestMoveEval}</div><div style="color:#fff">${thirdEngineBestMove} | ${thirdEngineBestMoveEval}</div>`;
-        raport.comment.push(displayMovesDiv.innerHTML);
-      } else if (engineGoodMove.includes(currentPlayerMove)) {
-        displayMovesDiv.textContent = engineGoodMove;
-        displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: #95b776;">${currentPlayerMove} is a good move!</div>
-        <div id="displayMoves" style="color: #71a341;">The best was: <span style="color:#fff"> ${engineBestMove} | ${engineBestMoveEval}</span></div><p style="font-size: 14px;">other posibilities:</p><div style="color:#fff">${secondEngineBestMove} | ${secondEngineBestMoveEval}</div><div style="color:#fff">${thirdEngineBestMove} | ${thirdEngineBestMoveEval}</div>`;
-        raport.comment.push(displayMovesDiv.innerHTML);
-      } else {
-        displayMovesDiv.textContent = engineBestMove;
-        displayMovesDiv.innerHTML = `<div id="displayMoves" style="color: ${textColor};">Move played: ${currentPlayerMove}</div>
-        <div id="displayMoves" style="color: #71a341;">The best was: <span style="color:#fff">${engineBestMove} | ${engineBestMoveEval}</span></div><p style="font-size: 14px;">other posibilities:</p><div style="color:#fff">${secondEngineBestMove} | ${secondEngineBestMoveEval}</div><div style="color:#fff">${thirdEngineBestMove} | ${thirdEngineBestMoveEval}</div>`;
-        raport.comment.push(displayMovesDiv.innerHTML);
-      }
     }
 
     return { moveEvaluationText, textColor };
@@ -2635,15 +2578,15 @@ async function DisplayBestPositions(fen, stockfish, depth, pgnClone) {
     let engineGoodMove = goodMovesArr[goodMovesArr.length - 1];
 
     // Colors
-    let brilliant = "#1f947d";
-    let great = "#5183b0";
-    let book = "#a17a5c";
-    let best = "#71a341";
-    let veryGood = "#71a340";
-    let good = "#95b776";
-    let inacuraccy = "#d9af32";
-    let mistake = "#ef9e4c";
-    let blunder = "#ec6354";
+    let brilliant = "#8ff7e3";
+    let great = "#76acde";
+    let book = "#deb18e";
+    let best = "#97cc64";
+    let veryGood = "#90c959";
+    let good = "#a5c983";
+    let inacuraccy = "#f7e36d";
+    let mistake = "#f2c28a";
+    let blunder = "#f58073";
 
     let currMoveValue = analyses[0].evaluation.value;
     let currMoveType = analyses[0].evaluation.type;
