@@ -157,6 +157,7 @@ h1 {
   margin: 28px 0 0 0;
   padding: 5px 20px;
   background-color: rgba(0, 0, 0, 0.25);
+  position: relative;
 }
 
 .moreDetails {
@@ -196,6 +197,7 @@ h1 {
 
 #pgnStatus {
   margin: 10px 0;
+  height: 45px;
   font-size: 14px;
   text-align: center;
   color: white;
@@ -213,6 +215,7 @@ h1 {
   display: flex;
   justify-content: center;
   gap: 20px;
+  margin-top: auto;
 }
 
 button {
